@@ -1,6 +1,6 @@
 # Java Package operator
 
-Explain the purpose of this project
+TODO: Explain the purpose of this project
 
 - Build the project and publish the image on a registry
 ```shell
