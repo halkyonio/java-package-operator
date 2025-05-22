@@ -2,7 +2,7 @@
 
 TODO: Explain the purpose of this project
 
-- Build the project and publish the image on a registry
+- Build the project and publish the image on a registry where you have write access (example: quay.io)
 ```shell
 mvn clean package \
   -Dquarkus.kubernetes.rbac.service-accounts.package-operator.namespace=default \
