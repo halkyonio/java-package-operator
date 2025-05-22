@@ -4,7 +4,7 @@ import io.fabric8.kubernetes.client.CustomResource;
 import io.fabric8.kubernetes.model.annotation.*;
 
 @Group("halkyon.io")
-@Version("v1alpha1")
+@Version("v1")
 @Kind("Package")
 @Plural("packages")
 @Singular("package")
