@@ -5,6 +5,8 @@ TODO: Explain the purpose of this project
 - Build the project and publish the image on a registry where you have write access (example: quay.io)
 ```shell
 mvn clean package \
+  -Dquarkus.kubernetes.output-directory=resources/manifests \
+  -Dquarkus.operator-sdk.crd.output-directory=resources/crds \
   -Dquarkus.kubernetes.rbac.service-accounts.package-operator.namespace=default \
   -Dquarkus.container-image.build=true \
   -Dquarkus.container-image.push=true \
@@ -13,11 +15,11 @@ mvn clean package \
 - Deploy the kube manifest on a kube cluster and install the CRD
 ```shell
 kubectl delete -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/resources/examples/package1.yml
-kubectl delete -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/target/kubernetes//kubernetes.yml
-kubectl delete -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/target/kubernetes/packages.halkyon.io-v1.yml
+kubectl delete -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/resources/manifests/kubernetes.yml
+kubectl delete -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/resources/crds/packages.halkyon.io-v1.yml
 
-kubectl apply -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/target/kubernetes/packages.halkyon.io-v1.yml
-kubectl apply -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/target/kubernetes/kubernetes.yml
+kubectl apply -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/resources/crds/packages.halkyon.io-v1.yml
+kubectl apply -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/resources/manifests/kubernetes.yml
 ```
 - Create a `Package` yaml
 ```yaml
