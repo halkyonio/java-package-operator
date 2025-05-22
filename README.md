@@ -19,7 +19,19 @@ kubectl delete -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/t
 kubectl apply -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/target/kubernetes/packages.halkyon.io-v1.yml
 kubectl apply -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/target/kubernetes/kubernetes.yml
 ```
-- Install a `Package`
+- Create a `Package` yaml
+```yaml
+apiVersion: halkyon.io/v1
+kind: Package
+metadata:
+  name: my-helm-app
+  namespace: default
+spec:
+  tool: Helm
+  url: https://charts.helm.sh/stable/nginx-ingress-1.41.3.tgz
+  version: 1.41.3
+```
+- and deploy it: 
 ```shell
 kubectl apply -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/resources/examples/package1.yml
 ```
