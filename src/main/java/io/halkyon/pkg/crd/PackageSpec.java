@@ -1,4 +1,7 @@
-package io.halkyon;
+package io.halkyon.pkg.crd;
+
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import io.fabric8.crd.generator.annotation.PreserveUnknownFields;
 
 import java.util.Map;
 
@@ -6,7 +9,11 @@ public class PackageSpec {
     private String tool;
     private String url;
     private String version;
-    private Map<String, Object> values;
+
+    @PreserveUnknownFields
+    @JsonPropertyDescription("ValuesObject specifies Helm values to be passed to helm template, defined as a map.")
+    private Map<String, Object> valuesObject;
+
     private KubernetesJob kubernetesJob;
 
     // Getters and Setters
@@ -34,12 +41,12 @@ public class PackageSpec {
         this.version = version;
     }
 
-    public Map<String, Object> getValues() {
-        return values;
+    public Map<String, Object> getValuesObject() {
+        return valuesObject;
     }
 
-    public void setValues(Map<String, Object> values) {
-        this.values = values;
+    public void setValuesObject(Map<String, Object> valuesObject) {
+        this.valuesObject = valuesObject;
     }
 
     public KubernetesJob getKubernetesJob() {
@@ -56,7 +63,7 @@ public class PackageSpec {
             "tool='" + tool + '\'' +
             ", url='" + url + '\'' +
             ", version='" + version + '\'' +
-            ", values=" + values +
+            ", values=" + valuesObject +
             ", kubernetesJob=" + kubernetesJob +
             '}';
     }

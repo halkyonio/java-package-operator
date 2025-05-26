@@ -4,17 +4,16 @@
   "metadata" : {
     "annotations" : {
       "app.quarkus.io/quarkus-version" : "3.22.3",
-      "app.quarkus.io/commit-id" : "89ec6a05643a044e27784b36be8cf7e293c3c0d3",
+      "app.quarkus.io/commit-id" : "65006edd6326bc49ce34502976a05be3c80a3851",
       "app.quarkus.io/vcs-uri" : "https://github.com/halkyonio/java-package-operator.git",
-      "app.quarkus.io/build-timestamp" : "2025-05-22 - 15:54:25 +0000"
+      "app.quarkus.io/build-timestamp" : "2025-05-26 - 10:11:26 +0000"
     },
     "labels" : {
       "app.kubernetes.io/name" : "package-operator",
       "app.kubernetes.io/version" : "0.1.0-SNAPSHOT",
       "app.kubernetes.io/managed-by" : "quarkus"
     },
-    "name" : "package-operator",
-    "namespace" : "default"
+    "name" : "package-operator"
   }
 },{
   "apiVersion" : "rbac.authorization.k8s.io/v1",
@@ -67,8 +66,7 @@
   },
   "subjects" : [ {
     "kind" : "ServiceAccount",
-    "name" : "package-operator",
-    "namespace" : "default"
+    "name" : "package-operator"
   } ]
 },{
   "apiVersion" : "rbac.authorization.k8s.io/v1",
@@ -87,8 +85,7 @@
   },
   "subjects" : [ {
     "kind" : "ServiceAccount",
-    "name" : "package-operator",
-    "namespace" : "default"
+    "name" : "package-operator"
   } ]
 },{
   "apiVersion" : "rbac.authorization.k8s.io/v1",
@@ -107,8 +104,7 @@
   },
   "subjects" : [ {
     "kind" : "ServiceAccount",
-    "name" : "package-operator",
-    "namespace" : "default"
+    "name" : "package-operator"
   } ]
 },{
   "apiVersion" : "v1",
@@ -116,9 +112,9 @@
   "metadata" : {
     "annotations" : {
       "app.quarkus.io/quarkus-version" : "3.22.3",
-      "app.quarkus.io/commit-id" : "89ec6a05643a044e27784b36be8cf7e293c3c0d3",
+      "app.quarkus.io/commit-id" : "65006edd6326bc49ce34502976a05be3c80a3851",
       "app.quarkus.io/vcs-uri" : "https://github.com/halkyonio/java-package-operator.git",
-      "app.quarkus.io/build-timestamp" : "2025-05-22 - 15:54:25 +0000"
+      "app.quarkus.io/build-timestamp" : "2025-05-26 - 10:11:26 +0000"
     },
     "labels" : {
       "app.kubernetes.io/name" : "package-operator",
@@ -146,9 +142,9 @@
   "metadata" : {
     "annotations" : {
       "app.quarkus.io/quarkus-version" : "3.22.3",
-      "app.quarkus.io/commit-id" : "89ec6a05643a044e27784b36be8cf7e293c3c0d3",
+      "app.quarkus.io/commit-id" : "65006edd6326bc49ce34502976a05be3c80a3851",
       "app.quarkus.io/vcs-uri" : "https://github.com/halkyonio/java-package-operator.git",
-      "app.quarkus.io/build-timestamp" : "2025-05-22 - 15:54:25 +0000"
+      "app.quarkus.io/build-timestamp" : "2025-05-26 - 10:11:26 +0000"
     },
     "labels" : {
       "app.kubernetes.io/name" : "package-operator",
@@ -161,22 +157,22 @@
     "replicas" : 1,
     "selector" : {
       "matchLabels" : {
-        "app.kubernetes.io/version" : "0.1.0-SNAPSHOT",
-        "app.kubernetes.io/name" : "package-operator"
+        "app.kubernetes.io/name" : "package-operator",
+        "app.kubernetes.io/version" : "0.1.0-SNAPSHOT"
       }
     },
     "template" : {
       "metadata" : {
         "annotations" : {
           "app.quarkus.io/quarkus-version" : "3.22.3",
-          "app.quarkus.io/commit-id" : "89ec6a05643a044e27784b36be8cf7e293c3c0d3",
+          "app.quarkus.io/commit-id" : "65006edd6326bc49ce34502976a05be3c80a3851",
           "app.quarkus.io/vcs-uri" : "https://github.com/halkyonio/java-package-operator.git",
-          "app.quarkus.io/build-timestamp" : "2025-05-22 - 15:54:25 +0000"
+          "app.quarkus.io/build-timestamp" : "2025-05-26 - 10:11:26 +0000"
         },
         "labels" : {
           "app.kubernetes.io/managed-by" : "quarkus",
-          "app.kubernetes.io/version" : "0.1.0-SNAPSHOT",
-          "app.kubernetes.io/name" : "package-operator"
+          "app.kubernetes.io/name" : "package-operator",
+          "app.kubernetes.io/version" : "0.1.0-SNAPSHOT"
         }
       },
       "spec" : {
@@ -189,7 +185,7 @@
               }
             }
           } ],
-          "image" : "quay.io/halkyonio/java-package-operator:0.1.0-SNAPSHOT",
+          "image" : "docker.io/cmoullia/package-operator:0.1.0-SNAPSHOT",
           "imagePullPolicy" : "Always",
           "livenessProbe" : {
             "failureThreshold" : 3,

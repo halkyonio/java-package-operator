@@ -1,4 +1,4 @@
-package io.halkyon;
+package io.halkyon.pkg.crd;
 
 import java.util.List;
 

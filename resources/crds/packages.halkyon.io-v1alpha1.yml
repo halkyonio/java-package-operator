@@ -11,7 +11,7 @@ spec:
     singular: "package"
   scope: "Cluster"
   versions:
-  - name: "v1"
+  - name: "v1alpha1"
     schema:
       openAPIV3Schema:
         properties:
@@ -36,10 +36,13 @@ spec:
                 type: "string"
               url:
                 type: "string"
-              values:
-                additionalProperties:
-                  type: "object"
+              valuesObject:
+                #additionalProperties:
+                #  type: "object"
+                description: "ValuesObject specifies Helm values to be passed to helm\
+                  \ template, defined as a map."
                 type: "object"
+                x-kubernetes-preserve-unknown-fields: true
               version:
                 type: "string"
             type: "object"
