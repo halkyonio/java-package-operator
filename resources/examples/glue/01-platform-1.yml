@@ -1,0 +1,26 @@
+apiVersion: glue.operator.javaoperatorsdk.io/v1beta1 #halkyon.io/v1alpha1
+kind: Platform
+metadata:
+  name: simple-platform
+spec:
+  version: 0.1.0
+  description: "A simple platform"
+  packages:
+    - name: nginx-ingress
+      description: "nginx-ingress package"
+      pipeline:
+        steps:
+        - name: pre-install
+          image: registry.access.redhat.com/ubi9
+          script: |
+            echo "This is a pre-installation running a job"
+        - name: "Install nginx-ingress"
+          repoUrl: https://kubernetes.github.io/ingress-nginx
+          version: 4.12.2
+          valuesObject:
+            ingress:
+              enabled: true
+        - name: post-install
+          image: registry.access.redhat.com/ubi9
+          script: |
+            echo "This is a post-installation running a job"

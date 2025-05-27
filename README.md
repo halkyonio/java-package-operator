@@ -7,6 +7,7 @@ TODO: Explain the purpose of this project
 mvn clean package \
   -Dquarkus.kubernetes.output-directory=resources/manifests \
   -Dquarkus.operator-sdk.crd.output-directory=resources/crds \
+  -Dquarkus.operator-sdk.crd.generate-all \
   -Dquarkus.kubernetes.rbac.service-accounts.package-operator.namespace=default \
   -Dquarkus.container-image.build=true \
   -Dquarkus.container-image.push=true \

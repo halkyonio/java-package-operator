@@ -1,0 +1,22 @@
+apiVersion: io.javaoperatorsdk.operator.glue/v1beta1
+kind: GlueOperator
+metadata:
+  name: ingress-platform
+spec:
+  parent:
+    apiVersion: glue.operator.javaoperatorsdk.io/v1beta1 # halkyon.io/v1alpha1
+    kind: Platform
+  childResources:
+    - name: jobs
+      bulk: true
+      resourceTemplate: |
+        items:
+        {#for p in parent.spec.packages}
+        - apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: {p.name}
+            namespace: default
+          data:
+            key: "value-{p.name}"
+        {/for}
