@@ -1,7 +1,5 @@
 package io.halkyon.crd.platform;
 
-import io.halkyon.crd.pkg.Package;
-
 import java.util.List;
 
 public class PlatformSpec {
