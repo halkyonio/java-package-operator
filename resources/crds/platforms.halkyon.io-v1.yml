@@ -9,7 +9,7 @@ spec:
     kind: "Platform"
     plural: "platforms"
     singular: "platform"
-  scope: "Cluster"
+  scope: "Namespaced"
   versions:
   - name: "v1alpha1"
     schema:
@@ -39,13 +39,13 @@ spec:
                             properties:
                               description:
                                 type: "string"
-                              helmUrl:
-                                type: "string"
                               id:
                                 type: "string"
                               image:
                                 type: "string"
                               name:
+                                type: "string"
+                              repoUrl:
                                 type: "string"
                               script:
                                 type: "string"
@@ -56,6 +56,8 @@ spec:
                                   \ be passed to helm template, defined as a map."
                                 type: "object"
                                 x-kubernetes-preserve-unknown-fields: true
+                              version:
+                                type: "string"
                             type: "object"
                           type: "array"
                       type: "object"

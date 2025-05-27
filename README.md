@@ -74,3 +74,19 @@ metadata:
     uid: e2872b3f-ea9b-4803-9b3f-30e708027a81  
 ```
 
+## TODO
+
+```shell
+k rollout status deployment kubernetes-glue-operator --timeout=90s
+
+k delete -f resources/examples/glue/simple-platform.yml
+k delete -f resources/examples/glue/crds/platforms.halkyon.io-v1alpha1.yml
+k delete -f resources/examples/glue/crds/platform-operator.yml
+
+k apply -f resources/examples/glue/crds/platforms.halkyon.io-v1alpha1.yml
+k apply -f resources/examples/glue/crds/platform-operator.yml
+k apply -f resources/examples/glue/simple-platform.yml
+
+k logs -lapp.kubernetes.io/name=kubernetes-glue-operator --tail=-1
+```
+

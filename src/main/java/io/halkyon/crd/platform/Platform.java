@@ -1,5 +1,6 @@
 package io.halkyon.crd.platform;
 
+import io.fabric8.kubernetes.api.model.Namespaced;
 import io.fabric8.kubernetes.client.CustomResource;
 import io.fabric8.kubernetes.model.annotation.*;
 
@@ -8,7 +9,7 @@ import io.fabric8.kubernetes.model.annotation.*;
 @Kind("Platform")
 @Plural("platforms")
 @Singular("platform")
-public class Platform extends CustomResource<PlatformSpec, PlatformStatus> {
+public class Platform extends CustomResource<PlatformSpec, PlatformStatus> implements Namespaced {
     @Override
     public String toString() {
         return "Platform{" +

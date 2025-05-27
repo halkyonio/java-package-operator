@@ -11,7 +11,13 @@ public class Step {
     private String description;
     private String id;
     private String script;
-    private String helmUrl;
+    private String repoUrl;
+    private String version;
+
+    @PreserveUnknownFields
+    @JsonPropertyDescription("ValuesObject specifies Helm values to be passed to helm template, defined as a map.")
+    private Map<String, Object> valuesObject;
+
 
     public String getName() {
         return name;
@@ -53,12 +59,20 @@ public class Step {
         this.script = script;
     }
 
-    public String getHelmUrl() {
-        return helmUrl;
+    public String getRepoUrl() {
+        return repoUrl;
     }
 
-    public void setHelmUrl(String helmUrl) {
-        this.helmUrl = helmUrl;
+    public void setRepoUrl(String repoUrl) {
+        this.repoUrl = repoUrl;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     public Map<String, Object> getValuesObject() {
@@ -68,8 +82,4 @@ public class Step {
     public void setValuesObject(Map<String, Object> valuesObject) {
         this.valuesObject = valuesObject;
     }
-
-    @PreserveUnknownFields
-    @JsonPropertyDescription("ValuesObject specifies Helm values to be passed to helm template, defined as a map.")
-    private Map<String, Object> valuesObject;
 }
