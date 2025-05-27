@@ -4,7 +4,7 @@ metadata:
   name: ingress-platform
 spec:
   parent:
-    apiVersion: halkyon.io/v1alpha1 # io.javaoperatorsdk.operator.glue/v1beta1
+    apiVersion: halkyon.io/v1alpha1
     kind: Platform
   childResources:
     - name: jobs
