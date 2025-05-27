@@ -1,10 +1,10 @@
-package io.halkyon.pkg.crd;
+package io.halkyon.crd.platform;
 
-public class PackageStatus {
+public class PlatformStatus {
     private String phase;
     private String message;
 
-    public PackageStatus withMessage(String message) {
+    public PlatformStatus withMessage(String message) {
         this.message = message;
         return this;
     }
@@ -27,7 +27,7 @@ public class PackageStatus {
 
     @Override
     public String toString() {
-        return "PackageStatus{" +
+        return "PlatformStatus{" +
             "phase='" + phase + '\'' +
             ", message='" + message + '\'' +
             '}';

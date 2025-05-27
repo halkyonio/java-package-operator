@@ -1,17 +1,17 @@
-package io.halkyon.pkg.crd;
+package io.halkyon.crd.platform;
 
 import io.fabric8.kubernetes.client.CustomResource;
 import io.fabric8.kubernetes.model.annotation.*;
 
 @Group("halkyon.io")
 @Version("v1alpha1")
-@Kind("Package")
-@Plural("packages")
-@Singular("package")
-public class Package extends CustomResource<PackageSpec, PackageStatus> {
+@Kind("Platform")
+@Plural("platforms")
+@Singular("platform")
+public class Platform extends CustomResource<PlatformSpec, PlatformStatus> {
     @Override
     public String toString() {
-        return "Package{" +
+        return "Platform{" +
             "apiVersion='" + getApiVersion() + '\'' +
             ", kind='" + getKind() + '\'' +
             ", metadata=" + getMetadata() +
