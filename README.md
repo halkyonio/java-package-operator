@@ -76,7 +76,7 @@ metadata:
 
 ## Work in progress
 
-Use the Glue Operator to manage using a workflow the `pre-install`, `post-install` and `installation` steps as jobs
+Use the [Glue Operator](https://github.com/java-operator-sdk/kubernetes-glue-operator) to manage using a workflow the `pre-install`, `post-install` and `installation` steps as jobs
 
 Install Glue on an existing kind cluster
 ```shell

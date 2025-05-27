@@ -58,6 +58,9 @@ spec:
                                 x-kubernetes-preserve-unknown-fields: true
                               version:
                                 type: "string"
+                            required:
+                            - "image"
+                            - "name"
                             type: "object"
                           type: "array"
                       type: "object"

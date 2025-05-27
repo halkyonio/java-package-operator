@@ -2,11 +2,14 @@ package io.halkyon.crd.platform;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.fabric8.crd.generator.annotation.PreserveUnknownFields;
+import io.fabric8.generator.annotation.Required;
 
 import java.util.Map;
 
 public class Step {
+    @Required
     private String name;
+    @Required
     private String image;
     private String description;
     private String id;
