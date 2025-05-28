@@ -43,6 +43,14 @@
             <groupId>io.quarkiverse.operatorsdk</groupId>
             <artifactId>quarkus-operator-sdk</artifactId>
         </dependency>
+        <!-- overrideing the version -->
+        <!--
+        <dependency>
+            <groupId>io.javaoperatorsdk</groupId>
+            <artifactId>operator-framework-core</artifactId>
+            <version>5.1.1</version>
+        </dependency>
+        -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-container-image-podman</artifactId>
