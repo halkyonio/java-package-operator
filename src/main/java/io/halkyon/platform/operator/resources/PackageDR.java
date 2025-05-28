@@ -17,7 +17,7 @@ import static io.halkyon.platform.operator.controller.PlatformReconciler.SELECTO
 import static io.halkyon.platform.operator.controller.PlatformReconciler.createStatus;
 
 // this annotation only activates when using managed dependents and is not otherwise needed
-@KubernetesDependent(informer = @Informer(labelSelector = SELECTOR))
+@KubernetesDependent()
 public class PackageDR extends CRUDKubernetesDependentResource<Package, Platform> {
     private final static Logger LOG = LoggerFactory.getLogger(PlatformReconciler.class);
 
