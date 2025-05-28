@@ -9,6 +9,8 @@ spec:
     kind: "Platform"
     plural: "platforms"
     singular: "platform"
+    shortNames:
+      - "pkg"
   scope: "Namespaced"
   versions:
     - name: "v1alpha1"
@@ -52,10 +54,10 @@ spec:
                                   type: "string"
                                 script:
                                   type: "string"
-                                valuesObject:
+                                values:
                                   description: "ValuesObject specifies Helm values to\
                                   \ be passed to helm template, defined as a map."
-                                  type: "object"
+                                  type: "string"
                                   x-kubernetes-preserve-unknown-fields: true
                                 version:
                                   type: "string"

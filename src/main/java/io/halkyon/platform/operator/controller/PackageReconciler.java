@@ -1,8 +1,8 @@
-package io.halkyon;
+package io.halkyon.platform.operator.controller;
 
-import io.halkyon.crd.ConfigMapDR;
-import io.halkyon.crd.pkg.Package;
-import io.halkyon.crd.pkg.PackageStatus;
+import io.halkyon.platform.operator.crd.ConfigMapDR;
+import io.halkyon.platform.operator.crd.pkg.Package;
+import io.halkyon.platform.operator.crd.pkg.PackageStatus;
 import io.javaoperatorsdk.operator.api.reconciler.Context;
 import io.javaoperatorsdk.operator.api.reconciler.Reconciler;
 import io.javaoperatorsdk.operator.api.reconciler.UpdateControl;

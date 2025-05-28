@@ -1,10 +1,4 @@
-package io.halkyon.crd.platform;
-
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import io.fabric8.crd.generator.annotation.PreserveUnknownFields;
-import io.halkyon.crd.KubernetesJob;
-
-import java.util.Map;
+package io.halkyon.platform.operator.crd.platform;
 
 public class Package {
     private String name;

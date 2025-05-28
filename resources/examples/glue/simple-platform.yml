@@ -18,7 +18,19 @@ spec:
           image: dtzar/helm-kubectl
           repoUrl: https://kubernetes.github.io/ingress-nginx
           version: 4.12.2
-          valuesObject:
+          script: |
+            cat << EOF > values.yml
+            ingress:
+              enabled: true
+            EOF
+            helm repo add kubernetes.github.io/ingress-nginx
+            helm repo update
+            helm install nginx-ingress ingress-nginx/ingress-nginx \
+               --version 4.12.2 \
+               --namespace ingress-nginx \
+               --create-namespace \
+               -f values.yml
+          values: |
             ingress:
               enabled: true
         - name: post-install

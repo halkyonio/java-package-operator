@@ -1,4 +1,4 @@
-package io.halkyon.crd.pkg;
+package io.halkyon.platform.operator.crd.pkg;
 
 import io.fabric8.kubernetes.client.CustomResource;
 import io.fabric8.kubernetes.model.annotation.*;

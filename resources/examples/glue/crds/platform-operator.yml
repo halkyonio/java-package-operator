@@ -28,11 +28,7 @@ spec:
                     {#if s.script??}
                     - /bin/sh
                     - -exc
-                    - |
-                      {s.script}
-                    {#else}
-                    - helm
-                    - version
+                    - {s.script}
                     {/if}
                 restartPolicy: Never
             backoffLimit: 4

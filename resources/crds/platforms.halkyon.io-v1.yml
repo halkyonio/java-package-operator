@@ -8,6 +8,8 @@ spec:
   names:
     kind: "Platform"
     plural: "platforms"
+    shortNames:
+    - "pkg"
     singular: "platform"
   scope: "Namespaced"
   versions:

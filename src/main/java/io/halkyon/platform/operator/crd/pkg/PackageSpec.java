@@ -1,8 +1,8 @@
-package io.halkyon.crd.pkg;
+package io.halkyon.platform.operator.crd.pkg;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.fabric8.crd.generator.annotation.PreserveUnknownFields;
-import io.halkyon.crd.KubernetesJob;
+import io.halkyon.platform.operator.crd.KubernetesJob;
 
 import java.util.Map;
 

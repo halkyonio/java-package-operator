@@ -1,7 +1,7 @@
-package io.halkyon;
+package io.halkyon.platform.operator.controller;
 
-import io.halkyon.crd.platform.Platform;
-import io.halkyon.crd.platform.PlatformStatus;
+import io.halkyon.platform.operator.crd.platform.Platform;
+import io.halkyon.platform.operator.crd.platform.PlatformStatus;
 import io.javaoperatorsdk.operator.api.reconciler.Context;
 import io.javaoperatorsdk.operator.api.reconciler.UpdateControl;
 import org.slf4j.Logger;
