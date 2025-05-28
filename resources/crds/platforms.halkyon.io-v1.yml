@@ -8,8 +8,6 @@ spec:
   names:
     kind: "Platform"
     plural: "platforms"
-    shortNames:
-    - "pkg"
     singular: "platform"
   scope: "Namespaced"
   versions:
@@ -26,45 +24,122 @@ spec:
               packages:
                 items:
                   properties:
-                    description:
+                    apiVersion:
                       type: "string"
-                    name:
+                    kind:
                       type: "string"
-                    pipeline:
+                    metadata:
                       properties:
-                        description:
+                        annotations:
+                          additionalProperties:
+                            type: "string"
+                          type: "object"
+                        creationTimestamp:
                           type: "string"
-                        name:
+                        deletionGracePeriodSeconds:
+                          type: "integer"
+                        deletionTimestamp:
                           type: "string"
-                        steps:
+                        finalizers:
+                          items:
+                            type: "string"
+                          type: "array"
+                        generateName:
+                          type: "string"
+                        generation:
+                          type: "integer"
+                        labels:
+                          additionalProperties:
+                            type: "string"
+                          type: "object"
+                        managedFields:
                           items:
                             properties:
-                              description:
+                              apiVersion:
                                 type: "string"
-                              id:
+                              fieldsType:
                                 type: "string"
-                              image:
+                              fieldsV1:
+                                type: "object"
+                              manager:
+                                type: "string"
+                              operation:
+                                type: "string"
+                              subresource:
+                                type: "string"
+                              time:
+                                type: "string"
+                            type: "object"
+                          type: "array"
+                        name:
+                          type: "string"
+                        namespace:
+                          type: "string"
+                        ownerReferences:
+                          items:
+                            properties:
+                              apiVersion:
+                                type: "string"
+                              blockOwnerDeletion:
+                                type: "boolean"
+                              controller:
+                                type: "boolean"
+                              kind:
                                 type: "string"
                               name:
                                 type: "string"
-                              repoUrl:
+                              uid:
                                 type: "string"
-                              script:
-                                type: "string"
-                              valuesObject:
-                                additionalProperties:
-                                  type: "object"
-                                description: "ValuesObject specifies Helm values to\
-                                  \ be passed to helm template, defined as a map."
-                                type: "object"
-                                x-kubernetes-preserve-unknown-fields: true
-                              version:
-                                type: "string"
-                            required:
-                            - "image"
-                            - "name"
                             type: "object"
                           type: "array"
+                        resourceVersion:
+                          type: "string"
+                        selfLink:
+                          type: "string"
+                        uid:
+                          type: "string"
+                      type: "object"
+                    spec:
+                      properties:
+                        description:
+                          type: "string"
+                        kubernetesJob:
+                          properties:
+                            args:
+                              items:
+                                type: "string"
+                              type: "array"
+                            command:
+                              items:
+                                type: "string"
+                              type: "array"
+                            image:
+                              type: "string"
+                            name:
+                              type: "string"
+                          type: "object"
+                        name:
+                          type: "string"
+                        tool:
+                          type: "string"
+                        url:
+                          type: "string"
+                        valuesObject:
+                          additionalProperties:
+                            type: "object"
+                          description: "ValuesObject specifies Helm values to be passed\
+                            \ to helm template, defined as a map."
+                          type: "object"
+                          x-kubernetes-preserve-unknown-fields: true
+                        version:
+                          type: "string"
+                      type: "object"
+                    status:
+                      properties:
+                        message:
+                          type: "string"
+                        phase:
+                          type: "string"
                       type: "object"
                   type: "object"
                 type: "array"

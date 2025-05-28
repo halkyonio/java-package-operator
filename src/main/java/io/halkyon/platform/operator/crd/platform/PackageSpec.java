@@ -1,4 +1,4 @@
-package io.halkyon.platform.operator.crd.pkg;
+package io.halkyon.platform.operator.crd.platform;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.fabric8.crd.generator.annotation.PreserveUnknownFields;
@@ -12,6 +12,22 @@ public class PackageSpec {
     private String tool;
     private String url;
     private String version;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     @PreserveUnknownFields
     @JsonPropertyDescription("ValuesObject specifies Helm values to be passed to helm template, defined as a map.")

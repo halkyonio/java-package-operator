@@ -1,38 +1,22 @@
 package io.halkyon.platform.operator.crd.platform;
 
-public class Package {
-    private String name;
-    private String description;
-    private Pipeline pipeline;
+import io.fabric8.kubernetes.api.model.Namespaced;
+import io.fabric8.kubernetes.client.CustomResource;
+import io.fabric8.kubernetes.model.annotation.Group;
+import io.fabric8.kubernetes.model.annotation.Version;
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Pipeline getPipeline() {
-        return pipeline;
-    }
-
-    public void setPipeline(Pipeline pipeline) {
-        this.pipeline = pipeline;
-    }
+@Group("halkyon.io")
+@Version("v1alpha1")
+public class Package extends CustomResource<PackageSpec, PackageStatus> implements Namespaced {
 
     @Override
     public String toString() {
         return "Package{" +
-            "name='" + name + '\'' +
-            ", descrption='" + description + '}';
+            "apiVersion='" + getApiVersion() + '\'' +
+            ", kind='" + getKind() + '\'' +
+            ", metadata=" + getMetadata() +
+            ", spec=" + getSpec() +
+            ", status=" + getStatus() +
+            '}';
     }
 }

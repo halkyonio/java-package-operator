@@ -9,7 +9,7 @@ spec:
     kind: "Package"
     plural: "packages"
     singular: "package"
-  scope: "Cluster"
+  scope: "Namespaced"
   versions:
   - name: "v1alpha1"
     schema:
@@ -17,6 +17,8 @@ spec:
         properties:
           spec:
             properties:
+              description:
+                type: "string"
               kubernetesJob:
                 properties:
                   args:
@@ -32,6 +34,8 @@ spec:
                   name:
                     type: "string"
                 type: "object"
+              name:
+                type: "string"
               tool:
                 type: "string"
               url:

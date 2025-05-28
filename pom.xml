@@ -43,7 +43,7 @@
             <groupId>io.quarkiverse.operatorsdk</groupId>
             <artifactId>quarkus-operator-sdk</artifactId>
         </dependency>
-        <!-- overrideing the version -->
+        <!-- overriding the version -->
         <!--
         <dependency>
             <groupId>io.javaoperatorsdk</groupId>

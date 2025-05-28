@@ -6,10 +6,6 @@ import io.fabric8.kubernetes.model.annotation.*;
 
 @Group("halkyon.io")
 @Version("v1alpha1")
-@ShortNames("pkg")
-// @Kind("Platform")
-// @Plural("platforms")
-// @Singular("platform")
 public class Platform extends CustomResource<PlatformSpec, PlatformStatus> implements Namespaced {
     @Override
     public String toString() {

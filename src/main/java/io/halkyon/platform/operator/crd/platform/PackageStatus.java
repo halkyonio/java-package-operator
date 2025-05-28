@@ -1,4 +1,4 @@
-package io.halkyon.platform.operator.crd.pkg;
+package io.halkyon.platform.operator.crd.platform;
 
 public class PackageStatus {
     private String phase;
