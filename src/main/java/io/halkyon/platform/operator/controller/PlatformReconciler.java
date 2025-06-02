@@ -5,6 +5,7 @@ import io.halkyon.platform.operator.model.Package;
 import io.halkyon.platform.operator.crd.Platform;
 import io.halkyon.platform.operator.crd.PlatformStatus;
 import io.halkyon.platform.operator.resources.PackageDR;
+import io.halkyon.platform.operator.resources.PodDR;
 import io.javaoperatorsdk.operator.api.reconciler.*;
 import io.javaoperatorsdk.operator.api.reconciler.dependent.Dependent;
 import org.slf4j.Logger;
@@ -28,16 +29,14 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
         if (!platform.getSpec().getPackages().isEmpty()) {
             LinkedList<Package> pkgs = PackageUtils.orderPackages(platform.getSpec().getPackages());
             PlatformStatus pStatus = new PlatformStatus();
-            pStatus.setPackages(pkgs);
-
+            pStatus.setMessage(String.format("Processing the package: %s",pkgs.getFirst().getName()));
+            pStatus.setPackageToProcess(pkgs.getFirst());
             platform.setStatus(pStatus);
-
             return UpdateControl.patchStatus(platform);
         } else {
-            LOG.warn("No managed packages found");
+            LOG.warn("No packages declared part of the Platform CR");
             return null;
         }
-
     }
 
     public static PlatformStatus createStatus(String configMapName) {

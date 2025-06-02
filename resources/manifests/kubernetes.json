@@ -4,9 +4,9 @@
   "metadata" : {
     "annotations" : {
       "app.quarkus.io/quarkus-version" : "3.22.3",
-      "app.quarkus.io/commit-id" : "8344346f8e963a637d2ed5f00823bd2a33570d2c",
+      "app.quarkus.io/commit-id" : "3958b24e49c6f8df7c1d9b78900c35998764c5d5",
       "app.quarkus.io/vcs-uri" : "https://github.com/halkyonio/java-package-operator.git",
-      "app.quarkus.io/build-timestamp" : "2025-06-02 - 14:43:28 +0000"
+      "app.quarkus.io/build-timestamp" : "2025-06-02 - 15:59:43 +0000"
     },
     "labels" : {
       "app.kubernetes.io/name" : "package-operator",
@@ -32,6 +32,10 @@
   }, {
     "apiGroups" : [ "halkyon.io" ],
     "resources" : [ "packages" ],
+    "verbs" : [ "create", "delete", "get", "list", "patch", "update", "watch" ]
+  }, {
+    "apiGroups" : [ "" ],
+    "resources" : [ "pods" ],
     "verbs" : [ "create", "delete", "get", "list", "patch", "update", "watch" ]
   } ]
 },{
@@ -112,9 +116,9 @@
   "metadata" : {
     "annotations" : {
       "app.quarkus.io/quarkus-version" : "3.22.3",
-      "app.quarkus.io/commit-id" : "8344346f8e963a637d2ed5f00823bd2a33570d2c",
+      "app.quarkus.io/commit-id" : "3958b24e49c6f8df7c1d9b78900c35998764c5d5",
       "app.quarkus.io/vcs-uri" : "https://github.com/halkyonio/java-package-operator.git",
-      "app.quarkus.io/build-timestamp" : "2025-06-02 - 14:43:28 +0000"
+      "app.quarkus.io/build-timestamp" : "2025-06-02 - 15:59:43 +0000"
     },
     "labels" : {
       "app.kubernetes.io/name" : "package-operator",
@@ -142,9 +146,9 @@
   "metadata" : {
     "annotations" : {
       "app.quarkus.io/quarkus-version" : "3.22.3",
-      "app.quarkus.io/commit-id" : "8344346f8e963a637d2ed5f00823bd2a33570d2c",
+      "app.quarkus.io/commit-id" : "3958b24e49c6f8df7c1d9b78900c35998764c5d5",
       "app.quarkus.io/vcs-uri" : "https://github.com/halkyonio/java-package-operator.git",
-      "app.quarkus.io/build-timestamp" : "2025-06-02 - 14:43:28 +0000"
+      "app.quarkus.io/build-timestamp" : "2025-06-02 - 15:59:43 +0000"
     },
     "labels" : {
       "app.kubernetes.io/name" : "package-operator",
@@ -157,22 +161,22 @@
     "replicas" : 1,
     "selector" : {
       "matchLabels" : {
-        "app.kubernetes.io/version" : "0.1.0-SNAPSHOT",
-        "app.kubernetes.io/name" : "package-operator"
+        "app.kubernetes.io/name" : "package-operator",
+        "app.kubernetes.io/version" : "0.1.0-SNAPSHOT"
       }
     },
     "template" : {
       "metadata" : {
         "annotations" : {
           "app.quarkus.io/quarkus-version" : "3.22.3",
-          "app.quarkus.io/commit-id" : "8344346f8e963a637d2ed5f00823bd2a33570d2c",
+          "app.quarkus.io/commit-id" : "3958b24e49c6f8df7c1d9b78900c35998764c5d5",
           "app.quarkus.io/vcs-uri" : "https://github.com/halkyonio/java-package-operator.git",
-          "app.quarkus.io/build-timestamp" : "2025-06-02 - 14:43:28 +0000"
+          "app.quarkus.io/build-timestamp" : "2025-06-02 - 15:59:43 +0000"
         },
         "labels" : {
           "app.kubernetes.io/managed-by" : "quarkus",
-          "app.kubernetes.io/version" : "0.1.0-SNAPSHOT",
-          "app.kubernetes.io/name" : "package-operator"
+          "app.kubernetes.io/name" : "package-operator",
+          "app.kubernetes.io/version" : "0.1.0-SNAPSHOT"
         }
       },
       "spec" : {

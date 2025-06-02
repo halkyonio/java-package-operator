@@ -78,6 +78,8 @@ spec:
                             type: "object"
                           type: "array"
                       type: "object"
+                    status:
+                      type: "string"
                     valuesObject:
                       additionalProperties:
                         type: "object"
@@ -91,6 +93,69 @@ spec:
             properties:
               message:
                 type: "string"
+              packageToProcess:
+                properties:
+                  description:
+                    type: "string"
+                  kubernetesJob:
+                    properties:
+                      args:
+                        items:
+                          type: "string"
+                        type: "array"
+                      command:
+                        items:
+                          type: "string"
+                        type: "array"
+                      image:
+                        type: "string"
+                      name:
+                        type: "string"
+                    type: "object"
+                  name:
+                    type: "string"
+                  pipeline:
+                    properties:
+                      description:
+                        type: "string"
+                      name:
+                        type: "string"
+                      steps:
+                        items:
+                          properties:
+                            description:
+                              type: "string"
+                            id:
+                              type: "string"
+                            image:
+                              type: "string"
+                            name:
+                              type: "string"
+                            repoUrl:
+                              type: "string"
+                            script:
+                              type: "string"
+                            values:
+                              description: "Values specifies the Helm values to be\
+                                \ passed to the helm template command and defined\
+                                \ as a map."
+                              type: "string"
+                              x-kubernetes-preserve-unknown-fields: true
+                            version:
+                              type: "string"
+                          required:
+                          - "image"
+                          - "name"
+                          type: "object"
+                        type: "array"
+                    type: "object"
+                  status:
+                    type: "string"
+                  valuesObject:
+                    additionalProperties:
+                      type: "object"
+                    type: "object"
+                type: "object"
               packages:
                 items:
                   properties:
@@ -148,14 +213,14 @@ spec:
                             type: "object"
                           type: "array"
                       type: "object"
+                    status:
+                      type: "string"
                     valuesObject:
                       additionalProperties:
                         type: "object"
                       type: "object"
                   type: "object"
                 type: "array"
-              phase:
-                type: "string"
             type: "object"
         type: "object"
     served: true

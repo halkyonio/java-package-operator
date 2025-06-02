@@ -2,8 +2,11 @@ package io.halkyon.platform.operator;
 
 import java.util.*;
 import io.halkyon.platform.operator.model.Package;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PackageUtils {
+    private static final Logger LOG = LoggerFactory.getLogger(PackageUtils.class);
 
     /**
      * Orders a list of Package objects based on their 'runAfter' dependencies.
@@ -44,7 +47,7 @@ public class PackageUtils {
                 }
                 adj.get(depName).add(pkg.getName()); // Add edge: depName -> pkg.getName()
                 inDegree.compute(pkg.getName(), (k, v) -> v + 1); // Increment in-degree of 'pkg'
-            },() -> System.out.println("Not found"));
+            },() -> LOG.warn("RunAfter not defined for the package: {}", pkg.getName()));
         }
 
         // 3. Find initial "root" nodes (nodes with no incoming dependencies)

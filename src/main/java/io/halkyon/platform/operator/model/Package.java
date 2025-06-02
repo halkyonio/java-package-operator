@@ -10,6 +10,7 @@ public class Package {
     private String description;
     private Pipeline pipeline;
     private String runAfter;
+    private String status;
 
     public Package withName(String name) {
         this.name = name;
@@ -19,6 +20,14 @@ public class Package {
     public Package withRunAfter(String runAfter) {
         this.runAfter = runAfter;
         return this;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Pipeline getPipeline() {

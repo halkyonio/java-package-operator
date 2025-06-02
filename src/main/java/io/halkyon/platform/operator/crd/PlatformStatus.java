@@ -7,6 +7,7 @@ import io.halkyon.platform.operator.model.Package;
 public class PlatformStatus {
     private String phase;
     private String message;
+    private Package packageToProcess;
     private List<Package> packages;
 
     public PlatformStatus withMessage(String message) {
@@ -14,12 +15,20 @@ public class PlatformStatus {
         return this;
     }
 
-    public String getPhase() {
-        return phase;
+    public Package getPackageToProcess() {
+        return packageToProcess;
     }
 
-    public void setPhase(String phase) {
-        this.phase = phase;
+    public void setPackageToProcess(Package packageToProcess) {
+        this.packageToProcess = packageToProcess;
+    }
+
+    public void setPackages(List<Package> packages) {
+        this.packages = packages;
+    }
+
+    public List<Package> getPackages() {
+        return packages;
     }
 
     public String getMessage() {
@@ -28,14 +37,6 @@ public class PlatformStatus {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public List<Package> getPackages() {
-        return packages;
-    }
-
-    public void setPackages(LinkedList<Package> packages) {
-        this.packages = packages;
     }
 
     @Override
