@@ -1,8 +1,8 @@
 package io.halkyon.platform.operator.controller;
 
-import io.halkyon.platform.operator.crd.platform.PackageCR;
-import io.halkyon.platform.operator.crd.platform.PlatformCR;
-import io.halkyon.platform.operator.crd.platform.PlatformStatus;
+import io.halkyon.platform.operator.crd.PackageCR;
+import io.halkyon.platform.operator.crd.PlatformCR;
+import io.halkyon.platform.operator.crd.PlatformStatus;
 import io.halkyon.platform.operator.resources.PackageDR;
 import io.javaoperatorsdk.operator.api.reconciler.*;
 import io.javaoperatorsdk.operator.api.reconciler.dependent.Dependent;

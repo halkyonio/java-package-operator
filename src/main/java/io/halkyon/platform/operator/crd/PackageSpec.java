@@ -1,4 +1,4 @@
-package io.halkyon.platform.operator.crd.platform;
+package io.halkyon.platform.operator.crd;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.fabric8.crd.generator.annotation.PreserveUnknownFields;

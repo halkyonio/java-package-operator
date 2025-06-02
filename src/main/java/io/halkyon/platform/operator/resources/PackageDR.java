@@ -1,8 +1,8 @@
 package io.halkyon.platform.operator.resources;
 
 import io.halkyon.platform.operator.controller.PlatformReconciler;
-import io.halkyon.platform.operator.crd.platform.PackageCR;
-import io.halkyon.platform.operator.crd.platform.PlatformCR;
+import io.halkyon.platform.operator.crd.PackageCR;
+import io.halkyon.platform.operator.crd.PlatformCR;
 import io.javaoperatorsdk.operator.api.reconciler.Context;
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.CRUDKubernetesDependentResource;
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.KubernetesDependent;

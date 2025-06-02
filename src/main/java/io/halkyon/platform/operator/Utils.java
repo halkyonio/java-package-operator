@@ -1,6 +1,6 @@
 package io.halkyon.platform.operator;
 
-import io.halkyon.platform.operator.crd.platform.PlatformCR;
+import io.halkyon.platform.operator.crd.PlatformCR;
 
 public class Utils {
     public static String configMapName(PlatformCR platformCR) {
