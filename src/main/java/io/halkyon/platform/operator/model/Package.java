@@ -6,9 +6,7 @@ import java.util.Optional;
 public class Package {
     private String name;
     private String description;
-    private String tool;
-    private String repoUrl;
-    private String version;
+    private Pipeline pipeline;
     private String runAfter;
 
     public Package(String name, String runAfter) {
@@ -18,6 +16,14 @@ public class Package {
 
     public Package(String name) {
         this.name = name;
+    }
+
+    public Pipeline getPipeline() {
+        return pipeline;
+    }
+
+    public void setPipeline(Pipeline pipeline) {
+        this.pipeline = pipeline;
     }
 
     public String getName() {
@@ -37,33 +43,8 @@ public class Package {
     }
 
     private Map<String, Object> valuesObject;
-
     private KubernetesJob kubernetesJob;
 
-    // Getters and Setters
-    public String getTool() {
-        return tool;
-    }
-
-    public void setTool(String tool) {
-        this.tool = tool;
-    }
-
-    public String getRepoUrl() {
-        return repoUrl;
-    }
-
-    public void setRepoUrl(String repoUrl) {
-        this.repoUrl = repoUrl;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
 
     public Optional<String>  getRunAfter() {
         return Optional.ofNullable(runAfter);
@@ -92,10 +73,7 @@ public class Package {
     @Override
     public String toString() {
         return "PackageSpec{" +
-            "tool='" + tool + '\'' +
-            ", url='" + repoUrl + '\'' +
-            ", version='" + version + '\'' +
-            ", values=" + valuesObject +
+            "values=" + valuesObject +
             ", kubernetesJob=" + kubernetesJob +
             '}';
     }

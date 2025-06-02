@@ -3,6 +3,10 @@ package io.halkyon.platform.operator.model;
 import java.util.List;
 
 public class Pipeline {
+    private String name;
+    private String description;
+    private List<Step> steps;
+
     public String getName() {
         return name;
     }
@@ -26,8 +30,4 @@ public class Pipeline {
     public void setSteps(List<Step> steps) {
         this.steps = steps;
     }
-
-    private String name;
-    private String description;
-    private List<Step> steps;
 }

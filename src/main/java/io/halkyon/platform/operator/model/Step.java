@@ -18,8 +18,8 @@ public class Step {
     private String version;
 
     @PreserveUnknownFields
-    @JsonPropertyDescription("ValuesObject specifies Helm values to be passed to helm template, defined as a map.")
-    private Map<String, Object> valuesObject;
+    @JsonPropertyDescription("Values specifies the Helm values to be passed to the helm template command and defined as a map.")
+    private String values;
 
 
     public String getName() {
@@ -78,11 +78,11 @@ public class Step {
         this.version = version;
     }
 
-    public Map<String, Object> getValuesObject() {
-        return valuesObject;
+    public String getValues() {
+        return values;
     }
 
-    public void setValuesObject(Map<String, Object> valuesObject) {
-        this.valuesObject = valuesObject;
+    public void setValues(String values) {
+        this.values = values;
     }
 }

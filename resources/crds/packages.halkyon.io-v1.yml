@@ -36,11 +36,70 @@ spec:
                 type: "object"
               name:
                 type: "string"
-              tool:
+              pipeline:
+                properties:
+                  description:
+                    type: "string"
+                  name:
+                    type: "string"
+                  steps:
+                    items:
+                      properties:
+                        description:
+                          type: "string"
+                        id:
+                          type: "string"
+                        image:
+                          type: "string"
+                        name:
+                          type: "string"
+                        repoUrl:
+                          type: "string"
+                        script:
+                          type: "string"
+                        values:
+                          description: "Values specifies the Helm values to be passed\
+                            \ to the helm template command and defined as a map."
+                          type: "string"
+                          x-kubernetes-preserve-unknown-fields: true
+                        version:
+                          type: "string"
+                      required:
+                      - "image"
+                      - "name"
+                      type: "object"
+                    type: "array"
+                type: "object"
+              runAfter:
                 type: "string"
-              url:
-                type: "string"
-              valuesObject:
+              steps:
+                items:
+                  properties:
+                    description:
+                      type: "string"
+                    id:
+                      type: "string"
+                    image:
+                      type: "string"
+                    name:
+                      type: "string"
+                    repoUrl:
+                      type: "string"
+                    script:
+                      type: "string"
+                    values:
+                      description: "Values specifies the Helm values to be passed\
+                        \ to the helm template command and defined as a map."
+                      type: "string"
+                      x-kubernetes-preserve-unknown-fields: true
+                    version:
+                      type: "string"
+                  required:
+                  - "image"
+                  - "name"
+                  type: "object"
+                type: "array"
+              values:
                 additionalProperties:
                   type: "object"
                 description: "ValuesObject specifies Helm values to be passed to helm\

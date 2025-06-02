@@ -24,122 +24,65 @@ spec:
               packages:
                 items:
                   properties:
-                    apiVersion:
+                    description:
                       type: "string"
-                    kind:
-                      type: "string"
-                    metadata:
+                    kubernetesJob:
                       properties:
-                        annotations:
-                          additionalProperties:
-                            type: "string"
-                          type: "object"
-                        creationTimestamp:
-                          type: "string"
-                        deletionGracePeriodSeconds:
-                          type: "integer"
-                        deletionTimestamp:
-                          type: "string"
-                        finalizers:
+                        args:
                           items:
                             type: "string"
                           type: "array"
-                        generateName:
-                          type: "string"
-                        generation:
-                          type: "integer"
-                        labels:
-                          additionalProperties:
-                            type: "string"
-                          type: "object"
-                        managedFields:
+                        command:
                           items:
-                            properties:
-                              apiVersion:
-                                type: "string"
-                              fieldsType:
-                                type: "string"
-                              fieldsV1:
-                                type: "object"
-                              manager:
-                                type: "string"
-                              operation:
-                                type: "string"
-                              subresource:
-                                type: "string"
-                              time:
-                                type: "string"
-                            type: "object"
+                            type: "string"
                           type: "array"
+                        image:
+                          type: "string"
                         name:
                           type: "string"
-                        namespace:
-                          type: "string"
-                        ownerReferences:
-                          items:
-                            properties:
-                              apiVersion:
-                                type: "string"
-                              blockOwnerDeletion:
-                                type: "boolean"
-                              controller:
-                                type: "boolean"
-                              kind:
-                                type: "string"
-                              name:
-                                type: "string"
-                              uid:
-                                type: "string"
-                            type: "object"
-                          type: "array"
-                        resourceVersion:
-                          type: "string"
-                        selfLink:
-                          type: "string"
-                        uid:
-                          type: "string"
                       type: "object"
-                    spec:
+                    name:
+                      type: "string"
+                    pipeline:
                       properties:
                         description:
                           type: "string"
-                        kubernetesJob:
-                          properties:
-                            args:
-                              items:
-                                type: "string"
-                              type: "array"
-                            command:
-                              items:
-                                type: "string"
-                              type: "array"
-                            image:
-                              type: "string"
-                            name:
-                              type: "string"
-                          type: "object"
                         name:
                           type: "string"
-                        tool:
-                          type: "string"
-                        url:
-                          type: "string"
-                        valuesObject:
-                          additionalProperties:
+                        steps:
+                          items:
+                            properties:
+                              description:
+                                type: "string"
+                              id:
+                                type: "string"
+                              image:
+                                type: "string"
+                              name:
+                                type: "string"
+                              repoUrl:
+                                type: "string"
+                              script:
+                                type: "string"
+                              values:
+                                description: "Values specifies the Helm values to\
+                                  \ be passed to the helm template command and defined\
+                                  \ as a map."
+                                type: "string"
+                                x-kubernetes-preserve-unknown-fields: true
+                              version:
+                                type: "string"
+                            required:
+                            - "image"
+                            - "name"
                             type: "object"
-                          description: "ValuesObject specifies Helm values to be passed\
-                            \ to helm template, defined as a map."
-                          type: "object"
-                          x-kubernetes-preserve-unknown-fields: true
-                        version:
-                          type: "string"
+                          type: "array"
                       type: "object"
-                    status:
-                      properties:
-                        message:
-                          type: "string"
-                        phase:
-                          type: "string"
+                    runAfter:
+                      x-kubernetes-preserve-unknown-fields: true
+                    valuesObject:
+                      additionalProperties:
+                        type: "object"
                       type: "object"
                   type: "object"
                 type: "array"
@@ -150,6 +93,71 @@ spec:
             properties:
               message:
                 type: "string"
+              packages:
+                items:
+                  properties:
+                    description:
+                      type: "string"
+                    kubernetesJob:
+                      properties:
+                        args:
+                          items:
+                            type: "string"
+                          type: "array"
+                        command:
+                          items:
+                            type: "string"
+                          type: "array"
+                        image:
+                          type: "string"
+                        name:
+                          type: "string"
+                      type: "object"
+                    name:
+                      type: "string"
+                    pipeline:
+                      properties:
+                        description:
+                          type: "string"
+                        name:
+                          type: "string"
+                        steps:
+                          items:
+                            properties:
+                              description:
+                                type: "string"
+                              id:
+                                type: "string"
+                              image:
+                                type: "string"
+                              name:
+                                type: "string"
+                              repoUrl:
+                                type: "string"
+                              script:
+                                type: "string"
+                              values:
+                                description: "Values specifies the Helm values to\
+                                  \ be passed to the helm template command and defined\
+                                  \ as a map."
+                                type: "string"
+                                x-kubernetes-preserve-unknown-fields: true
+                              version:
+                                type: "string"
+                            required:
+                            - "image"
+                            - "name"
+                            type: "object"
+                          type: "array"
+                      type: "object"
+                    runAfter:
+                      x-kubernetes-preserve-unknown-fields: true
+                    valuesObject:
+                      additionalProperties:
+                        type: "object"
+                      type: "object"
+                  type: "object"
+                type: "array"
               phase:
                 type: "string"
             type: "object"

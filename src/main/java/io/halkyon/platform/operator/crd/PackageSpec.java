@@ -3,22 +3,32 @@ package io.halkyon.platform.operator.crd;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.fabric8.crd.generator.annotation.PreserveUnknownFields;
 import io.halkyon.platform.operator.model.KubernetesJob;
+import io.halkyon.platform.operator.model.Pipeline;
+import io.halkyon.platform.operator.model.Step;
 
+import java.util.List;
 import java.util.Map;
 
 public class PackageSpec {
     private String name;
     private String description;
-    private String tool;
-    private String repoUrl;
     private String version;
+    private Pipeline pipeline;
+    private String runAfter;
+    private List<Step> steps;
 
     @PreserveUnknownFields
     @JsonPropertyDescription("ValuesObject specifies Helm values to be passed to helm template, defined as a map.")
     private Map<String, Object> values;
     private KubernetesJob kubernetesJob;
 
-    private String runAfter;
+    public Pipeline getPipeline() {
+        return pipeline;
+    }
+
+    public void setPipeline(Pipeline pipeline) {
+        this.pipeline = pipeline;
+    }
 
     public String getName() {
         return name;
@@ -34,22 +44,6 @@ public class PackageSpec {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getTool() {
-        return tool;
-    }
-
-    public void setTool(String tool) {
-        this.tool = tool;
-    }
-
-    public String getRepoUrl() {
-        return repoUrl;
-    }
-
-    public void setRepoUrl(String repoUrl) {
-        this.repoUrl = repoUrl;
     }
 
     public String getVersion() {
@@ -84,12 +78,18 @@ public class PackageSpec {
         this.kubernetesJob = kubernetesJob;
     }
 
+    public List<Step> getSteps() {
+        return steps;
+    }
+
+    public void setSteps(List<Step> steps) {
+        this.steps = steps;
+    }
+
     @Override
     public String toString() {
         return "PackageSpec{" +
-            "tool='" + tool + '\'' +
-            ", url='" + repoUrl + '\'' +
-            ", version='" + version + '\'' +
+            "version='" + version + '\'' +
             ", values=" + values +
             ", kubernetesJob=" + kubernetesJob +
             '}';

@@ -1,11 +1,9 @@
 package io.halkyon.platform.operator.controller;
 
 import io.halkyon.platform.operator.PackageUtils;
-import io.halkyon.platform.operator.crd.PackageCR;
-import io.halkyon.platform.operator.crd.PlatformCR;
-import io.halkyon.platform.operator.crd.PlatformStatus;
 import io.halkyon.platform.operator.model.Package;
-import io.halkyon.platform.operator.model.Platform;
+import io.halkyon.platform.operator.crd.Platform;
+import io.halkyon.platform.operator.crd.PlatformStatus;
 import io.halkyon.platform.operator.resources.PackageDR;
 import io.javaoperatorsdk.operator.api.reconciler.*;
 import io.javaoperatorsdk.operator.api.reconciler.dependent.Dependent;
@@ -18,23 +16,23 @@ import java.util.LinkedList;
     dependents = {
         @Dependent(type = PackageDR.class),
     })
-public class PlatformReconciler implements Reconciler<PlatformCR>, Cleaner<PlatformCR> {
+public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platform> {
     private final static Logger LOG = LoggerFactory.getLogger(PlatformReconciler.class);
 
     public static final String SELECTOR = "managed";
 
-    public UpdateControl<PlatformCR> reconcile(PlatformCR platformCR, Context<PlatformCR> context) {
-        var name = platformCR.getMetadata().getName();
+    public UpdateControl<Platform> reconcile(Platform platform, Context<Platform> context) {
+        var name = platform.getMetadata().getName();
         LOG.info("Reconciling platform {}", name);
 
-        if (!platformCR.getSpec().getPackages().isEmpty()) {
-            LinkedList<Package> pkgs = PackageUtils.orderPackages(platformCR.getSpec().getPackages());
+        if (!platform.getSpec().getPackages().isEmpty()) {
+            LinkedList<Package> pkgs = PackageUtils.orderPackages(platform.getSpec().getPackages());
             PlatformStatus pStatus = new PlatformStatus();
             pStatus.setPackages(pkgs);
 
-            platformCR.setStatus(pStatus);
+            platform.setStatus(pStatus);
 
-            return UpdateControl.patchStatus(platformCR);
+            return UpdateControl.patchStatus(platform);
         } else {
             LOG.warn("No managed packages found");
             return null;
@@ -49,8 +47,8 @@ public class PlatformReconciler implements Reconciler<PlatformCR>, Cleaner<Platf
     }
 
     @Override
-    public DeleteControl cleanup(PlatformCR platformCR, Context<PlatformCR> context) throws Exception {
-        LOG.info("Platform resource: {} deleted", platformCR.getMetadata().getName());
+    public DeleteControl cleanup(Platform platform, Context<Platform> context) throws Exception {
+        LOG.info("Platform resource: {} deleted", platform.getMetadata().getName());
         return DeleteControl.defaultDelete();
     }
 }

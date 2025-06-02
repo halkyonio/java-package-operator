@@ -4,10 +4,10 @@ import io.halkyon.platform.operator.model.Package;
 import java.util.List;
 
 public class PlatformSpec {
-    private String version;
-    private String description;
-    private List<Package> packages;
     private String name;
+    private String description;
+    private String version;
+    private List<Package> packages;
 
     public String getName() {
         return name;

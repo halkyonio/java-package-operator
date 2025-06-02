@@ -4,9 +4,9 @@
   "metadata" : {
     "annotations" : {
       "app.quarkus.io/quarkus-version" : "3.22.3",
-      "app.quarkus.io/commit-id" : "2db17aef7514effebee14d84faeae8b568de3f8e",
+      "app.quarkus.io/commit-id" : "f5a54e212a3c5b99ba054776e324f57e0e2cf0a5",
       "app.quarkus.io/vcs-uri" : "https://github.com/halkyonio/java-package-operator.git",
-      "app.quarkus.io/build-timestamp" : "2025-05-27 - 15:43:06 +0000"
+      "app.quarkus.io/build-timestamp" : "2025-06-02 - 14:15:46 +0000"
     },
     "labels" : {
       "app.kubernetes.io/name" : "package-operator",
@@ -23,15 +23,15 @@
       "app.kubernetes.io/name" : "package-operator",
       "app.kubernetes.io/version" : "0.1.0-SNAPSHOT"
     },
-    "name" : "packagereconciler-cluster-role"
+    "name" : "platformreconciler-cluster-role"
   },
   "rules" : [ {
     "apiGroups" : [ "halkyon.io" ],
-    "resources" : [ "packages", "packages/status", "packages/finalizers" ],
+    "resources" : [ "platforms", "platforms/status", "platforms/finalizers" ],
     "verbs" : [ "get", "list", "watch", "patch", "update", "create", "delete" ]
   }, {
-    "apiGroups" : [ "" ],
-    "resources" : [ "configmaps" ],
+    "apiGroups" : [ "halkyon.io" ],
+    "resources" : [ "packages" ],
     "verbs" : [ "create", "delete", "get", "list", "patch", "update", "watch" ]
   } ]
 },{
@@ -57,7 +57,7 @@
       "app.kubernetes.io/name" : "package-operator",
       "app.kubernetes.io/version" : "0.1.0-SNAPSHOT"
     },
-    "name" : "packagereconciler-crd-validating-role-binding"
+    "name" : "platformreconciler-crd-validating-role-binding"
   },
   "roleRef" : {
     "kind" : "ClusterRole",
@@ -76,12 +76,12 @@
       "app.kubernetes.io/name" : "package-operator",
       "app.kubernetes.io/version" : "0.1.0-SNAPSHOT"
     },
-    "name" : "packagereconciler-cluster-role-binding"
+    "name" : "platformreconciler-cluster-role-binding"
   },
   "roleRef" : {
     "kind" : "ClusterRole",
     "apiGroup" : "rbac.authorization.k8s.io",
-    "name" : "packagereconciler-cluster-role"
+    "name" : "platformreconciler-cluster-role"
   },
   "subjects" : [ {
     "kind" : "ServiceAccount",
@@ -112,9 +112,9 @@
   "metadata" : {
     "annotations" : {
       "app.quarkus.io/quarkus-version" : "3.22.3",
-      "app.quarkus.io/commit-id" : "2db17aef7514effebee14d84faeae8b568de3f8e",
+      "app.quarkus.io/commit-id" : "f5a54e212a3c5b99ba054776e324f57e0e2cf0a5",
       "app.quarkus.io/vcs-uri" : "https://github.com/halkyonio/java-package-operator.git",
-      "app.quarkus.io/build-timestamp" : "2025-05-27 - 15:43:06 +0000"
+      "app.quarkus.io/build-timestamp" : "2025-06-02 - 14:15:46 +0000"
     },
     "labels" : {
       "app.kubernetes.io/name" : "package-operator",
@@ -142,9 +142,9 @@
   "metadata" : {
     "annotations" : {
       "app.quarkus.io/quarkus-version" : "3.22.3",
-      "app.quarkus.io/commit-id" : "2db17aef7514effebee14d84faeae8b568de3f8e",
+      "app.quarkus.io/commit-id" : "f5a54e212a3c5b99ba054776e324f57e0e2cf0a5",
       "app.quarkus.io/vcs-uri" : "https://github.com/halkyonio/java-package-operator.git",
-      "app.quarkus.io/build-timestamp" : "2025-05-27 - 15:43:06 +0000"
+      "app.quarkus.io/build-timestamp" : "2025-06-02 - 14:15:46 +0000"
     },
     "labels" : {
       "app.kubernetes.io/name" : "package-operator",
@@ -165,9 +165,9 @@
       "metadata" : {
         "annotations" : {
           "app.quarkus.io/quarkus-version" : "3.22.3",
-          "app.quarkus.io/commit-id" : "2db17aef7514effebee14d84faeae8b568de3f8e",
+          "app.quarkus.io/commit-id" : "f5a54e212a3c5b99ba054776e324f57e0e2cf0a5",
           "app.quarkus.io/vcs-uri" : "https://github.com/halkyonio/java-package-operator.git",
-          "app.quarkus.io/build-timestamp" : "2025-05-27 - 15:43:06 +0000"
+          "app.quarkus.io/build-timestamp" : "2025-06-02 - 14:15:46 +0000"
         },
         "labels" : {
           "app.kubernetes.io/managed-by" : "quarkus",
