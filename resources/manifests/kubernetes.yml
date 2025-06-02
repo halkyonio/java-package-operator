@@ -4,9 +4,9 @@ kind: ServiceAccount
 metadata:
   annotations:
     app.quarkus.io/quarkus-version: 3.22.3
-    app.quarkus.io/commit-id: f5a54e212a3c5b99ba054776e324f57e0e2cf0a5
+    app.quarkus.io/commit-id: 8344346f8e963a637d2ed5f00823bd2a33570d2c
     app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-    app.quarkus.io/build-timestamp: 2025-06-02 - 14:15:46 +0000
+    app.quarkus.io/build-timestamp: 2025-06-02 - 14:43:28 +0000
   labels:
     app.kubernetes.io/name: package-operator
     app.kubernetes.io/version: 0.1.0-SNAPSHOT
@@ -114,9 +114,9 @@ kind: Service
 metadata:
   annotations:
     app.quarkus.io/quarkus-version: 3.22.3
-    app.quarkus.io/commit-id: f5a54e212a3c5b99ba054776e324f57e0e2cf0a5
+    app.quarkus.io/commit-id: 8344346f8e963a637d2ed5f00823bd2a33570d2c
     app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-    app.quarkus.io/build-timestamp: 2025-06-02 - 14:15:46 +0000
+    app.quarkus.io/build-timestamp: 2025-06-02 - 14:43:28 +0000
   labels:
     app.kubernetes.io/name: package-operator
     app.kubernetes.io/version: 0.1.0-SNAPSHOT
@@ -138,9 +138,9 @@ kind: Deployment
 metadata:
   annotations:
     app.quarkus.io/quarkus-version: 3.22.3
-    app.quarkus.io/commit-id: f5a54e212a3c5b99ba054776e324f57e0e2cf0a5
+    app.quarkus.io/commit-id: 8344346f8e963a637d2ed5f00823bd2a33570d2c
     app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-    app.quarkus.io/build-timestamp: 2025-06-02 - 14:15:46 +0000
+    app.quarkus.io/build-timestamp: 2025-06-02 - 14:43:28 +0000
   labels:
     app.kubernetes.io/name: package-operator
     app.kubernetes.io/version: 0.1.0-SNAPSHOT
@@ -156,9 +156,9 @@ spec:
     metadata:
       annotations:
         app.quarkus.io/quarkus-version: 3.22.3
-        app.quarkus.io/commit-id: f5a54e212a3c5b99ba054776e324f57e0e2cf0a5
+        app.quarkus.io/commit-id: 8344346f8e963a637d2ed5f00823bd2a33570d2c
         app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-        app.quarkus.io/build-timestamp: 2025-06-02 - 14:15:46 +0000
+        app.quarkus.io/build-timestamp: 2025-06-02 - 14:43:28 +0000
       labels:
         app.kubernetes.io/managed-by: quarkus
         app.kubernetes.io/version: 0.1.0-SNAPSHOT

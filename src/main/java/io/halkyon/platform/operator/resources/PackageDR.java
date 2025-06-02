@@ -20,6 +20,11 @@ public class PackageDR extends CRUDKubernetesDependentResource<Package, Platform
     @Override
     protected Package desired(Platform platform, Context<Platform> ctx) {
         LOG.info("Processing the platform resource: {} for the dependent resource: Package", platform.getMetadata().getName());
-        return null;
+
+        Package dummyPackage = new Package();
+        dummyPackage.getMetadata().setName("dummy");
+        dummyPackage.getMetadata().setNamespace(platform.getMetadata().getNamespace());
+
+        return dummyPackage;
     }
 }

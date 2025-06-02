@@ -1,5 +1,7 @@
 package io.halkyon.platform.operator.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Map;
 import java.util.Optional;
 
@@ -9,13 +11,14 @@ public class Package {
     private Pipeline pipeline;
     private String runAfter;
 
-    public Package(String name, String runAfter) {
+    public Package withName(String name) {
         this.name = name;
-        this.runAfter = runAfter;
+        return this;
     }
 
-    public Package(String name) {
-        this.name = name;
+    public Package withRunAfter(String runAfter) {
+        this.runAfter = runAfter;
+        return this;
     }
 
     public Pipeline getPipeline() {
@@ -45,8 +48,8 @@ public class Package {
     private Map<String, Object> valuesObject;
     private KubernetesJob kubernetesJob;
 
-
-    public Optional<String>  getRunAfter() {
+    @JsonIgnore
+    public Optional<String> getRunAfter() {
         return Optional.ofNullable(runAfter);
     }
 

@@ -78,8 +78,6 @@ spec:
                             type: "object"
                           type: "array"
                       type: "object"
-                    runAfter:
-                      x-kubernetes-preserve-unknown-fields: true
                     valuesObject:
                       additionalProperties:
                         type: "object"
@@ -150,8 +148,6 @@ spec:
                             type: "object"
                           type: "array"
                       type: "object"
-                    runAfter:
-                      x-kubernetes-preserve-unknown-fields: true
                     valuesObject:
                       additionalProperties:
                         type: "object"

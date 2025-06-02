@@ -12,9 +12,9 @@ public class PackageUtilsTest {
     @Test
     public void basicOrderingTest() {
         List<Package> pkgs = new ArrayList<>();
-        pkgs.add(new Package("3", "2"));
-        pkgs.add(new Package("2", "1"));
-        pkgs.add(new Package("1")); // No runAfter, so it's a root
+        pkgs.add(new Package().withName("3").withRunAfter("2"));
+        pkgs.add(new Package().withName("2").withRunAfter("1"));
+        pkgs.add(new Package().withName("1"));
 
         Platform platform = new Platform(pkgs);
 
@@ -31,10 +31,10 @@ public class PackageUtilsTest {
     @Test
     public void moreComplexOrderingTest() {
         List<Package> pkgs = new ArrayList<>();
-        pkgs.add(new Package("C", "B"));
-        pkgs.add(new Package("A")); // Independent root
-        pkgs.add(new Package("B", "A"));
-        pkgs.add(new Package("Z")); // Independent root
+        pkgs.add(new Package().withName("C").withRunAfter("B"));
+        pkgs.add(new Package().withName("A")); // Independent root
+        pkgs.add(new Package().withName("B").withRunAfter("A"));
+        pkgs.add(new Package().withName("Z")); // Independent root
 
         Platform platform = new Platform(pkgs);
 
@@ -52,9 +52,9 @@ public class PackageUtilsTest {
     @Test
     public void circularDependencyTest() {
         List<Package> circularPackages = new ArrayList<>();
-        circularPackages.add(new Package("P1", "P3")); // P1 runs after P3
-        circularPackages.add(new Package("P2", "P1")); // P2 runs after P1
-        circularPackages.add(new Package("P3", "P2")); // P3 runs after P2
+        circularPackages.add(new Package().withName("P1").withRunAfter("P3")); // P1 runs after P3
+        circularPackages.add(new Package().withName("P2").withRunAfter("P1")); // P2 runs after P1
+        circularPackages.add(new Package().withName("P3").withRunAfter("P2")); // P3 runs after P2
 
         Platform platform = new Platform(circularPackages);
         try {
@@ -68,7 +68,7 @@ public class PackageUtilsTest {
     @Test
     public void missingDependencyTest() {
         List<Package> missingDepPackages = new ArrayList<>();
-        missingDepPackages.add(new Package("P_A", "P_MISSING"));
+        missingDepPackages.add(new Package().withName("P_A").withRunAfter("P_MISSING"));
 
         Platform platform = new Platform(missingDepPackages);
         try {
