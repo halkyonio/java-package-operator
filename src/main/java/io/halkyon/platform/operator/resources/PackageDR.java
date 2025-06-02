@@ -30,7 +30,7 @@ public class PackageDR extends CRUDKubernetesDependentResource<PackageCR, Platfo
         platformCR.getSpec().getPackages().stream().findFirst().ifPresent(pkg -> {
             aPackageCR.getMetadata().setName(pkg.getMetadata().getName());
             aPackageCR.getSpec().setTool(pkg.getSpec().getTool());
-            aPackageCR.getSpec().setUrl(pkg.getSpec().getUrl());
+            aPackageCR.getSpec().setRepoUrl(pkg.getSpec().getRepoUrl());
         });
         return aPackageCR;
     }

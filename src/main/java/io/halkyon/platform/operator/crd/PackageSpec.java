@@ -10,8 +10,15 @@ public class PackageSpec {
     private String name;
     private String description;
     private String tool;
-    private String url;
+    private String repoUrl;
     private String version;
+
+    @PreserveUnknownFields
+    @JsonPropertyDescription("ValuesObject specifies Helm values to be passed to helm template, defined as a map.")
+    private Map<String, Object> values;
+    private KubernetesJob kubernetesJob;
+
+    private String runAfter;
 
     public String getName() {
         return name;
@@ -29,13 +36,6 @@ public class PackageSpec {
         this.description = description;
     }
 
-    @PreserveUnknownFields
-    @JsonPropertyDescription("ValuesObject specifies Helm values to be passed to helm template, defined as a map.")
-    private Map<String, Object> valuesObject;
-
-    private KubernetesJob kubernetesJob;
-
-    // Getters and Setters
     public String getTool() {
         return tool;
     }
@@ -44,12 +44,12 @@ public class PackageSpec {
         this.tool = tool;
     }
 
-    public String getUrl() {
-        return url;
+    public String getRepoUrl() {
+        return repoUrl;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setRepoUrl(String repoUrl) {
+        this.repoUrl = repoUrl;
     }
 
     public String getVersion() {
@@ -60,12 +60,20 @@ public class PackageSpec {
         this.version = version;
     }
 
-    public Map<String, Object> getValuesObject() {
-        return valuesObject;
+    public String getRunAfter() {
+        return runAfter;
     }
 
-    public void setValuesObject(Map<String, Object> valuesObject) {
-        this.valuesObject = valuesObject;
+    public void setRunAfter(String runAfter) {
+        this.runAfter = runAfter;
+    }
+
+    public Map<String, Object> getValues() {
+        return values;
+    }
+
+    public void setValues(Map<String, Object> values) {
+        this.values = values;
     }
 
     public KubernetesJob getKubernetesJob() {
@@ -80,9 +88,9 @@ public class PackageSpec {
     public String toString() {
         return "PackageSpec{" +
             "tool='" + tool + '\'' +
-            ", url='" + url + '\'' +
+            ", url='" + repoUrl + '\'' +
             ", version='" + version + '\'' +
-            ", values=" + valuesObject +
+            ", values=" + values +
             ", kubernetesJob=" + kubernetesJob +
             '}';
     }
