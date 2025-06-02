@@ -5,7 +5,7 @@ import java.util.List;
 public class PlatformSpec {
     private String version;
     private String description;
-    private List<Package> packages;
+    private List<PackageCR> packageCRS;
     private String name;
 
     public String getName() {
@@ -32,11 +32,11 @@ public class PlatformSpec {
         this.description = description;
     }
 
-    public List<Package> getPackages() {
-        return packages;
+    public List<PackageCR> getPackages() {
+        return packageCRS;
     }
 
-    public void setPackages(List<Package> packages) {
-        this.packages = packages;
+    public void setPackages(List<PackageCR> packageCRS) {
+        this.packageCRS = packageCRS;
     }
 }

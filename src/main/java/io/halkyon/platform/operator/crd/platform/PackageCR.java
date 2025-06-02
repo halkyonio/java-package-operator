@@ -2,14 +2,16 @@ package io.halkyon.platform.operator.crd.platform;
 
 import io.fabric8.kubernetes.api.model.Namespaced;
 import io.fabric8.kubernetes.client.CustomResource;
-import io.fabric8.kubernetes.model.annotation.*;
+import io.fabric8.kubernetes.model.annotation.Group;
+import io.fabric8.kubernetes.model.annotation.Version;
 
 @Group("halkyon.io")
 @Version("v1alpha1")
-public class Platform extends CustomResource<PlatformSpec, PlatformStatus> implements Namespaced {
+public class PackageCR extends CustomResource<PackageSpec, PackageStatus> implements Namespaced {
+
     @Override
     public String toString() {
-        return "Platform{" +
+        return "Package{" +
             "apiVersion='" + getApiVersion() + '\'' +
             ", kind='" + getKind() + '\'' +
             ", metadata=" + getMetadata() +

@@ -1,4 +1,4 @@
-package io.halkyon.platform.operator.crd.platform;
+package io.halkyon.platform.operator.model;
 
 import java.util.List;
 

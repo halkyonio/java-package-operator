@@ -17,9 +17,9 @@ mvn clean package \
 ```shell
 kubectl delete -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/resources/examples/package1.yml
 kubectl delete -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/resources/manifests/kubernetes.yml
-kubectl delete -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/resources/crds/packages.halkyon.io-v1.yml
+kubectl delete -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/resources/crds/packageCRS.halkyon.io-v1.yml
 
-kubectl apply -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/resources/crds/packages.halkyon.io-v1.yml
+kubectl apply -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/resources/crds/packageCRS.halkyon.io-v1.yml
 kubectl apply -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/resources/manifests/kubernetes.yml
 ```
 - Create a `Package` yaml
@@ -88,13 +88,13 @@ Deploy our CRDs and Custom resource object of a simple workflow
 ```shell
 k rollout status deployment kubernetes-glue-operator --timeout=90s
 
-k delete -f resources/examples/glue/simple-platform.yml
+k delete -f resources/examples/glue/simple-platformCR.yml
 k delete -f resources/examples/glue/crds/platforms.halkyon.io-v1alpha1.yml
-k delete -f resources/examples/glue/crds/platform-operator.yml
+k delete -f resources/examples/glue/crds/platformCR-operator.yml
 
 k apply -f resources/examples/glue/crds/platforms.halkyon.io-v1alpha1.yml
-k apply -f resources/examples/glue/crds/platform-operator.yml
-k apply -f resources/examples/glue/simple-platform.yml
+k apply -f resources/examples/glue/crds/platformCR-operator.yml
+k apply -f resources/examples/glue/simple-platformCR.yml
 
 k logs -lapp.kubernetes.io/name=kubernetes-glue-operator --tail=-1
 ```

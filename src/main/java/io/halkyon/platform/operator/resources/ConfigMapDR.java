@@ -4,7 +4,7 @@ import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
 import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
 import io.halkyon.platform.operator.controller.PlatformReconciler;
-import io.halkyon.platform.operator.crd.platform.Platform;
+import io.halkyon.platform.operator.crd.platform.PlatformCR;
 import io.javaoperatorsdk.operator.api.config.informer.Informer;
 import io.javaoperatorsdk.operator.api.reconciler.Context;
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.CRUDKubernetesDependentResource;
@@ -21,7 +21,7 @@ import static io.halkyon.platform.operator.controller.PlatformReconciler.createS
 
 // this annotation only activates when using managed dependents and is not otherwise needed
 @KubernetesDependent(informer = @Informer(labelSelector = SELECTOR))
-public class ConfigMapDR extends CRUDKubernetesDependentResource<ConfigMap, Platform> {
+public class ConfigMapDR extends CRUDKubernetesDependentResource<ConfigMap, PlatformCR> {
     private final static Logger LOG = LoggerFactory.getLogger(PlatformReconciler.class);
 
     public ConfigMapDR() {
@@ -29,26 +29,26 @@ public class ConfigMapDR extends CRUDKubernetesDependentResource<ConfigMap, Plat
     }
 
     @Override
-    protected ConfigMap desired(Platform platform, Context<Platform> ctx) {
-        LOG.info("Processing the platform resource: {} for the dependent resource: ConfigMap", platform.getMetadata().getName());
+    protected ConfigMap desired(PlatformCR platformCR, Context<PlatformCR> ctx) {
+        LOG.info("Processing the platform resource: {} for the dependent resource: ConfigMap", platformCR.getMetadata().getName());
 
-        if (platform.getSpec().getVersion().equals("0.1.1")) {
-            LOG.info("Platform has been updated. Version is now: {}", platform.getSpec().getVersion());
+        if (platformCR.getSpec().getVersion().equals("0.1.1")) {
+            LOG.info("Platform has been updated. Version is now: {}", platformCR.getSpec().getVersion());
         } else {
-            LOG.info("Original platform version is {}", platform.getSpec().getVersion());
+            LOG.info("Original platform version is {}", platformCR.getSpec().getVersion());
         }
 
-        platform.setStatus(createStatus("ConfigMap created"));
+        platformCR.setStatus(createStatus("ConfigMap created"));
 
         Map<String, String> data = new HashMap<>();
-        data.put("version", platform.getSpec().getVersion());
+        data.put("version", platformCR.getSpec().getVersion());
         Map<String, String> labels = new HashMap<>();
         labels.put(SELECTOR, "true");
         return new ConfigMapBuilder()
             .withMetadata(
                 new ObjectMetaBuilder()
-                    .withName(configMapName(platform))
-                    .withNamespace(platform.getMetadata().getNamespace())
+                    .withName(configMapName(platformCR))
+                    .withNamespace(platformCR.getMetadata().getNamespace())
                     .withLabels(labels)
                     .build())
             .withData(data)

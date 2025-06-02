@@ -1,12 +1,8 @@
-package io.halkyon.platform.operator.crd.platform;
-
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import io.fabric8.crd.generator.annotation.PreserveUnknownFields;
-import io.halkyon.platform.operator.model.KubernetesJob;
+package io.halkyon.platform.operator.model;
 
 import java.util.Map;
 
-public class PackageSpec {
+public class Package {
     private String name;
     private String description;
     private String tool;
@@ -29,8 +25,6 @@ public class PackageSpec {
         this.description = description;
     }
 
-    @PreserveUnknownFields
-    @JsonPropertyDescription("ValuesObject specifies Helm values to be passed to helm template, defined as a map.")
     private Map<String, Object> valuesObject;
 
     private KubernetesJob kubernetesJob;
