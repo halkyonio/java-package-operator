@@ -1,13 +1,24 @@
 package io.halkyon.platform.operator.model;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class Package {
     private String name;
     private String description;
     private String tool;
-    private String url;
+    private String repoUrl;
     private String version;
+    private String runAfter;
+
+    public Package(String name, String runAfter) {
+        this.name = name;
+        this.runAfter = runAfter;
+    }
+
+    public Package(String name) {
+        this.name = name;
+    }
 
     public String getName() {
         return name;
@@ -38,12 +49,12 @@ public class Package {
         this.tool = tool;
     }
 
-    public String getUrl() {
-        return url;
+    public String getRepoUrl() {
+        return repoUrl;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setRepoUrl(String repoUrl) {
+        this.repoUrl = repoUrl;
     }
 
     public String getVersion() {
@@ -52,6 +63,14 @@ public class Package {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public Optional<String>  getRunAfter() {
+        return Optional.ofNullable(runAfter);
+    }
+
+    public void setRunAfter(String  runAfter) {
+        this.runAfter = runAfter;
     }
 
     public Map<String, Object> getValuesObject() {
@@ -74,7 +93,7 @@ public class Package {
     public String toString() {
         return "PackageSpec{" +
             "tool='" + tool + '\'' +
-            ", url='" + url + '\'' +
+            ", url='" + repoUrl + '\'' +
             ", version='" + version + '\'' +
             ", values=" + valuesObject +
             ", kubernetesJob=" + kubernetesJob +

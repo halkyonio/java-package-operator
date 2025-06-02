@@ -1,13 +1,18 @@
 package io.halkyon.platform.operator.controller;
 
+import io.halkyon.platform.operator.PackageUtils;
 import io.halkyon.platform.operator.crd.PackageCR;
 import io.halkyon.platform.operator.crd.PlatformCR;
 import io.halkyon.platform.operator.crd.PlatformStatus;
+import io.halkyon.platform.operator.model.Package;
+import io.halkyon.platform.operator.model.Platform;
 import io.halkyon.platform.operator.resources.PackageDR;
 import io.javaoperatorsdk.operator.api.reconciler.*;
 import io.javaoperatorsdk.operator.api.reconciler.dependent.Dependent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.LinkedList;
 
 @Workflow(
     dependents = {
@@ -19,18 +24,22 @@ public class PlatformReconciler implements Reconciler<PlatformCR>, Cleaner<Platf
     public static final String SELECTOR = "managed";
 
     public UpdateControl<PlatformCR> reconcile(PlatformCR platformCR, Context<PlatformCR> context) {
-        LOG.info("Reconciling platform {}", platformCR.getMetadata().getName());
-        final var name =
-            context.getSecondaryResource(PackageCR.class).orElseThrow().getMetadata().getName();
+        var name = platformCR.getMetadata().getName();
+        LOG.info("Reconciling platform {}", name);
 
-         if (platformCR.getStatus().getMessage().equals("ConfigMap created")) {
-             LOG.info("Platform status updated.");
-             String newStatus = platformCR.getStatus().getMessage().concat("\nStatus updated");
-             PlatformStatus platformStatus = new PlatformStatus();
-             platformStatus.setMessage(newStatus);
-             platformCR.setStatus(platformStatus);
-         }
-        return UpdateControl.patchStatus(platformCR);
+        if (!platformCR.getSpec().getPackages().isEmpty()) {
+            LinkedList<Package> pkgs = PackageUtils.orderPackages(platformCR.getSpec().getPackages());
+            PlatformStatus pStatus = new PlatformStatus();
+            pStatus.setPackages(pkgs);
+
+            platformCR.setStatus(pStatus);
+
+            return UpdateControl.patchStatus(platformCR);
+        } else {
+            LOG.warn("No managed packages found");
+            return null;
+        }
+
     }
 
     public static PlatformStatus createStatus(String configMapName) {
