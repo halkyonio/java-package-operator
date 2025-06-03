@@ -4,6 +4,7 @@ import io.fabric8.kubernetes.api.model.*;
 import io.halkyon.platform.operator.crd.Package;
 import io.halkyon.platform.operator.crd.PackageSpec;
 import io.halkyon.platform.operator.crd.PackageStatus;
+import io.halkyon.platform.operator.model.PackageDefinition;
 import io.halkyon.platform.operator.model.Pipeline;
 import io.javaoperatorsdk.operator.api.config.informer.InformerEventSourceConfiguration;
 import io.javaoperatorsdk.operator.api.reconciler.*;
@@ -17,8 +18,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static io.halkyon.platform.operator.PackageUtils.PACKAGE_LABEL_SELECTOR;
-import static io.halkyon.platform.operator.PackageUtils.createPackageLabels;
+import static io.halkyon.platform.operator.PackageUtils.*;
 
 /*
 @Workflow(
@@ -65,7 +65,7 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
         } else {
             LOG.info("Status of the pod changed: {}",previousPod.getStatus().getPhase());
             if (previousPod.getStatus().getPhase().equals("Succeeded")) {
-                pkg.setStatus(updatePackageStatus("installation succeeded"));
+                pkg.setStatus(updatePackageStatus(INSTALLATION_SUCCEEDED,pkg));
                 return UpdateControl.patchStatus(pkg);
             }
         }
@@ -78,9 +78,10 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
         return DeleteControl.defaultDelete();
     }
 
-    public PackageStatus updatePackageStatus(String message) {
+    public PackageStatus updatePackageStatus(String status, Package pkg) {
         PackageStatus packageStatus = new PackageStatus();
-        packageStatus.setMessage(message);
+        packageStatus.setName(pkg.getMetadata().getName());
+        packageStatus.setInstallationStatus(status);
         return packageStatus;
     }
 

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 public class PackageUtils {
     private static final Logger LOG = LoggerFactory.getLogger(PackageUtils.class);
 
+    public final static String INSTALLATION_SUCCEEDED = "installation succeeded";
     public final static String PACKAGE_LABEL_SELECTOR = "io.halkyon.package";
 
     public static LinkedHashMap<String, String> createPackageLabels(Package pkg) {

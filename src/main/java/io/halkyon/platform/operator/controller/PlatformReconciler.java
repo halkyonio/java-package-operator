@@ -14,11 +14,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static io.halkyon.platform.operator.PackageUtils.PACKAGE_LABEL_SELECTOR;
-import static io.halkyon.platform.operator.PackageUtils.createPackageLabels;
+import static io.halkyon.platform.operator.PackageUtils.*;
 
 /*
 @Workflow(
@@ -43,21 +44,14 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
     public UpdateControl<Platform> reconcile(Platform platform, Context<Platform> context) {
 
         var name = platform.getMetadata().getName();
-        //List<PackageDefinition> pkgs;
-        Map<Integer, PackageDefinition> indexedPackageMap;
-        PackageDefinition pkgDefinition;
+        List<PackageDefinition> pkgs;
+        PackageDefinition pkgDefinition = null;
 
         LOG.info("Reconciling platform {}", name);
 
         // Verify first if packages have been declared !
         if (!platform.getSpec().getPackages().isEmpty()) {
-            var pkgs = platform.getSpec().getPackages();
-            indexedPackageMap = IntStream.range(0, pkgs.size())
-                .boxed()
-                .collect(Collectors.toMap(
-                    i -> i + 1,
-                    pkgs::get
-                ));
+            pkgs = platform.getSpec().getPackages();
         } else {
             LOG.warn("No packages declared part of the Platform CR");
             return null;
@@ -65,16 +59,33 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
 
         var previousPackage = context.getSecondaryResource(Package.class).orElse(null);
         if (previousPackage == null) {
-            // When the previous package is null, then we will process the first package of the list
-            pkgDefinition = indexedPackageMap.get(1);
+            // When the previous package is null, then we process the first package of the list
+            pkgDefinition = pkgs.getFirst();
         } else {
-            if (previousPackage.getStatus() != null && previousPackage.getStatus().getMessage().equals("installation succeeded")) {
-                LOG.info("Package installation succeeded for {}. Processing now the next package ...",previousPackage.getMetadata().getName());
+            // As a Package has already been processed, we will check its status is "installation succeeded"
+            // and remove it from the list of the to be processed to pick up the next one
+            if (installationSucceeded(previousPackage)) {
+                LOG.info("Package installation succeeded for package: {}", previousPackage);
 
+                var existingPackages = context.getClient().resources(Package.class).inNamespace(previousPackage.getMetadata().getNamespace()).list();
+                Set<String> succeededNames = existingPackages.getItems().stream()
+                    .filter(pkg -> INSTALLATION_SUCCEEDED.equalsIgnoreCase(pkg.getStatus().getInstallationStatus()))
+                    .map(p -> p.getMetadata().getName())
+                    .collect(Collectors.toSet());
+
+                List<PackageDefinition> remaining = pkgs.stream()
+                    .filter(p -> !succeededNames.contains(p.getName()))
+                    .toList();
+
+                Optional<PackageDefinition> nextToProcess = remaining.stream().findFirst();
+                if (nextToProcess.isPresent()) {
+                    LOG.info("Next package to create: " + nextToProcess.get().getName());
+                    pkgDefinition = nextToProcess.get();
+                }
             } else {
                 LOG.warn("Package status is null or different ... {}",previousPackage);
+                return UpdateControl.noUpdate();
             }
-            return UpdateControl.noUpdate();
         }
 
         var pkg = createPackageCR(pkgDefinition, platform);
@@ -87,6 +98,10 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
         pStatus.setMessage(String.format("Processing the package: %s", pkgDefinition.getName()));
         platform.setStatus(pStatus);
         return UpdateControl.patchStatus(platform);
+    }
+
+    private boolean installationSucceeded(Package pkg) {
+        return pkg.getStatus() != null && pkg.getStatus().getInstallationStatus().equals(INSTALLATION_SUCCEEDED);
     }
 
     private Package createPackageCR(PackageDefinition pkgDefinition, Platform platform) {
