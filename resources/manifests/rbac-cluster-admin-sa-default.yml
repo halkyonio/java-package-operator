@@ -21,7 +21,7 @@ roleRef:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: default-sa-cluster-admin-binding
+  name: package-operator-sa-cluster-admin-binding
 subjects:
   - kind: ServiceAccount
     name: package-operator
