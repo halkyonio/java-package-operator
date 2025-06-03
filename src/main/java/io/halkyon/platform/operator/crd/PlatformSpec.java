@@ -1,13 +1,13 @@
 package io.halkyon.platform.operator.crd;
 
-import io.halkyon.platform.operator.model.Package;
+import io.halkyon.platform.operator.model.PackageDefinition;
 import java.util.List;
 
 public class PlatformSpec {
     private String name;
     private String description;
     private String version;
-    private List<Package> packages;
+    private List<PackageDefinition> packageDefinitions;
 
     public String getName() {
         return name;
@@ -33,11 +33,11 @@ public class PlatformSpec {
         this.description = description;
     }
 
-    public List<Package> getPackages() {
-        return packages;
+    public List<PackageDefinition> getPackages() {
+        return packageDefinitions;
     }
 
-    public void setPackages(List<Package> packages) {
-        this.packages = packages;
+    public void setPackages(List<PackageDefinition> packageDefinitions) {
+        this.packageDefinitions = packageDefinitions;
     }
 }

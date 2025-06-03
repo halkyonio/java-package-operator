@@ -1,7 +1,7 @@
 package io.halkyon.platform.operator;
 
 import java.util.*;
-import io.halkyon.platform.operator.model.Package;
+import io.halkyon.platform.operator.model.PackageDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,18 +12,18 @@ public class PackageUtils {
      * Orders a list of Package objects based on their 'runAfter' dependencies.
      * Implements Kahn's algorithm for topological sort.
      *
-     * @param packages The list of Package objects to order.
+     * @param packageDefinitions The list of Package objects to order.
      * @return A new List containing the Package objects in topological order.
      * @throws IllegalArgumentException if a dependency is specified but not found in the input list.
      * @throws IllegalStateException if a circular dependency is detected.
      */
-    public static LinkedList<Package> orderPackages(List<Package> packages) {
-        if (packages == null || packages.isEmpty()) {
+    public static LinkedList<PackageDefinition> orderPackages(List<PackageDefinition> packageDefinitions) {
+        if (packageDefinitions == null || packageDefinitions.isEmpty()) {
             return new LinkedList<>();
         }
 
         // 1. Data Structures for the graph representation
-        Map<String, Package> packageMap = new HashMap<>();
+        Map<String, PackageDefinition> packageMap = new HashMap<>();
         // Map: Package name -> count of dependencies it has (in-degree)
         Map<String, Integer> inDegree = new HashMap<>();
         // Map: Package name -> list of package names that depend on it (adjacency list)
@@ -31,14 +31,14 @@ public class PackageUtils {
         Map<String, List<String>> adj = new HashMap<>();
 
         // Initialize maps for all packages
-        for (Package pkg : packages) {
+        for (PackageDefinition pkg : packageDefinitions) {
             packageMap.put(pkg.getName(), pkg);
             inDegree.put(pkg.getName(), 0); // Start with 0 in-degree for all
             adj.put(pkg.getName(), new ArrayList<>()); // Initialize empty list for dependents
         }
 
         // 2. Populate in-degrees and adjacency list based on 'runAfter'
-        for (Package pkg : packages) {
+        for (PackageDefinition pkg : packageDefinitions) {
             pkg.getRunAfter().ifPresentOrElse(depName -> {
                 // If 'pkg' runs after 'depName', then 'depName' is a prerequisite for 'pkg'.
                 // This means there's a directed edge from 'depName' to 'pkg'.
@@ -59,7 +59,7 @@ public class PackageUtils {
         }
 
         // 4. Process nodes in topological order (BFS)
-        LinkedList<Package> linkedList = new LinkedList<>();
+        LinkedList<PackageDefinition> linkedList = new LinkedList<>();
         int nodesVisited = 0;
 
         while (!queue.isEmpty()) {
@@ -77,7 +77,7 @@ public class PackageUtils {
         }
 
         // 5. Check for cycles
-        if (nodesVisited != packages.size()) {
+        if (nodesVisited != packageDefinitions.size()) {
             throw new IllegalStateException("Circular dependency detected among packages. Cannot establish a valid order.");
         }
 

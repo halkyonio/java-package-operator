@@ -5,19 +5,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Map;
 import java.util.Optional;
 
-public class Package {
+public class PackageDefinition {
     private String name;
     private String description;
     private Pipeline pipeline;
     private String runAfter;
     private String status;
 
-    public Package withName(String name) {
+    public PackageDefinition withName(String name) {
         this.name = name;
         return this;
     }
 
-    public Package withRunAfter(String runAfter) {
+    public PackageDefinition withRunAfter(String runAfter) {
         this.runAfter = runAfter;
         return this;
     }

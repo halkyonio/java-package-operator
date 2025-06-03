@@ -1,34 +1,33 @@
 package io.halkyon.platform.operator.crd;
 
-import java.util.LinkedList;
 import java.util.List;
-import io.halkyon.platform.operator.model.Package;
+import io.halkyon.platform.operator.model.PackageDefinition;
 
 public class PlatformStatus {
     private String phase;
     private String message;
-    private Package packageToProcess;
-    private List<Package> packages;
+    private PackageDefinition packageDefinitionToProcess;
+    private List<PackageDefinition> packageDefinitions;
 
     public PlatformStatus withMessage(String message) {
         this.message = message;
         return this;
     }
 
-    public Package getPackageToProcess() {
-        return packageToProcess;
+    public PackageDefinition getPackageToProcess() {
+        return packageDefinitionToProcess;
     }
 
-    public void setPackageToProcess(Package packageToProcess) {
-        this.packageToProcess = packageToProcess;
+    public void setPackageToProcess(PackageDefinition packageDefinitionToProcess) {
+        this.packageDefinitionToProcess = packageDefinitionToProcess;
     }
 
-    public void setPackages(List<Package> packages) {
-        this.packages = packages;
+    public void setPackages(List<PackageDefinition> packageDefinitions) {
+        this.packageDefinitions = packageDefinitions;
     }
 
-    public List<Package> getPackages() {
-        return packages;
+    public List<PackageDefinition> getPackages() {
+        return packageDefinitions;
     }
 
     public String getMessage() {

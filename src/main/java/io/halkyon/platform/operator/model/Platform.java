@@ -4,13 +4,13 @@ import java.util.List;
 
 // Assuming a simple Platform class structure for context
 public class Platform {
-    private List<Package> packages;
+    private List<PackageDefinition> packageDefinitions;
 
-    public Platform(List<Package> packages) {
-        this.packages = packages;
+    public Platform(List<PackageDefinition> packageDefinitions) {
+        this.packageDefinitions = packageDefinitions;
     }
 
-    public List<Package> getPackages() {
-        return packages;
+    public List<PackageDefinition> getPackages() {
+        return packageDefinitions;
     }
 }
