@@ -31,14 +31,16 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
 
         if (!platform.getSpec().getPackages().isEmpty()) {
             LinkedList<PackageDefinition> pkgs = PackageUtils.orderPackages(platform.getSpec().getPackages());
+
             PackageDefinition pkgDefinition = pkgs.getFirst();
+
             PlatformStatus pStatus = new PlatformStatus();
             pStatus.setMessage(String.format("Processing the package: %s",pkgs.getFirst().getName()));
             pStatus.setPackageToProcess(pkgDefinition);
             platform.setStatus(pStatus);
 
             Package pkg = new Package();
-            pkg.getMetadata().setName(name);
+            pkg.getMetadata().setName(pkgDefinition.getName());
             pkg.getMetadata().setNamespace(platform.getMetadata().getNamespace());
             pkg.addOwnerReference(platform);
 
