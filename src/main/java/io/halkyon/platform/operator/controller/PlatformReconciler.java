@@ -43,7 +43,7 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
     public UpdateControl<Platform> reconcile(Platform platform, Context<Platform> context) {
 
         var name = platform.getMetadata().getName();
-        List<PackageDefinition> pkgs;
+        //List<PackageDefinition> pkgs;
         Map<Integer, PackageDefinition> indexedPackageMap;
         PackageDefinition pkgDefinition;
 
@@ -68,9 +68,12 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
             // When the previous package is null, then we will process the first package of the list
             pkgDefinition = indexedPackageMap.get(1);
         } else {
-            // TODO: Implement the logic able to process the package
-            LOG.info("Processing now the next package ...");
+            if (previousPackage.getStatus() != null && previousPackage.getStatus().getMessage().equals("installation succeeded")) {
+                LOG.info("Package installation succeeded for {}. Processing now the next package ...",previousPackage.getMetadata().getName());
 
+            } else {
+                LOG.warn("Package status is null or different ... {}",previousPackage);
+            }
             return UpdateControl.noUpdate();
         }
 
@@ -82,7 +85,7 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
 
         PlatformStatus pStatus = new PlatformStatus();
         pStatus.setMessage(String.format("Processing the package: %s", pkgDefinition.getName()));
-        pStatus.setPackageToProcess(pkgDefinition);
+        pStatus.setPackages();
         platform.setStatus(pStatus);
         return UpdateControl.patchStatus(platform);
     }

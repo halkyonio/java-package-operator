@@ -4,7 +4,6 @@ import java.util.List;
 import io.halkyon.platform.operator.model.PackageDefinition;
 
 public class PlatformStatus {
-    private String phase;
     private String message;
     private PackageDefinition packageDefinitionToProcess;
     private List<PackageDefinition> packageDefinitions;
@@ -41,7 +40,6 @@ public class PlatformStatus {
     @Override
     public String toString() {
         return "PlatformStatus{" +
-            "phase='" + phase + '\'' +
             ", message='" + message + '\'' +
             '}';
     }
