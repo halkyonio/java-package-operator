@@ -85,7 +85,6 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
 
         PlatformStatus pStatus = new PlatformStatus();
         pStatus.setMessage(String.format("Processing the package: %s", pkgDefinition.getName()));
-        pStatus.setPackages();
         platform.setStatus(pStatus);
         return UpdateControl.patchStatus(platform);
     }
