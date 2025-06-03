@@ -4,15 +4,15 @@ kind: ServiceAccount
 metadata:
   annotations:
     app.quarkus.io/quarkus-version: 3.22.3
-    app.quarkus.io/commit-id: a227e07225a041f365c6c0cd6448dd429871f128
+    app.quarkus.io/commit-id: 0ece4c2e39489dbbab40e945a674b876dc70aec4
     app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-    app.quarkus.io/build-timestamp: 2025-06-03 - 15:08:49 +0000
+    app.quarkus.io/build-timestamp: 2025-06-03 - 15:55:57 +0000
   labels:
     app.kubernetes.io/name: package-operator
     app.kubernetes.io/version: 0.1.0-SNAPSHOT
     app.kubernetes.io/managed-by: quarkus
   name: package-operator
-  namespace: default
+  namespace: platform
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -90,7 +90,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: package-operator
-    namespace: default
+    namespace: platform
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -106,7 +106,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: package-operator
-    namespace: default
+    namespace: platform
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -122,7 +122,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: package-operator
-    namespace: default
+    namespace: platform
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -138,7 +138,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: package-operator
-    namespace: default
+    namespace: platform
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -154,16 +154,16 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: package-operator
-    namespace: default
+    namespace: platform
 ---
 apiVersion: v1
 kind: Service
 metadata:
   annotations:
     app.quarkus.io/quarkus-version: 3.22.3
-    app.quarkus.io/commit-id: a227e07225a041f365c6c0cd6448dd429871f128
+    app.quarkus.io/commit-id: 0ece4c2e39489dbbab40e945a674b876dc70aec4
     app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-    app.quarkus.io/build-timestamp: 2025-06-03 - 15:08:49 +0000
+    app.quarkus.io/build-timestamp: 2025-06-03 - 15:55:57 +0000
   labels:
     app.kubernetes.io/name: package-operator
     app.kubernetes.io/version: 0.1.0-SNAPSHOT
@@ -185,9 +185,9 @@ kind: Deployment
 metadata:
   annotations:
     app.quarkus.io/quarkus-version: 3.22.3
-    app.quarkus.io/commit-id: a227e07225a041f365c6c0cd6448dd429871f128
+    app.quarkus.io/commit-id: 0ece4c2e39489dbbab40e945a674b876dc70aec4
     app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-    app.quarkus.io/build-timestamp: 2025-06-03 - 15:08:49 +0000
+    app.quarkus.io/build-timestamp: 2025-06-03 - 15:55:57 +0000
   labels:
     app.kubernetes.io/name: package-operator
     app.kubernetes.io/version: 0.1.0-SNAPSHOT
@@ -197,19 +197,19 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/version: 0.1.0-SNAPSHOT
       app.kubernetes.io/name: package-operator
+      app.kubernetes.io/version: 0.1.0-SNAPSHOT
   template:
     metadata:
       annotations:
         app.quarkus.io/quarkus-version: 3.22.3
-        app.quarkus.io/commit-id: a227e07225a041f365c6c0cd6448dd429871f128
+        app.quarkus.io/commit-id: 0ece4c2e39489dbbab40e945a674b876dc70aec4
         app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-        app.quarkus.io/build-timestamp: 2025-06-03 - 15:08:49 +0000
+        app.quarkus.io/build-timestamp: 2025-06-03 - 15:55:57 +0000
       labels:
         app.kubernetes.io/managed-by: quarkus
-        app.kubernetes.io/version: 0.1.0-SNAPSHOT
         app.kubernetes.io/name: package-operator
+        app.kubernetes.io/version: 0.1.0-SNAPSHOT
     spec:
       containers:
         - env:

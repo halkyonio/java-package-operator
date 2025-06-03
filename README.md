@@ -8,7 +8,7 @@ mvn clean package \
   -Dquarkus.kubernetes.output-directory=resources/manifests \
   -Dquarkus.operator-sdk.crd.output-directory=resources/crds \
   -Dquarkus.operator-sdk.crd.generate-all \
-  -Dquarkus.kubernetes.rbac.service-accounts.package-operator.namespace=default \
+  -Dquarkus.kubernetes.rbac.service-accounts.package-operator.namespace=platform \
   -Dquarkus.container-image.build=true \
   -Dquarkus.container-image.push=true \
   -Dquarkus.container-image.image=quay.io/halkyonio/java-package-operator:0.1.0-SNAPSHOT
