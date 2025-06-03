@@ -8,10 +8,19 @@ import java.util.Optional;
 public class PackageDefinition {
     private String name;
     private String description;
+    private String id;
     private Pipeline pipeline;
     private String runAfter;
     private String status;
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+    
     public PackageDefinition withName(String name) {
         this.name = name;
         return this;

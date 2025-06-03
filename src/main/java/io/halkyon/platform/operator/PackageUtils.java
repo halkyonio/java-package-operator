@@ -1,12 +1,22 @@
 package io.halkyon.platform.operator;
 
 import java.util.*;
+
+import io.halkyon.platform.operator.crd.Package;
 import io.halkyon.platform.operator.model.PackageDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PackageUtils {
     private static final Logger LOG = LoggerFactory.getLogger(PackageUtils.class);
+
+    public final static String PACKAGE_LABEL_SELECTOR = "io.halkyon.package";
+
+    public static LinkedHashMap<String, String> createPackageLabels(Package pkg) {
+        LinkedHashMap<String, String> labels = new LinkedHashMap<>();
+        labels.put(PACKAGE_LABEL_SELECTOR, pkg.getMetadata().getName());
+        return labels;
+    }
 
     /**
      * Orders a list of Package objects based on their 'runAfter' dependencies.

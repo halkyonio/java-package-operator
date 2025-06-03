@@ -1,16 +1,24 @@
 package io.halkyon.platform.operator.controller;
 
-import io.halkyon.platform.operator.PackageUtils;
 import io.halkyon.platform.operator.crd.Package;
 import io.halkyon.platform.operator.crd.PackageSpec;
 import io.halkyon.platform.operator.crd.Platform;
 import io.halkyon.platform.operator.crd.PlatformStatus;
 import io.halkyon.platform.operator.model.PackageDefinition;
+import io.javaoperatorsdk.operator.api.config.informer.InformerEventSourceConfiguration;
 import io.javaoperatorsdk.operator.api.reconciler.*;
+import io.javaoperatorsdk.operator.processing.event.source.EventSource;
+import io.javaoperatorsdk.operator.processing.event.source.informer.InformerEventSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static io.halkyon.platform.operator.PackageUtils.PACKAGE_LABEL_SELECTOR;
+import static io.halkyon.platform.operator.PackageUtils.createPackageLabels;
 
 /*
 @Workflow(
@@ -21,50 +29,79 @@ import java.util.LinkedList;
 public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platform> {
     private final static Logger LOG = LoggerFactory.getLogger(PlatformReconciler.class);
 
-    public static final String SELECTOR = "managed";
+    @Override
+    public List<EventSource<?, Platform>> prepareEventSources(EventSourceContext<Platform> context) {
+        var packageEventSource =
+            new InformerEventSource<>(
+                InformerEventSourceConfiguration.from(Package.class, Platform.class)
+                    .withLabelSelector(PACKAGE_LABEL_SELECTOR)
+                    .build(),
+                context);
+        return List.of(packageEventSource);
+    }
 
     public UpdateControl<Platform> reconcile(Platform platform, Context<Platform> context) {
+
         var name = platform.getMetadata().getName();
+        List<PackageDefinition> pkgs;
+        Map<Integer, PackageDefinition> indexedPackageMap;
+        PackageDefinition pkgDefinition;
+
         LOG.info("Reconciling platform {}", name);
 
-        var client = context.getClient();
-
+        // Verify first if packages have been declared !
         if (!platform.getSpec().getPackages().isEmpty()) {
-            LinkedList<PackageDefinition> pkgs = PackageUtils.orderPackages(platform.getSpec().getPackages());
-
-            PackageDefinition pkgDefinition = pkgs.getFirst();
-
-            PlatformStatus pStatus = new PlatformStatus();
-            pStatus.setMessage(String.format("Processing the package: %s",pkgs.getFirst().getName()));
-            pStatus.setPackageToProcess(pkgDefinition);
-            platform.setStatus(pStatus);
-
-            Package pkg = new Package();
-            pkg.getMetadata().setName(pkgDefinition.getName());
-            pkg.getMetadata().setNamespace(platform.getMetadata().getNamespace());
-            pkg.addOwnerReference(platform);
-
-            PackageSpec pkgSpec = new PackageSpec();
-            pkgSpec.setName(name);
-            pkgSpec.setDescription(name);
-            pkgSpec.setPipeline(pkgDefinition.getPipeline());
-            pkg.setSpec(pkgSpec);
-
-            client.resources(io.halkyon.platform.operator.crd.Package.class).resource(pkg).serverSideApply();
-
-            return UpdateControl.patchStatus(platform);
-
+            var pkgs = platform.getSpec().getPackages();
+            indexedPackageMap = IntStream.range(0, pkgs.size())
+                .boxed()
+                .collect(Collectors.toMap(
+                    i -> i + 1,
+                    pkgs::get
+                ));
         } else {
             LOG.warn("No packages declared part of the Platform CR");
             return null;
         }
+
+        var previousPackage = context.getSecondaryResource(Package.class).orElse(null);
+        if (previousPackage == null) {
+            // When the previous package is null, then we will process the first package of the list
+            pkgDefinition = indexedPackageMap.get(1);
+        } else {
+            // TODO: Implement the logic able to process the package
+            LOG.info("Processing now the next package ...");
+
+            return UpdateControl.noUpdate();
+        }
+
+        var pkg = createPackageCR(pkgDefinition, platform);
+        context.getClient()
+            .resources(io.halkyon.platform.operator.crd.Package.class)
+            .resource(pkg)
+            .serverSideApply();
+
+        PlatformStatus pStatus = new PlatformStatus();
+        pStatus.setMessage(String.format("Processing the package: %s", pkgDefinition.getName()));
+        pStatus.setPackageToProcess(pkgDefinition);
+        platform.setStatus(pStatus);
+        return UpdateControl.patchStatus(platform);
     }
 
-    public static PlatformStatus createStatus(String configMapName) {
-        PlatformStatus status = new PlatformStatus();
-        status.setMessage(configMapName);
-        return status;
+    private Package createPackageCR(PackageDefinition pkgDefinition, Platform platform) {
+        Package pkg = new Package();
+        pkg.getMetadata().setName(pkgDefinition.getName());
+        pkg.getMetadata().setNamespace(platform.getMetadata().getNamespace());
+        pkg.getMetadata().setLabels(createPackageLabels(pkg));
+        pkg.addOwnerReference(platform);
+
+        PackageSpec pkgSpec = new PackageSpec();
+        pkgSpec.setName(pkgDefinition.getName());
+        pkgSpec.setDescription(pkgDefinition.getDescription());
+        pkgSpec.setPipeline(pkgDefinition.getPipeline());
+        pkg.setSpec(pkgSpec);
+        return pkg;
     }
+
 
     @Override
     public DeleteControl cleanup(Platform platform, Context<Platform> context) throws Exception {
