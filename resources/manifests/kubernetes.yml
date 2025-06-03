@@ -4,14 +4,37 @@ kind: ServiceAccount
 metadata:
   annotations:
     app.quarkus.io/quarkus-version: 3.22.3
-    app.quarkus.io/commit-id: 4284595ea1616038e0a1a8bef609cdaaddfb982c
+    app.quarkus.io/commit-id: 4ad123b6bac589de6bfcb803b9c39b427cdaf9db
     app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-    app.quarkus.io/build-timestamp: 2025-06-02 - 16:03:50 +0000
+    app.quarkus.io/build-timestamp: 2025-06-03 - 13:03:19 +0000
   labels:
     app.kubernetes.io/name: package-operator
     app.kubernetes.io/version: 0.1.0-SNAPSHOT
     app.kubernetes.io/managed-by: quarkus
   name: package-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: package-operator
+    app.kubernetes.io/version: 0.1.0-SNAPSHOT
+  name: packagereconciler-cluster-role
+rules:
+  - apiGroups:
+      - halkyon.io
+    resources:
+      - packages
+      - packages/status
+      - packages/finalizers
+    verbs:
+      - get
+      - list
+      - watch
+      - patch
+      - update
+      - create
+      - delete
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -51,6 +74,36 @@ rules:
     verbs:
       - get
       - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/name: package-operator
+    app.kubernetes.io/version: 0.1.0-SNAPSHOT
+  name: packagereconciler-crd-validating-role-binding
+roleRef:
+  kind: ClusterRole
+  apiGroup: rbac.authorization.k8s.io
+  name: josdk-crd-validating-cluster-role
+subjects:
+  - kind: ServiceAccount
+    name: package-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/name: package-operator
+    app.kubernetes.io/version: 0.1.0-SNAPSHOT
+  name: packagereconciler-cluster-role-binding
+roleRef:
+  kind: ClusterRole
+  apiGroup: rbac.authorization.k8s.io
+  name: packagereconciler-cluster-role
+subjects:
+  - kind: ServiceAccount
+    name: package-operator
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -102,9 +155,9 @@ kind: Service
 metadata:
   annotations:
     app.quarkus.io/quarkus-version: 3.22.3
-    app.quarkus.io/commit-id: 4284595ea1616038e0a1a8bef609cdaaddfb982c
+    app.quarkus.io/commit-id: 4ad123b6bac589de6bfcb803b9c39b427cdaf9db
     app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-    app.quarkus.io/build-timestamp: 2025-06-02 - 16:03:50 +0000
+    app.quarkus.io/build-timestamp: 2025-06-03 - 13:03:19 +0000
   labels:
     app.kubernetes.io/name: package-operator
     app.kubernetes.io/version: 0.1.0-SNAPSHOT
@@ -126,9 +179,9 @@ kind: Deployment
 metadata:
   annotations:
     app.quarkus.io/quarkus-version: 3.22.3
-    app.quarkus.io/commit-id: 4284595ea1616038e0a1a8bef609cdaaddfb982c
+    app.quarkus.io/commit-id: 4ad123b6bac589de6bfcb803b9c39b427cdaf9db
     app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-    app.quarkus.io/build-timestamp: 2025-06-02 - 16:03:50 +0000
+    app.quarkus.io/build-timestamp: 2025-06-03 - 13:03:19 +0000
   labels:
     app.kubernetes.io/name: package-operator
     app.kubernetes.io/version: 0.1.0-SNAPSHOT
@@ -144,9 +197,9 @@ spec:
     metadata:
       annotations:
         app.quarkus.io/quarkus-version: 3.22.3
-        app.quarkus.io/commit-id: 4284595ea1616038e0a1a8bef609cdaaddfb982c
+        app.quarkus.io/commit-id: 4ad123b6bac589de6bfcb803b9c39b427cdaf9db
         app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-        app.quarkus.io/build-timestamp: 2025-06-02 - 16:03:50 +0000
+        app.quarkus.io/build-timestamp: 2025-06-03 - 13:03:19 +0000
       labels:
         app.kubernetes.io/managed-by: quarkus
         app.kubernetes.io/name: package-operator

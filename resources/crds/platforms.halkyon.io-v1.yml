@@ -26,6 +26,8 @@ spec:
                   properties:
                     description:
                       type: "string"
+                    id:
+                      type: "string"
                     kubernetesJob:
                       properties:
                         args:
@@ -97,6 +99,8 @@ spec:
                 properties:
                   description:
                     type: "string"
+                  id:
+                    type: "string"
                   kubernetesJob:
                     properties:
                       args:
@@ -160,6 +164,8 @@ spec:
                 items:
                   properties:
                     description:
+                      type: "string"
+                    id:
                       type: "string"
                     kubernetesJob:
                       properties:

@@ -20,17 +20,18 @@ spec:
           repoUrl: https://kubernetes.github.io/ingress-nginx
           version: 4.12.2
           script: |
-            # cat << EOF > values.yml
-            # ingress:
-            #   enabled: true
-            # EOF
-            # helm repo add ingress https://kubernetes.github.io/ingress-nginx
-            # helm repo update
-            # helm install nginx-ingress ingress/ingress-nginx \
-            #    --version 4.12.2 \
-            #    --namespace ingress \
-            #    --create-namespace \
-            #    -f values.yml
+            cat << EOF > values.yml
+            ingress:
+              enabled: true
+            EOF
+            helm repo add ingress https://kubernetes.github.io/ingress-nginx
+            helm repo update
+            helm uninstall nginx-ingress -n ingress || echo "Release 'nginx-ingress' not found. Continuing..."
+            helm install nginx-ingress ingress/ingress-nginx \
+               --version 4.12.2 \
+               --namespace ingress \
+               --create-namespace \
+               -f values.yml
             echo "This is installation step"
           values: |
             ingress:
@@ -43,9 +44,60 @@ spec:
       description: "gitea package"
       pipeline:
         steps:
-          - name: install
-            image: registry.access.redhat.com/ubi9
+          - name: pre-install
+            image: dtzar/helm-kubectl
             script: |
+              echo "WaitFor Ingress webhook"
+              
+
+          - name: install
+            image: dtzar/helm-kubectl
+            script: |
+              cat << EOF > values.yml
+              redis-cluster:
+                enabled: false
+              postgresql:
+                enabled: false
+              postgresql-ha:
+                enabled: false
+              valkey-cluster:
+                enabled: false
+              persistence:
+                enabled: false
+              gitea:
+                admin:
+                  # existingSecret: <NAME_OF_SECRET>
+                  username: "giteaAdmin"
+                  password: "developer"
+                  email: "gi@tea.com"
+                config:
+                  database:
+                    DB_TYPE: sqlite3
+                  session:
+                    PROVIDER: memory
+                  cache:
+                    ADAPTER: memory
+                  queue:
+                    TYPE: level
+              service:
+                ssh:
+                  type: NodePort
+                  nodePort: 32222
+                  externalTrafficPolicy: Local
+              ingress:
+                enabled: true
+                className: nginx
+                hosts:
+                  - host: gitea.localtest.me
+                    paths:
+                      - path: /
+                        pathType: Prefix
+              EOF
+              helm repo add gitea-charts https://dl.gitea.com/charts/
+              helm repo update
+              helm uninstall gitea -n gitea || echo "Release 'gitea' not found. Continuing..."
+              helm install gitea gitea-charts/gitea \
+                -f values.yml
               echo "This is a step running a job ..."
     - name: argocd
       description: "argocd package"
