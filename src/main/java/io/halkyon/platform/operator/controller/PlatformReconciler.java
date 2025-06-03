@@ -13,11 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static io.halkyon.platform.operator.PackageUtils.*;
 
@@ -27,6 +25,7 @@ import static io.halkyon.platform.operator.PackageUtils.*;
         @Dependent(type = PackageDR.class),
     })
 */
+
 public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platform> {
     private final static Logger LOG = LoggerFactory.getLogger(PlatformReconciler.class);
 
@@ -57,47 +56,44 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
             return null;
         }
 
-        var previousPackage = context.getSecondaryResource(Package.class).orElse(null);
-        if (previousPackage == null) {
+        var previousPackages = context.getSecondaryResources(Package.class);
+        if (previousPackages == null) {
             // When the previous package is null, then we process the first package of the list
             pkgDefinition = pkgs.getFirst();
         } else {
             // As a Package has already been processed, we will check its status is "installation succeeded"
             // and remove it from the list of the to be processed to pick up the next one
-            if (installationSucceeded(previousPackage)) {
-                LOG.info("Package installation succeeded for package: {}", previousPackage);
+            Set<String> succeededNames = previousPackages.stream()
+                .filter(pkg -> pkg.getStatus() != null && pkg.getStatus().getInstallationStatus() != null)
+                .filter(pkg -> INSTALLATION_SUCCEEDED.equalsIgnoreCase(pkg.getStatus().getInstallationStatus()))
+                .map(pkg -> pkg.getMetadata().getName())
+                .collect(Collectors.toSet());
 
-                var existingPackages = context.getClient().resources(Package.class).inNamespace(previousPackage.getMetadata().getNamespace()).list();
-                Set<String> succeededNames = existingPackages.getItems().stream()
-                    .filter(pkg -> INSTALLATION_SUCCEEDED.equalsIgnoreCase(pkg.getStatus().getInstallationStatus()))
-                    .map(p -> p.getMetadata().getName())
-                    .collect(Collectors.toSet());
+            List<PackageDefinition> remaining = pkgs.stream()
+                .filter(pkg -> !succeededNames.contains(pkg.getName()))
+                .toList();
 
-                List<PackageDefinition> remaining = pkgs.stream()
-                    .filter(p -> !succeededNames.contains(p.getName()))
-                    .toList();
-
-                Optional<PackageDefinition> nextToProcess = remaining.stream().findFirst();
-                if (nextToProcess.isPresent()) {
-                    LOG.info("Next package to create: " + nextToProcess.get().getName());
-                    pkgDefinition = nextToProcess.get();
-                }
-            } else {
-                LOG.warn("Package status is null or different ... {}",previousPackage);
-                return UpdateControl.noUpdate();
+            Optional<PackageDefinition> nextToProcess = remaining.stream().findFirst();
+            if (nextToProcess.isPresent()) {
+                LOG.info("Next package to create: " + nextToProcess.get().getName());
+                pkgDefinition = nextToProcess.get();
             }
         }
+        if (pkgDefinition != null) {
+            var pkg = createPackageCR(pkgDefinition, platform);
+            context.getClient()
+                .resources(io.halkyon.platform.operator.crd.Package.class)
+                .resource(pkg)
+                .serverSideApply();
 
-        var pkg = createPackageCR(pkgDefinition, platform);
-        context.getClient()
-            .resources(io.halkyon.platform.operator.crd.Package.class)
-            .resource(pkg)
-            .serverSideApply();
+            PlatformStatus pStatus = new PlatformStatus();
+            pStatus.setMessage(String.format("Processing the package: %s", pkgDefinition.getName()));
+            platform.setStatus(pStatus);
+            return UpdateControl.patchStatus(platform);
+        } else {
+            return UpdateControl.noUpdate();
+        }
 
-        PlatformStatus pStatus = new PlatformStatus();
-        pStatus.setMessage(String.format("Processing the package: %s", pkgDefinition.getName()));
-        platform.setStatus(pStatus);
-        return UpdateControl.patchStatus(platform);
     }
 
     private boolean installationSucceeded(Package pkg) {
