@@ -25,7 +25,6 @@ import static io.halkyon.platform.operator.PackageUtils.*;
         @Dependent(type = PackageDR.class),
     })
 */
-
 public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platform> {
     private final static Logger LOG = LoggerFactory.getLogger(PlatformReconciler.class);
 
@@ -94,10 +93,6 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
             return UpdateControl.noUpdate();
         }
 
-    }
-
-    private boolean installationSucceeded(Package pkg) {
-        return pkg.getStatus() != null && pkg.getStatus().getInstallationStatus().equals(INSTALLATION_SUCCEEDED);
     }
 
     private Package createPackageCR(PackageDefinition pkgDefinition, Platform platform) {

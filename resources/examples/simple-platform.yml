@@ -2,7 +2,7 @@ apiVersion: halkyon.io/v1alpha1
 kind: Platform
 metadata:
   name: simple-platform
-  namespace: default
+  namespace: platform
 spec:
   version: 0.1.0
   description: "A simple platform"
@@ -11,10 +11,6 @@ spec:
       description: "nginx-ingress package"
       pipeline:
         steps:
-        - name: pre-install
-          image: registry.access.redhat.com/ubi9
-          script: |
-            echo "This is a pre-installation running a job"
         - name: install-nginx-ingress
           image: dtzar/helm-kubectl
           repoUrl: https://kubernetes.github.io/ingress-nginx
@@ -36,19 +32,26 @@ spec:
           values: |
             ingress:
               enabled: true
-        - name: post-install
-          image: registry.access.redhat.com/ubi9
+
+        - name: uninstall
+          image: dtzar/helm-kubectl
           script: |
-            echo "This is a post-installation running a job"
+            helm uninstall nginx-ingress -n ingress 
+
     - name: gitea
       description: "gitea package"
       pipeline:
         steps:
-          - name: pre-install
+          - name: init
             image: dtzar/helm-kubectl
             script: |
-              echo "WaitFor Ingress webhook"
-              
+              echo "WaitFor Ingress"
+              # kubectl rollout status deployment nginx-ingress-ingress-nginx-controller -n ingress --timeout=90s
+              until curl -s http://nginx-ingress-ingress-nginx-controller-admission.ingress.svc.cluster.local:443/healthz; do
+                echo "Waiting for service to be ready..."
+                sleep 5
+              done
+              echo "Ingress Webhook Service is ready!"
 
           - name: install
             image: dtzar/helm-kubectl
@@ -97,8 +100,15 @@ spec:
               helm repo update
               helm uninstall gitea -n gitea || echo "Release 'gitea' not found. Continuing..."
               helm install gitea gitea-charts/gitea \
+                -n gitea \
+                --create-namespace \
                 -f values.yml
-              echo "This is a step running a job ..."
+
+          - name: uninstall
+            image: dtzar/helm-kubectl
+            script: |
+              helm uninstall gitea -n gitea
+
     - name: argocd
       description: "argocd package"
       pipeline:

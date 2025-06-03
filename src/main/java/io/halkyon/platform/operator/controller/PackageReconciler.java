@@ -4,7 +4,6 @@ import io.fabric8.kubernetes.api.model.*;
 import io.halkyon.platform.operator.crd.Package;
 import io.halkyon.platform.operator.crd.PackageSpec;
 import io.halkyon.platform.operator.crd.PackageStatus;
-import io.halkyon.platform.operator.model.PackageDefinition;
 import io.halkyon.platform.operator.model.Pipeline;
 import io.javaoperatorsdk.operator.api.config.informer.InformerEventSourceConfiguration;
 import io.javaoperatorsdk.operator.api.reconciler.*;
@@ -54,7 +53,8 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                   .withLabels(createPackageLabels(pkg))
                 .endMetadata()
                 .withNewSpec()
-                  .withContainers(createContainersFromPipeline(pkg))
+                  .withInitContainers(createInitOrContainersFromPipeline(pkg, "init"))
+                  .withContainers(createInitOrContainersFromPipeline(pkg, "install"))
                   .withRestartPolicy("Never") // To avoid CrashLoopbackOff as pod is restarting
                 .endSpec()
                 .build();
@@ -73,7 +73,27 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
     }
 
     @Override
-    public DeleteControl cleanup(Package platform, Context<Package> context) throws Exception {
+    public DeleteControl cleanup(Package pkg, Context<Package> context) throws Exception {
+        LOG.info("Creating a pod to uninstall the package {}",pkg.getMetadata().getName());
+        var containers = createInitOrContainersFromPipeline(pkg, "uninstall");
+        if (!containers.isEmpty()) {
+            Pod pod = new PodBuilder()
+                //@formatter:off
+                .withNewMetadata()
+                  .withName("uninstall-"+pkg.getMetadata().getName())
+                  .withNamespace(pkg.getMetadata().getNamespace())
+                  .withLabels(createPackageLabels(pkg))
+                .endMetadata()
+                .withNewSpec()
+                  .withContainers(containers)
+                  .withRestartPolicy("Never") // To avoid CrashLoopbackOff as pod is restarting
+                .endSpec()
+                .build();
+                //@formatter:on
+            // TODO Let's create it without reference
+            //  pod.addOwnerReference(pkg);
+            context.getClient().pods().inNamespace(pkg.getMetadata().getNamespace()).resource(pod).serverSideApply();
+        }
         LOG.info("Package resource deleted");
         return DeleteControl.defaultDelete();
     }
@@ -85,31 +105,30 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
         return packageStatus;
     }
 
-    public List<Container> createContainersFromPipeline(Package pkg) {
-        List<Container> containers = Optional.ofNullable(pkg)
+    public List<Container> createInitOrContainersFromPipeline(Package pkg, String WordToSearch) {
+        return Optional.ofNullable(pkg)
             .map(Package::getSpec)
             .map(PackageSpec::getPipeline)
             .map(Pipeline::getSteps)
             .orElse(Collections.emptyList())
             .stream()
+            .filter(s -> s.getName() != null && s.getName().startsWith(WordToSearch))
             .map(s -> {
                 ContainerBuilder builder = new ContainerBuilder()
                     .withName(s.getName())
                     .withImage(s.getImage());
 
                 if (s.getScript() != null && !s.getScript().isEmpty()) {
-                    //builder.withCommand(Collections.singletonList(s.getScript()));
                     List<String> prefixedCommands = Stream.concat(
-                        Stream.of("/bin/bash", "-exc"),
-                        Stream.of(s.getScript())
-                    ).collect(Collectors.toList());
+                            Stream.of("/bin/bash", "-exc"),
+                            Stream.of(s.getScript()))
+                        .collect(Collectors.toList());
                     builder.withCommand(prefixedCommands);
                 }
 
                 return builder.build();
             })
             .collect(Collectors.toList());
-        return containers;
     }
 
 }
