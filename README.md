@@ -1,6 +1,8 @@
-# Java Package operator
+# Java Platform Kubernetes operator
 
-TODO: Explain the purpose of this project
+The Java Platform Kubernetes operator projects aims to provision a cluster without the pain to have to deal with scripts locally (bash, python, etc), to manage the depends on or to wait till services, resources (deployment, pod, ...) are up and running.
+
+With the help of our `Platform Custom Resource`, you can declare using the section `Packages` what you would like to install (ingress, backstage, gitea, argocd, etc) and the How is defined part of a simple Pipeline composed of steps able to perform: init, install, uninstall or do something post-installation.
 
 ## How to play with it
 
