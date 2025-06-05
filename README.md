@@ -2,22 +2,13 @@
 
 TODO: Explain the purpose of this project
 
-- Build the project and publish the image on a registry where you have write access (example: quay.io)
-```shell
-mvn clean package \
-  -Dquarkus.kubernetes.output-directory=resources/manifests \
-  -Dquarkus.operator-sdk.crd.output-directory=resources/crds \
-  -Dquarkus.operator-sdk.crd.generate-all \
-  -Dquarkus.kubernetes.rbac.service-accounts.package-operator.namespace=platform \
-  -Dquarkus.container-image.build=true \
-  -Dquarkus.container-image.push=true \
-  -Dquarkus.container-image.image=quay.io/halkyonio/java-package-operator:0.1.0-SNAPSHOT
-```
-- Create locally a Kubernetes cluster running the Platform controller using the [Java Kind client](https://github.com/halkyonio/java-kind-client)
+## How to play with it
+
+Install locally a Kubernetes cluster running the `Platform controller` using the [Java Kind client](https://github.com/halkyonio/java-kind-client)
 ```shell
 kubectl delete -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/resources/examples/package1.yml
 ```
-- Create a `Platform` definition to install `ingress` and `gitea`
+Create a `Platform` definition file packaging by example: `ingress` and `gitea`
 ```yaml
 apiVersion: halkyon.io/v1alpha1
 kind: Platform
@@ -142,13 +133,27 @@ spec:
             script: |
               helm uninstall gitea -n gitea
 ```
-- Deploy it
+Deploy it
 ```shell
 kubectl apply -f my-platform.yaml
 ```
-- Check the pods created and if gitea is running, access its url: `https://gitea.localtest.me:8443`
+Check the pods created and if gitea is running, access its url: `https://gitea.localtest.me:8443`
 
 Enjoy ;-)
+
+## For the developers
+
+Build the project and publish the image on a registry where you have write access (example: quay.io)
+```shell
+mvn clean package \
+  -Dquarkus.kubernetes.output-directory=resources/manifests \
+  -Dquarkus.operator-sdk.crd.output-directory=resources/crds \
+  -Dquarkus.operator-sdk.crd.generate-all \
+  -Dquarkus.kubernetes.rbac.service-accounts.package-operator.namespace=platform \
+  -Dquarkus.container-image.build=true \
+  -Dquarkus.container-image.push=true \
+  -Dquarkus.container-image.image=quay.io/halkyonio/java-package-operator:0.1.0-SNAPSHOT
+```
 
 ## Work in progress
 
