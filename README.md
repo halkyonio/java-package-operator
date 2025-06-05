@@ -11,6 +11,13 @@ This project is still a WIP and additional features, improvements will come such
 - Delete the pod used to `uninstall` a package when the Package CR is deleted
 - Implement a simple mechanism to start a container when the previous finished (mounted volume with shared files, etc)
 
+## Rational of this project
+
+While several projects already exist to install and sync resources: Argocd, Kro, Crossplane, ... most of them don't support to define easily steps to be executed, before or after a package is installed, rely on user's scripts to define the scenario to be executed when x packages are installed able to verify if pod, deployment, service are ready, if a health check endpoint returns a HTTP 200 response, etc and don't support to declare the dependencies between the packages/applications: https://github.com/argoproj/argo-cd/issues/7437
+
+TODO
+
+
 ## How to play with it
 
 Install locally a Kubernetes cluster running the `Platform controller` using the [Java Kind client](https://github.com/halkyonio/java-kind-client)
