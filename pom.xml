@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.halkyon</groupId>
-    <artifactId>package-operator</artifactId>
+    <artifactId>platform-operator</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 
     <properties>
@@ -43,14 +43,6 @@
             <groupId>io.quarkiverse.operatorsdk</groupId>
             <artifactId>quarkus-operator-sdk</artifactId>
         </dependency>
-        <!-- overriding the version -->
-        <!--
-        <dependency>
-            <groupId>io.javaoperatorsdk</groupId>
-            <artifactId>operator-framework-core</artifactId>
-            <version>5.1.1</version>
-        </dependency>
-        -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-container-image-podman</artifactId>
