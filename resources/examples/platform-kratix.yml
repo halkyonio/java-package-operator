@@ -196,7 +196,7 @@ spec:
                     nginx.ingress.kubernetes.io/backend-protocol: HTTPS
                     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
                     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-                  tls: false
+                  tls: true
 
           - name: uninstall
             image: dtzar/helm-kubectl
