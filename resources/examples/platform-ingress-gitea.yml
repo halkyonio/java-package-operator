@@ -1,42 +1,56 @@
 apiVersion: halkyon.io/v1alpha1
 kind: Platform
 metadata:
-  name: simple-platform
+  name: ingress-gitea
   namespace: platform
 spec:
   version: 0.1.0
-  description: "A simple platform"
+  description: "A platform example installing the following packages nginx ingress and gitea and exposing the gitea ui at the address https://gitea.localtest.me:8443"
   packages:
     - name: nginx-ingress
       description: "nginx-ingress package"
       pipeline:
         steps:
-        - name: install-nginx-ingress
-          image: dtzar/helm-kubectl
-          repoUrl: https://kubernetes.github.io/ingress-nginx
-          version: 4.12.2
-          script: |
-            cat << EOF > values.yml
-            ingress:
-              enabled: true
-            EOF
-            helm repo add ingress https://kubernetes.github.io/ingress-nginx
-            helm repo update
-            helm uninstall nginx-ingress -n ingress || echo "Release 'nginx-ingress' not found. Continuing..."
-            helm install nginx-ingress ingress/ingress-nginx \
-               --version 4.12.2 \
-               --namespace ingress \
-               --create-namespace \
-               -f values.yml
-            echo "This is installation step"
-          values: |
-            ingress:
-              enabled: true
-
-        - name: uninstall
-          image: dtzar/helm-kubectl
-          script: |
-            helm uninstall nginx-ingress -n ingress 
+          - name: install-nginx-ingress
+            image: dtzar/helm-kubectl
+            repoUrl: https://kubernetes.github.io/ingress-nginx
+            version: 4.12.2
+            script: |
+              cat << EOF > values.yml
+              controller:
+                hostPort:
+                  enabled: true
+                service:
+                  type: NodePort
+              ingress:
+                enabled: true
+              EOF
+              helm repo add ingress https://kubernetes.github.io/ingress-nginx
+              helm repo update
+              helm uninstall nginx-ingress -n ingress || echo "Release 'nginx-ingress' not found. Continuing..."
+              helm install nginx-ingress ingress/ingress-nginx \
+                 --version 4.12.2 \
+                 --namespace ingress \
+                 --create-namespace \
+                 -f values.yml
+              echo "This is installation step"
+            values: |
+              ingress:
+                enabled: true
+          - name: post-install
+            image: dtzar/helm-kubectl
+            script: |
+              echo "WaitFor Ingress"
+              # kubectl rollout status deployment nginx-ingress-ingress-nginx-controller -n ingress --timeout=90s
+              until curl -s http://nginx-ingress-ingress-nginx-controller-admission.ingress.svc.cluster.local:443/healthz; do
+                echo "Waiting for service to be ready..."
+                sleep 5
+              done
+              echo "Ingress Webhook Service is ready!"
+          - name: uninstall
+            image: dtzar/helm-kubectl
+            script: |
+              helm uninstall nginx-ingress -n ingress
 
     - name: gitea
       description: "gitea package"
@@ -51,8 +65,6 @@ spec:
                 echo "Waiting for service to be ready..."
                 sleep 5
               done
-              echo "Ingress Webhook Service is ready!"
-
           - name: install
             image: dtzar/helm-kubectl
             script: |
@@ -108,12 +120,3 @@ spec:
             image: dtzar/helm-kubectl
             script: |
               helm uninstall gitea -n gitea
-
-    - name: argocd
-      description: "argocd package"
-      pipeline:
-        steps:
-          - name: install
-            image: registry.access.redhat.com/ubi9
-            script: |
-              echo "This is a step running a job ..."
