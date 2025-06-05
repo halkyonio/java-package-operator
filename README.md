@@ -9,6 +9,7 @@ This project is still a WIP and additional features, improvements will come such
 - Add `step` field to specify the tool to be used: helm, file, kustomize, etc and their parameters or values to be passed to Helm
 - Support to mount script(s) to be executed part of pipeline step(s)
 - Delete the pod used to `uninstall` a package when the Package CR is deleted
+- Implement a simple mechanism to start a container when the previous finished (mounted volume with shared files, etc)
 
 ## How to play with it
 
