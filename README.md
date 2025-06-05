@@ -7,10 +7,8 @@ With the help of our `Platform Custom Resource`, you can declare using the secti
 ## How to play with it
 
 Install locally a Kubernetes cluster running the `Platform controller` using the [Java Kind client](https://github.com/halkyonio/java-kind-client)
-```shell
-kubectl delete -f ~/code/halkyonio/java-kind-cli-and-operator/package-operator/resources/examples/package1.yml
-```
-Create a `Platform` definition file packaging by example: `ingress` and `gitea`
+
+Create next a `Platform` definition file packaging by example: `ingress` and `gitea`
 ```yaml
 apiVersion: halkyon.io/v1alpha1
 kind: Platform
@@ -140,6 +138,8 @@ Deploy it
 kubectl apply -f my-platform.yaml
 ```
 Check the pods created and if gitea is running, access its url: `https://gitea.localtest.me:8443`
+
+**Note**: To clean up the cluster, simply delete the manifest file installed !
 
 Enjoy ;-)
 
