@@ -2,7 +2,13 @@
 
 The Java Platform Kubernetes operator projects aims to provision a cluster without the pain to have to deal with scripts locally (bash, python, etc), to manage the depends on or to wait till services, resources (deployment, pod, ...) are up and running.
 
-With the help of our `Platform Custom Resource`, you can declare using the section `Packages` what you would like to install (ingress, backstage, gitea, argocd, etc) and the How is defined part of a simple Pipeline composed of steps able to perform: init, install, uninstall or do something post-installation.
+With the help of our `Platform Custom Resource`, you can declare using the section `Packages` what you would like to install (ingress, backstage, gitea, argocd, etc) and the `How` is defined part of a simple Pipeline composed of steps able to perform: init, install, uninstall or do something post-installation.
+
+This project is still a WIP and additional features, improvements will come such as:
+
+- Add `step` field to specify the tool to be used: helm, file, kustomize, etc and their parameters or values to be passed to Helm
+- Support to mount script(s) to be executed part of pipeline step(s)
+- Delete the pod used to `uninstall` a package when the Package CR is deleted
 
 ## How to play with it
 
