@@ -164,8 +164,8 @@ spec:
             script: |
               cat << EOF > values.yml
               configs:
-                secret:
-                  argocdServerAdminPassword: $2a$10$lsTGT/O94tQBTs4gdtQmBuQ3R3jgfSizvPSzl6ySt2cn6OktKVwAy
+               secret:
+                 argocdServerAdminPassword: "$2a$10$lsTGT/O94tQBTs4gdtQmBuQ3R3jgfSizvPSzl6ySt2cn6OktKVwAy"
               global:
                 domain: argocd.localtest.me
               certificate:
@@ -187,22 +187,14 @@ spec:
                  --namespace argocd \
                  --create-namespace \
                  -f values.yml
-            values: |
-             global:
-                domain: argocd.localtest.me 
-              certificate:
-                enabled: true
-              server:
-                ingress:
-                  enabled: true
-                  ingressClassName: nginx
-                  annotations:
-                    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
-                    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-                    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-                  tls: true
 
           - name: uninstall
             image: dtzar/helm-kubectl
             script: |
               helm uninstall argocd -n argocd
+# kubectl patch secret argocd-secret \
+#        --namespace=argocd \
+#        --patch='{"stringData": {
+#      "admin.password": "$2a$10$lsTGT/O94tQBTs4gdtQmBuQ3R3jgfSizvPSzl6ySt2cn6OktKVwAy",
+#      "admin.passwordMtime": "'$(date +%FT%T%Z)'"
+#    }}'
