@@ -165,7 +165,7 @@ spec:
               cat << EOF > values.yml
               configs:
                secret:
-                 argocdServerAdminPassword: '$2a$10$lsTGT/O94tQBTs4gdtQmBuQ3R3jgfSizvPSzl6ySt2cn6OktKVwAy'
+                 argocdServerAdminPassword: $2a$10$lsTGT/O94tQBTs4gdtQmBuQ3R3jgfSizvPSzl6ySt2cn6OktKVwAy
               global:
                 domain: argocd.localtest.me
               certificate:
@@ -180,6 +180,7 @@ spec:
                     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
                   tls: true
               EOF
+              cat values.yml
               helm repo add argo https://argoproj.github.io/argo-helm  
               helm repo update
               helm uninstall argocd -n argocd || echo "Release 'argocd' not found. Continuing..."
