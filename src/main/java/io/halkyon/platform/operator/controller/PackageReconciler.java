@@ -85,7 +85,6 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                   .withName("uninstall-"+pkg.getMetadata().getName())
                   .withNamespace(pkg.getMetadata().getNamespace())
                   .withLabels(createPackageLabels(pkg))
-                  //.withFinalizers("packages.halkyon.io/finalizer")
                 .endMetadata()
                 .withNewSpec()
                   .withContainers(containers)
@@ -93,7 +92,7 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                 .endSpec()
                 .build();
                 //@formatter:on
-            //pod.addOwnerReference(pkg);
+            pod.addOwnerReference(pkg);
             context.getClient().pods().inNamespace(pkg.getMetadata().getNamespace()).resource(pod).serverSideApply();
         }
         LOG.info("Package resource deleted");
