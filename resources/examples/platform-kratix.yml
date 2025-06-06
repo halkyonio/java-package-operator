@@ -162,7 +162,7 @@ spec:
           - name: install
             image: dtzar/helm-kubectl
             script: |
-              cat << EOF > values.yml
+              cat << 'EOF' > values.yml
               configs:
                secret:
                  argocdServerAdminPassword: $2a$10$lsTGT/O94tQBTs4gdtQmBuQ3R3jgfSizvPSzl6ySt2cn6OktKVwAy
@@ -193,9 +193,3 @@ spec:
             image: dtzar/helm-kubectl
             script: |
               helm uninstall argocd -n argocd
-# kubectl patch secret argocd-secret \
-#        --namespace=argocd \
-#        --patch='{"stringData": {
-#      "admin.password": "$2a$10$lsTGT/O94tQBTs4gdtQmBuQ3R3jgfSizvPSzl6ySt2cn6OktKVwAy",
-#      "admin.passwordMtime": "'$(date +%FT%T%Z)'"
-#    }}'
