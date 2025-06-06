@@ -1,0 +1,160 @@
+apiVersion: halkyon.io/v1alpha1
+kind: Platform
+metadata:
+  name: idpbuilder
+  namespace: platform
+spec:
+  version: 0.1.0
+  description: "The idpbuilder platform defintion: ingress, gitea & argocd."
+  packages:
+    - name: nginx-ingress
+      description: "nginx-ingress package"
+      pipeline:
+        steps:
+          - name: install
+            image: dtzar/helm-kubectl
+            repoUrl: https://kubernetes.github.io/ingress-nginx
+            version: 4.12.2
+            script: |
+              cat << EOF > values.yml
+              controller:
+                hostPort:
+                  enabled: true
+                service:
+                  type: NodePort
+              ingress:
+                enabled: true
+              EOF
+              helm repo add ingress https://kubernetes.github.io/ingress-nginx
+              helm repo update
+              helm uninstall nginx-ingress -n ingress || echo "Release 'nginx-ingress' not found. Continuing..."
+              helm install nginx-ingress ingress/ingress-nginx \
+                 --version 4.12.2 \
+                 --namespace ingress \
+                 --create-namespace \
+                 -f values.yml
+              echo "This is installation step"
+            values: |
+              ingress:
+                enabled: true
+          - name: post-install
+            image: dtzar/helm-kubectl
+            script: |
+              echo "WaitFor Ingress"
+              # kubectl rollout status deployment nginx-ingress-ingress-nginx-controller -n ingress --timeout=90s
+              until curl -s http://nginx-ingress-ingress-nginx-controller-admission.ingress.svc.cluster.local:443/healthz; do
+                echo "Waiting for service to be ready..."
+                sleep 5
+              done
+              echo "Ingress Webhook Service is ready!"
+          - name: uninstall
+            image: dtzar/helm-kubectl
+            script: |
+              helm uninstall nginx-ingress -n ingress
+
+    - name: gitea
+      description: "gitea package"
+      pipeline:
+        steps:
+          - name: init
+            image: dtzar/helm-kubectl
+            script: |
+              echo "WaitFor Ingress"
+              until curl -s http://nginx-ingress-ingress-nginx-controller-admission.ingress.svc.cluster.local:443/healthz; do
+                echo "Waiting for service to be ready..."
+                sleep 5
+              done
+          - name: install
+            image: dtzar/helm-kubectl
+            script: |
+              cat << EOF > values.yml
+              redis-cluster:
+                enabled: false
+              postgresql:
+                enabled: false
+              postgresql-ha:
+                enabled: false
+              valkey-cluster:
+                enabled: false
+              persistence:
+                enabled: false
+              gitea:
+                admin:
+                  # existingSecret: <NAME_OF_SECRET>
+                  username: "giteaAdmin"
+                  password: "developer"
+                  email: "gi@tea.com"
+                config:
+                  database:
+                    DB_TYPE: sqlite3
+                  session:
+                    PROVIDER: memory
+                  cache:
+                    ADAPTER: memory
+                  queue:
+                    TYPE: level
+              #service:
+              #  ssh:
+              #    type: NodePort
+              #    nodePort: 32222
+              #    externalTrafficPolicy: Local
+              ingress:
+                enabled: true
+                className: nginx
+                hosts:
+                  - host: gitea.localtest.me
+                    paths:
+                      - path: /
+                        pathType: Prefix
+              EOF
+              helm repo add gitea-charts https://dl.gitea.com/charts/
+              helm repo update
+              helm uninstall gitea -n gitea || echo "Release 'gitea' not found. Continuing..."
+              helm install gitea gitea-charts/gitea \
+                -n gitea \
+                --create-namespace \
+                -f values.yml
+
+          - name: uninstall
+            image: dtzar/helm-kubectl
+            script: |
+              helm uninstall gitea -n gitea
+
+    - name: argocd
+      description: "argocd package"
+      pipeline:
+        steps:
+          - name: install
+            image: dtzar/helm-kubectl
+            script: |
+              cat << 'EOF' > values.yml
+              configs:
+               secret:
+                 argocdServerAdminPassword: $2a$10$lsTGT/O94tQBTs4gdtQmBuQ3R3jgfSizvPSzl6ySt2cn6OktKVwAy
+              global:
+                domain: argocd.localtest.me
+              certificate:
+                enabled: true
+              server:
+                ingress:
+                  enabled: true
+                  ingressClassName: nginx
+                  annotations:
+                    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+                    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+                    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+                  tls: true
+              EOF
+              cat values.yml
+              helm repo add argo https://argoproj.github.io/argo-helm  
+              helm repo update
+              helm uninstall argocd -n argocd || echo "Release 'argocd' not found. Continuing..."
+              helm install argocd argo/argo-cd \
+                 --namespace argocd \
+                 --create-namespace \
+                 -f values.yml
+
+          - name: uninstall
+            image: dtzar/helm-kubectl
+            script: |
+              helm uninstall argocd -n argocd
