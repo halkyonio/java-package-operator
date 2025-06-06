@@ -165,7 +165,7 @@ spec:
               cat << EOF > values.yml
               configs:
                secret:
-                 argocdServerAdminPassword: "$2a$10$lsTGT/O94tQBTs4gdtQmBuQ3R3jgfSizvPSzl6ySt2cn6OktKVwAy"
+                 argocdServerAdminPassword: '$2a$10$lsTGT/O94tQBTs4gdtQmBuQ3R3jgfSizvPSzl6ySt2cn6OktKVwAy'
               global:
                 domain: argocd.localtest.me
               certificate:
