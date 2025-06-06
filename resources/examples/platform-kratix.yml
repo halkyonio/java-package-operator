@@ -163,9 +163,10 @@ spec:
             image: dtzar/helm-kubectl
             script: |
               cat << EOF > values.yml
-              cmp:
-                secret:
-                  argocdServerAdminPassword: $2a$10$lsTGT/O94tQBTs4gdtQmBuQ3R3jgfSizvPSzl6ySt2cn6OktKVwAy
+              configs:
+                cmp:
+                  secret:
+                    argocdServerAdminPassword: $2a$10$lsTGT/O94tQBTs4gdtQmBuQ3R3jgfSizvPSzl6ySt2cn6OktKVwAy
               global:
                 domain: argocd.localtest.me
               certificate:
