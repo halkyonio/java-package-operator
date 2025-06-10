@@ -4,6 +4,7 @@ import io.halkyon.platform.operator.crd.Package;
 import io.halkyon.platform.operator.crd.PackageSpec;
 import io.halkyon.platform.operator.crd.Platform;
 import io.halkyon.platform.operator.crd.PlatformStatus;
+import io.halkyon.platform.operator.model.Condition;
 import io.halkyon.platform.operator.model.PackageDefinition;
 import io.javaoperatorsdk.operator.api.config.informer.InformerEventSourceConfiguration;
 import io.javaoperatorsdk.operator.api.reconciler.*;
@@ -12,10 +13,12 @@ import io.javaoperatorsdk.operator.processing.event.source.informer.InformerEven
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static io.halkyon.platform.operator.PackageUtils.*;
 
@@ -85,8 +88,14 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
                 .resource(pkg)
                 .serverSideApply();
 
-            PlatformStatus pStatus = new PlatformStatus();
-            pStatus.setMessage(String.format("Processing the package: %s", pkgDefinition.getName()));
+            PlatformStatus pStatus = platform.getStatus();
+            if (pStatus == null) {
+                pStatus = new PlatformStatus();
+            }
+            Condition condition = new Condition();
+            condition.setMessage(String.format("Deploying the package: %s", pkgDefinition.getName()));
+            condition.setType("Deploying");
+            pStatus.addCondition(condition);
             platform.setStatus(pStatus);
             return UpdateControl.patchStatus(platform);
         } else {
@@ -94,6 +103,32 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
         }
 
     }
+
+    /**
+     * Creates a new List<PackageDefinition> by combining an existing list
+     * and a new PackageDefinition object.
+     * The original list is not modified.
+     *
+     * @param originalList The list to which you want to conceptually "append".
+     * @param newPackage The new object to append.
+     * @return A new List containing all elements from the original list plus the newPackage.
+     */
+    public static List<PackageDefinition> appendPackage(
+        List<PackageDefinition> originalList, PackageDefinition newPackage) {
+
+        // If the original list is null, treat it as an empty list
+        // and just create a new list containing only the new package.
+        if (originalList == null) {
+            return Collections.singletonList(newPackage);
+        }
+
+        return Stream.concat(
+                originalList.stream(),
+                Stream.of(newPackage)
+            )
+            .collect(Collectors.toList());
+    }
+
 
     private Package createPackageCR(PackageDefinition pkgDefinition, Platform platform) {
         Package pkg = new Package();
