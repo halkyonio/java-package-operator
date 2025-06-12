@@ -1,17 +1,51 @@
 package io.halkyon.platform.operator;
 
-import java.util.*;
-
 import io.halkyon.platform.operator.crd.Package;
 import io.halkyon.platform.operator.model.PackageDefinition;
+import io.halkyon.platform.operator.model.Step;
+import io.quarkus.qute.Template;
+import io.quarkus.qute.TemplateInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PackageUtils {
     private static final Logger LOG = LoggerFactory.getLogger(PackageUtils.class);
 
     public final static String INSTALLATION_SUCCEEDED = "installation succeeded";
     public final static String PACKAGE_LABEL_SELECTOR = "io.halkyon.package";
+
+    public static List<String> generatePodCommandFromScript(String script) {
+        return Stream.concat(
+                Stream.of("/bin/bash", "-exc"),
+                Stream.of(script))
+            .collect(Collectors.toList());
+    }
+
+    public static List<String> generatePodCommandFromTemplate(Step step) {
+        TemplateInstance helmscript = Templates.helmscript();
+        String result = "";
+        // We assume when there is a repoUrl, that the user would like to use Helm
+        if (step.getRepoUrl() != "") {
+            Map<String, Map<?, ?>> data = new HashMap<>();
+            Map<String, Object> values = new HashMap<>();
+            values.put("repoUrl", step.getRepoUrl());
+            values.put("namespace", step.getNamespace());
+            values.put("helmValues", step.getValues());
+            values.put("version", step.getVersion());
+            values.put("createNamespace", step.getCreateNamespace());
+            data.put("s", values);
+            result = helmscript.data(data).render();
+            LOG.info(result);
+        }
+        return Stream.concat(
+                Stream.of("/bin/bash", "-exc"),
+                Stream.of(result))
+            .collect(Collectors.toList());
+    }
 
     public static LinkedHashMap<String, String> createPackageLabels(Package pkg) {
         LinkedHashMap<String, String> labels = new LinkedHashMap<>();
@@ -26,7 +60,7 @@ public class PackageUtils {
      * @param packageDefinitions The list of Package objects to order.
      * @return A new List containing the Package objects in topological order.
      * @throws IllegalArgumentException if a dependency is specified but not found in the input list.
-     * @throws IllegalStateException if a circular dependency is detected.
+     * @throws IllegalStateException    if a circular dependency is detected.
      */
     public static LinkedList<PackageDefinition> orderPackages(List<PackageDefinition> packageDefinitions) {
         if (packageDefinitions == null || packageDefinitions.isEmpty()) {
@@ -58,7 +92,7 @@ public class PackageUtils {
                 }
                 adj.get(depName).add(pkg.getName()); // Add edge: depName -> pkg.getName()
                 inDegree.compute(pkg.getName(), (k, v) -> v + 1); // Increment in-degree of 'pkg'
-            },() -> LOG.warn("RunAfter not defined for the package: {}", pkg.getName()));
+            }, () -> LOG.warn("RunAfter not defined for the package: {}", pkg.getName()));
         }
 
         // 3. Find initial "root" nodes (nodes with no incoming dependencies)

@@ -2,10 +2,7 @@ package io.halkyon.platform;
 
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.client.utils.Serialization;
-import io.quarkus.qute.Engine;
-import io.quarkus.qute.Location;
-import io.quarkus.qute.Template;
-import io.quarkus.qute.ValueResolver;
+import io.quarkus.qute.*;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
@@ -20,26 +17,10 @@ public class QuteTemplateTest {
 
     @Inject
     @Location("helmscript")
-    Template helmscript;
-
-    /*
-    private String bashScript = """
-                cat << EOF > values.yml
-                ingress:
-                  enabled: true
-                EOF
-                helm repo add kubernetes.github.io/ingress-nginx
-                helm repo update
-                helm install nginx-ingress ingress-nginx/ingress-nginx \\\\
-                   --version 4.12.2 \\\\
-                   --namespace ingress-nginx \\\\
-                   --create-namespace \\\\
-                   -f values.yml
-            """;
-    */
+    Template tmpl;
 
     @Test
-    public void testScript() {
+    public void testHelmScriptWithValues() {
         String helmValues = """
             controller:
               hostPort:
@@ -49,37 +30,18 @@ public class QuteTemplateTest {
             ingress:
               enabled: true""";
 
-        var template = """
-            cat << EOF > values.yml
-            {s.helmValues}
-            EOF
-            
-            helm repo add ingress {s.repoUrl}
-            helm repo update
-            
-            helm install nginx-ingress ingress/ingress-nginx {#if s.version??}--version {s.version}{/}{#if s.namespace??}--namespace {s.namespace}{/}{#if s.createNamespace}}--create-namespace{/} -f values.yml
-            """;
-
         Map<String, Map<?, ?>> data = new HashMap<>();
 
-        Map values = new HashMap();
+        Map<String, Object> values = new HashMap<>();
         values.put("repoUrl", "https://kubernetes.github.io/ingress-nginx");
         values.put("namespace", "nginx-ingress");
         values.put("helmValues", helmValues);
-        // values.put("version", "1.0");
         values.put("createNamespace", false);
         data.put("s", values);
 
-        /*
-        final Engine engine = Engine.builder()
-            .addDefaults()
-            .build();
-        Template parsedTemplate = engine.parse(template);
-        var result = parsedTemplate.data(data).render();
-        */
+        var result = tmpl.data(data).render();
+        assertTrue(result.contains("helm install nginx-ingress ingress/ingress-nginx --namespace nginx-ingress -f values.yml"));
 
-        var result = helmscript.data(data).render();
-        assertTrue(result.contains("echo Hello"));
     }
 
     @Test

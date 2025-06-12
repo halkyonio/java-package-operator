@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static io.halkyon.platform.operator.PackageUtils.*;
 
@@ -118,15 +117,11 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                 ContainerBuilder builder = new ContainerBuilder()
                     .withName(s.getName())
                     .withImage(s.getImage());
-
                 if (s.getScript() != null && !s.getScript().isEmpty()) {
-                    List<String> prefixedCommands = Stream.concat(
-                            Stream.of("/bin/bash", "-exc"),
-                            Stream.of(s.getScript()))
-                        .collect(Collectors.toList());
-                    builder.withCommand(prefixedCommands);
+                    builder.withCommand(generatePodCommandFromScript(s.getScript()));
+                } else {
+                    builder.withCommand(generatePodCommandFromTemplate(s));
                 }
-
                 return builder.build();
             })
             .collect(Collectors.toList());
