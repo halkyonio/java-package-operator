@@ -33,10 +33,7 @@ spec:
                  --namespace ingress \
                  --create-namespace \
                  -f values.yml
-              echo "This is installation step"
-            values: |
-              ingress:
-                enabled: true
+
           - name: post-install
             image: dtzar/helm-kubectl
             script: |

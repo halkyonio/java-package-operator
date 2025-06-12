@@ -1,0 +1,19 @@
+apiVersion: halkyon.io/v1alpha1
+kind: Platform
+metadata:
+  name: say-hello
+  namespace: platform
+spec:
+  packages:
+    - name: say-hello
+      pipeline:
+        steps:
+          - name: install
+            image: registry.access.redhat.com/ubi9
+            script: |
+              echo "I say hello"
+
+          - name: uninstall
+            image: registry.access.redhat.com/ubi9
+            script: |
+              echo "I say good bye"
