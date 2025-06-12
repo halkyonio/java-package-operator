@@ -1,0 +1,8 @@
+cat << EOF > values.yml
+{s.helmValues}
+EOF
+
+helm repo add ingress {s.repoUrl}
+helm repo update
+
+helm install nginx-ingress ingress/ingress-nginx {#if s.version??}--version {s.version}{/}{#if s.namespace??}--namespace {s.namespace}{/}{#if s.createNamespace}}--create-namespace{/} -f values.yml
