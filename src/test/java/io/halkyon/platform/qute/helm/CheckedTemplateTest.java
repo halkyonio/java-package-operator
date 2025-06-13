@@ -3,21 +3,24 @@ package io.halkyon.platform.qute.helm;
 import io.halkyon.platform.operator.model.Helm;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
-import io.quarkus.test.QuarkusUnitTest;
+import io.quarkus.test.junit.QuarkusTest;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@QuarkusTest
 public class CheckedTemplateTest {
 
-    @RegisterExtension
-    static final QuarkusUnitTest config = new QuarkusUnitTest()
-        .withApplicationRoot(root -> root
-            .addClass(Templates.class)
-            .addAsResource(new StringAsset("helm repo add {helm.chart.repoName} {helm.chart.repoUrl}"),"templates/helm")
-        );
+    @BeforeAll
+    public static void setup() {
+        ShrinkWrap.create(JavaArchive.class)
+            .addClasses(Templates.class)
+            .addAsResource(new StringAsset("helm repo add {helm.chart.repoName} {helm.chart.repoUrl}"),"templates/helm");
+    }
 
     @Test
     public void testHelmRepoAdd() {
