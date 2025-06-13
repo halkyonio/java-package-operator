@@ -60,7 +60,8 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                 .endSpec()
                 .build();
                 //@formatter:on
-            pod.addOwnerReference(pkg);
+            //pod.addOwnerReference(pkg);
+            //pod.addFinalizer("packages.halkyon.io/finalizer");
 
             context.getClient().pods().inNamespace(pkg.getMetadata().getNamespace()).resource(pod).serverSideApply();
         } else {
@@ -92,12 +93,13 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                 .endSpec()
                 .build();
                 //@formatter:on
-            pod.addOwnerReference(pkg);
+            //pod.addOwnerReference(pkg);
+            //pod.addFinalizer("packages.halkyon.io/finalizer");
             LOG.info("Pod generated: {}", Serialization.asYaml(pod));
             context.getClient().pods().inNamespace(pkg.getMetadata().getNamespace()).resource(pod).serverSideApply();
         }
-        LOG.info("Package resource deleted");
-        return DeleteControl.defaultDelete();
+        LOG.info("Waiting till the pod to uninstall succeeded !");
+        return DeleteControl.noFinalizerRemoval();
     }
 
     public PackageStatus updatePackageStatus(String status, Package pkg) {
