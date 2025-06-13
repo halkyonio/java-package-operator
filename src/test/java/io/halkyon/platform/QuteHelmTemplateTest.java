@@ -1,6 +1,7 @@
 package io.halkyon.platform;
 
 import io.halkyon.platform.operator.Templates;
+import io.halkyon.platform.operator.model.Helm;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Assertions;
@@ -44,7 +45,7 @@ public class QuteHelmTemplateTest {
               -f values.yml
             """;
 
-        Map<String, Map<?, ?>> data = new HashMap<>();
+/*        Map<String, Map<?, ?>> data = new HashMap<>();
 
         Map<String, Object> values = new HashMap<>();
         values.put("name","hello");
@@ -52,10 +53,15 @@ public class QuteHelmTemplateTest {
         values.put("namespace", "nginx-ingress");
         values.put("helmValues", helmValues);
         values.put("createNamespace", false);
-        data.put("s", values);
+        data.put("s", values);*/
 
-        var tmpl = Templates.helmscript();
-        String result = tmpl.data(data).render();
+        Helm helm = new Helm();
+        Helm.Chart chart = new Helm.Chart();
+        chart.setRepoUrl("https://kubernetes.github.io/ingress-nginx");
+        chart.setRepoName("nginx-ingress");
+
+        var tmpl = Templates.newhelmscript(helm);
+        String result = tmpl.data(helm).render();
         //Assertions.assertSame(expected,result);
     }
 

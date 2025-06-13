@@ -54,15 +54,38 @@ spec:
                         steps:
                           items:
                             properties:
+                              createNamespace:
+                                type: "boolean"
                               description:
                                 type: "string"
+                              helm:
+                                properties:
+                                  chart:
+                                    properties:
+                                      name:
+                                        type: "string"
+                                      repoName:
+                                        type: "string"
+                                      repoUrl:
+                                        type: "string"
+                                      version:
+                                        type: "string"
+                                    type: "object"
+                                  release:
+                                    properties:
+                                      name:
+                                        type: "string"
+                                      version:
+                                        type: "string"
+                                    type: "object"
+                                type: "object"
                               id:
                                 type: "string"
                               image:
                                 type: "string"
                               name:
                                 type: "string"
-                              repoUrl:
+                              namespace:
                                 type: "string"
                               script:
                                 type: "string"
@@ -72,8 +95,6 @@ spec:
                                   \ as a map."
                                 type: "string"
                                 x-kubernetes-preserve-unknown-fields: true
-                              version:
-                                type: "string"
                             required:
                             - "image"
                             - "name"
@@ -93,6 +114,25 @@ spec:
             type: "object"
           status:
             properties:
+              conditions:
+                items:
+                  properties:
+                    lastTransitionTime:
+                      format: "date-time"
+                      type: "string"
+                    lastUpdateTime:
+                      format: "date-time"
+                      type: "string"
+                    message:
+                      type: "string"
+                    reason:
+                      type: "string"
+                    status:
+                      type: "string"
+                    type:
+                      type: "string"
+                  type: "object"
+                type: "array"
               message:
                 type: "string"
               packageToProcess:
@@ -127,15 +167,38 @@ spec:
                       steps:
                         items:
                           properties:
+                            createNamespace:
+                              type: "boolean"
                             description:
                               type: "string"
+                            helm:
+                              properties:
+                                chart:
+                                  properties:
+                                    name:
+                                      type: "string"
+                                    repoName:
+                                      type: "string"
+                                    repoUrl:
+                                      type: "string"
+                                    version:
+                                      type: "string"
+                                  type: "object"
+                                release:
+                                  properties:
+                                    name:
+                                      type: "string"
+                                    version:
+                                      type: "string"
+                                  type: "object"
+                              type: "object"
                             id:
                               type: "string"
                             image:
                               type: "string"
                             name:
                               type: "string"
-                            repoUrl:
+                            namespace:
                               type: "string"
                             script:
                               type: "string"
@@ -145,8 +208,6 @@ spec:
                                 \ as a map."
                               type: "string"
                               x-kubernetes-preserve-unknown-fields: true
-                            version:
-                              type: "string"
                           required:
                           - "image"
                           - "name"
@@ -193,15 +254,38 @@ spec:
                         steps:
                           items:
                             properties:
+                              createNamespace:
+                                type: "boolean"
                               description:
                                 type: "string"
+                              helm:
+                                properties:
+                                  chart:
+                                    properties:
+                                      name:
+                                        type: "string"
+                                      repoName:
+                                        type: "string"
+                                      repoUrl:
+                                        type: "string"
+                                      version:
+                                        type: "string"
+                                    type: "object"
+                                  release:
+                                    properties:
+                                      name:
+                                        type: "string"
+                                      version:
+                                        type: "string"
+                                    type: "object"
+                                type: "object"
                               id:
                                 type: "string"
                               image:
                                 type: "string"
                               name:
                                 type: "string"
-                              repoUrl:
+                              namespace:
                                 type: "string"
                               script:
                                 type: "string"
@@ -211,8 +295,6 @@ spec:
                                   \ as a map."
                                 type: "string"
                                 x-kubernetes-preserve-unknown-fields: true
-                              version:
-                                type: "string"
                             required:
                             - "image"
                             - "name"

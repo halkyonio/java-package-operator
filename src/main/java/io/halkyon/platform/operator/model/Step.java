@@ -5,26 +5,26 @@ import io.fabric8.crd.generator.annotation.PreserveUnknownFields;
 import io.fabric8.generator.annotation.Required;
 import io.smallrye.config.WithDefault;
 
-import java.util.Map;
-
 public class Step {
     @Required
     private String name;
     @Required
     private String image;
+
     private String description;
     private String id;
     private String script;
-    private String repoUrl;
-    private String version;
+    private Helm helm;
+
+    @WithDefault("default")
     private String namespace;
-    @WithDefault("false")
+
+    @WithDefault("true")
     private Boolean createNamespace;
 
     @PreserveUnknownFields
     @JsonPropertyDescription("Values specifies the Helm values to be passed to the helm template command and defined as a map.")
     private String values;
-
 
     public String getName() {
         return name;
@@ -66,30 +66,6 @@ public class Step {
         this.script = script;
     }
 
-    public String getRepoUrl() {
-        return repoUrl;
-    }
-
-    public void setRepoUrl(String repoUrl) {
-        this.repoUrl = repoUrl;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public String getValues() {
-        return values;
-    }
-
-    public void setValues(String values) {
-        this.values = values;
-    }
-
     public String getNamespace() {
         return namespace;
     }
@@ -104,6 +80,22 @@ public class Step {
 
     public void setCreateNamespace(Boolean createNamespace) {
         this.createNamespace = createNamespace;
+    }
+
+    public String getValues() {
+        return values;
+    }
+
+    public void setValues(String values) {
+        this.values = values;
+    }
+
+    public Helm getHelm() {
+        return helm;
+    }
+
+    public void setHelm(Helm helm) {
+        this.helm = helm;
     }
 
 }
