@@ -1,4 +1,4 @@
-package io.halkyon.platform;
+package io.halkyon.platform.qute;
 
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.client.utils.Serialization;
@@ -10,39 +10,13 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
-public class QuteTemplateTest {
+public class MultilinesScriptTest {
 
     @Inject
     @Location("helmscript")
     Template tmpl;
-
-    @Test
-    public void testHelmScriptWithValues() {
-        String helmValues = """
-            controller:
-              hostPort:
-                enabled: true
-              service:
-                type: NodePort
-            ingress:
-              enabled: true""";
-
-        Map<String, Map<?, ?>> data = new HashMap<>();
-
-        Map<String, Object> values = new HashMap<>();
-        values.put("repoUrl", "https://kubernetes.github.io/ingress-nginx");
-        values.put("namespace", "nginx-ingress");
-        values.put("helmValues", helmValues);
-        values.put("createNamespace", false);
-        data.put("s", values);
-
-        var result = tmpl.data(data).render();
-        assertTrue(result.contains("helm install nginx-ingress ingress/ingress-nginx --namespace nginx-ingress -f values.yml"));
-
-    }
 
     @Test
     void testMultilinesScript() {

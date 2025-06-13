@@ -7,5 +7,4 @@ import io.quarkus.qute.TemplateInstance;
 @CheckedTemplate(requireTypeSafeExpressions = false)
 public class Templates {
     public static native TemplateInstance helmscript(Helm helm);
-    public static native TemplateInstance newhelmscript(Helm helm);
 }
