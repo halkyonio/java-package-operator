@@ -88,8 +88,10 @@ spec:
                               namespace:
                                 properties:
                                   createNamespace:
+                                    default: true
                                     type: "boolean"
                                   name:
+                                    default: "default"
                                     type: "string"
                                 type: "object"
                               script:
@@ -206,8 +208,10 @@ spec:
                             namespace:
                               properties:
                                 createNamespace:
+                                  default: true
                                   type: "boolean"
                                 name:
+                                  default: "default"
                                   type: "string"
                               type: "object"
                             script:
@@ -298,8 +302,10 @@ spec:
                               namespace:
                                 properties:
                                   createNamespace:
+                                    default: true
                                     type: "boolean"
                                   name:
+                                    default: "default"
                                     type: "string"
                                 type: "object"
                               script:

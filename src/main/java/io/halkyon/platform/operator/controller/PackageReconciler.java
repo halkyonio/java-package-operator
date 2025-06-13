@@ -1,9 +1,11 @@
 package io.halkyon.platform.operator.controller;
 
 import io.fabric8.kubernetes.api.model.*;
+import io.fabric8.kubernetes.client.utils.Serialization;
 import io.halkyon.platform.operator.crd.Package;
 import io.halkyon.platform.operator.crd.PackageSpec;
 import io.halkyon.platform.operator.crd.PackageStatus;
+import io.halkyon.platform.operator.model.Namespace;
 import io.halkyon.platform.operator.model.Pipeline;
 import io.javaoperatorsdk.operator.api.config.informer.InformerEventSourceConfiguration;
 import io.javaoperatorsdk.operator.api.reconciler.*;
@@ -91,6 +93,7 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                 .build();
                 //@formatter:on
             pod.addOwnerReference(pkg);
+            LOG.info("Pod generated: {}", Serialization.asYaml(pod));
             context.getClient().pods().inNamespace(pkg.getMetadata().getNamespace()).resource(pod).serverSideApply();
         }
         LOG.info("Package resource deleted");
@@ -113,6 +116,10 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
             .stream()
             .filter(s -> s.getName() != null && s.getName().startsWith(action))
             .map(s -> {
+                // TODO: To be improved if a trick exists to generate the object even if not defined within the YAML
+                if (s.getNamespace() == null) {
+                    s.setNamespace(new Namespace());
+                }
                 ContainerBuilder builder = new ContainerBuilder()
                     .withName(s.getName())
                     .withImage(s.getImage());

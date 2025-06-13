@@ -176,6 +176,11 @@ mvn clean package -Dquarkus.container-image.build=true \
   -Dquarkus.container-image.push=true \
   -Dquarkus.container-image.image=quay.io/halkyonio/java-package-operator:0.1.0-SNAPSHOT
 ```
+and to regenerate new CRDs
+```shell
+mvn clean package -Dquarkus.operator-sdk.crd.output-directory=resources/crds \
+  -Dquarkus.operator-sdk.crd.generate-all
+```
 
 ## Work in progress
 

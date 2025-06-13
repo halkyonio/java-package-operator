@@ -3,7 +3,6 @@ package io.halkyon.platform.operator.model;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.fabric8.crd.generator.annotation.PreserveUnknownFields;
 import io.fabric8.generator.annotation.Required;
-import io.smallrye.config.WithDefault;
 
 public class Step {
     @Required
