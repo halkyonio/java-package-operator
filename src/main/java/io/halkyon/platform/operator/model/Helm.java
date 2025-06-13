@@ -3,6 +3,7 @@ package io.halkyon.platform.operator.model;
 public class Helm {
     private Chart chart;
     private Release release;
+    private String values;
 
     public Chart getChart() {
         return chart;
@@ -18,6 +19,14 @@ public class Helm {
 
     public void setRelease(Release release) {
         this.release = release;
+    }
+
+    public String getValues() {
+        return values;
+    }
+
+    public void setValues(String values) {
+        this.values = values;
     }
 
     public static class Chart {

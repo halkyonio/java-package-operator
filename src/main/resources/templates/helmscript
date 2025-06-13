@@ -1,8 +1,8 @@
 cat << EOF > values.yml
-{s.helmValues}
+{helm.values}
 EOF
 
-helm repo add {s.helm.chart.name} {s.helm.chart.repoUrl}
+helm repo add {helm.chart.name} {helm.chart.repoUrl}
 helm repo update
 
-helm install {s.helm.chart.name} {s.helm.chart.name}/{s.helm.chart.name}{#if s.version??} --version {s.version}{/}{#if s.namespace??} --namespace {s.namespace}{/}{#if s.createNamespace??} --create-namespace{/} -f values.yml
+helm install {helm.chart.name} {helm.chart.name}/{helm.chart.name}{#if version??} --version {version}{/}{#if namespace??} --namespace {namespace}{/}{#if createNamespace??} --create-namespace{/} -f values.yml

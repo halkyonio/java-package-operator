@@ -134,6 +134,15 @@
 
     <profiles>
         <profile>
+            <id>debug</id>
+            <dependencies>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-qute-deployment</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>native</id>
             <activation>
                 <property>
