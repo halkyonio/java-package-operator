@@ -1,0 +1,2 @@
+{#let helm=step.helm namespace=step.namespace}
+helm uninstall {helm.chart.name} {#if namespace.name??}--namespace {namespace.name}{/}{/let}

@@ -21,7 +21,7 @@ public class CheckedTemplateTest {
         Helm helm = new Helm();
         Helm.Chart chart = new Helm.Chart();
         chart.setRepoUrl("https://kubernetes.github.io/ingress-nginx");
-        chart.setRepoName("nginx-ingress");
+        chart.setName("nginx-ingress");
 
         helm.setChart(chart);
         step.setHelm(helm);
@@ -72,10 +72,29 @@ public class CheckedTemplateTest {
         assertEquals(expected,Templates.helminstall(step).render());
     }
 
+    @Test
+    public void testHelmUninstall() {
+        String expected = "helm uninstall nginx-ingress --namespace default";
+
+        Step step = new Step();
+        Namespace namespace = new Namespace(); // create an instance to set the default values
+
+        Helm helm = new Helm();
+        Helm.Chart chart = new Helm.Chart();
+        chart.setName("nginx-ingress");
+
+        helm.setChart(chart);
+        step.setHelm(helm);
+        step.setNamespace(namespace);
+
+        assertEquals(expected,Templates.helmuninstall(step).render());
+    }
+
     @CheckedTemplate(basePath = "")
     public static class Templates {
         static native TemplateInstance helmrepo(Step step);
         static native TemplateInstance helminstall(Step step);
+        static native TemplateInstance helmuninstall(Step step);
     }
 
 }
