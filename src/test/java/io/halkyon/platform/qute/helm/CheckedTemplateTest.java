@@ -4,26 +4,24 @@ import io.halkyon.platform.operator.model.Helm;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import io.quarkus.test.QuarkusUnitTest;
-import io.quarkus.test.junit.QuarkusTest;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@QuarkusTest
-public class QuteHelmTemplateTest {
+public class CheckedTemplateTest {
 
     @RegisterExtension
     static final QuarkusUnitTest config = new QuarkusUnitTest()
         .withApplicationRoot(root -> root
             .addClass(Templates.class)
-            .addAsResource(new StringAsset("helm repo add {chart.repoName} {chart.repoUrl}"),"templates/helm.txt")
+            .addAsResource(new StringAsset("helm repo add {helm.chart.repoName} {helm.chart.repoUrl}"),"templates/CheckedTemplateTest/helm")
         );
 
     @Test
     public void testHelmRepoAdd() {
-        String expected = "helm repo add ingress https://kubernetes.github.io/ingress-nginx";
+        String expected = "helm repo add nginx-ingress https://kubernetes.github.io/ingress-nginx";
 
         Helm helm = new Helm();
         Helm.Chart chart = new Helm.Chart();
@@ -34,7 +32,7 @@ public class QuteHelmTemplateTest {
         assertEquals(expected,Templates.helm(helm).render());
     }
 
-    @CheckedTemplate(basePath = "", requireTypeSafeExpressions = false)
+    @CheckedTemplate
     public static class Templates {
         static native TemplateInstance helm(Helm helm);
     }
