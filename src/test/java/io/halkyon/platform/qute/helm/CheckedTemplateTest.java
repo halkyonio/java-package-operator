@@ -62,7 +62,7 @@ public class CheckedTemplateTest {
 
         Helm.Chart chart = new Helm.Chart();
         chart.setRepoUrl("https://kubernetes.github.io/ingress-nginx");
-        chart.setRepoName("ingress-nginx");
+        chart.setName("ingress-nginx");
         helm.setChart(chart);
         helm.setValues(helmValues);
 
