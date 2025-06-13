@@ -7,4 +7,5 @@ import io.quarkus.qute.TemplateInstance;
 @CheckedTemplate(requireTypeSafeExpressions = false)
 public class Templates {
     public static native TemplateInstance helmscript(Step step);
+    public static native TemplateInstance uninstallhelmscript(Step step);
 }

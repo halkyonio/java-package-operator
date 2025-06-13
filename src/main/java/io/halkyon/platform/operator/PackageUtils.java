@@ -1,11 +1,8 @@
 package io.halkyon.platform.operator;
 
 import io.halkyon.platform.operator.crd.Package;
-import io.halkyon.platform.operator.model.Helm;
 import io.halkyon.platform.operator.model.PackageDefinition;
 import io.halkyon.platform.operator.model.Step;
-import io.quarkus.qute.Template;
-import io.quarkus.qute.TemplateInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +15,7 @@ public class PackageUtils {
 
     public final static String INSTALLATION_SUCCEEDED = "installation succeeded";
     public final static String PACKAGE_LABEL_SELECTOR = "io.halkyon.package";
+    public final static String INSTALLATION_FAILED = "installation failed";
 
     public static List<String> generatePodCommandFromScript(String script) {
         return Stream.concat(
@@ -26,13 +24,20 @@ public class PackageUtils {
             .collect(Collectors.toList());
     }
 
-    public static List<String> generatePodCommandFromTemplate(Step step) {
+    public static List<String> generatePodCommandFromTemplate(Step step, Mode action) {
         String result = "";
-        // We assume when there is a repoUrl, that the user would like to use Helm
-        if (step.getHelm().getChart().getRepoUrl() != "") {
-            result = Templates.helmscript(step).render();
-            LOG.info(result);
+
+        switch (action) {
+            case Mode.INSTALL:
+                result = Templates.helmscript(step).render();
+                break;
+            case Mode.UNINSTALL:
+                result = Templates.uninstallhelmscript(step).render();
+                break;
         }
+
+        LOG.debug(result);
+
         return Stream.concat(
                 Stream.of("/bin/bash", "-exc"),
                 Stream.of(result))
@@ -119,5 +124,16 @@ public class PackageUtils {
         }
 
         return linkedList;
+    }
+
+    public static Mode getMode(String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("Input string cannot be null");
+        }
+        try {
+            return Mode.valueOf(value.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid Mode: " + value, e);
+        }
     }
 }

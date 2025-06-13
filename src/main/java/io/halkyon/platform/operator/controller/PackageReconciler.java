@@ -75,7 +75,6 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
     public DeleteControl cleanup(Package pkg, Context<Package> context) throws Exception {
         LOG.info("Creating a pod to uninstall the package {}",pkg.getMetadata().getName());
 
-        // TODO: Investigate the best approach to run the uninstall pod before the package is deleted
         var containers = createInitOrContainersFromPipeline(pkg, "uninstall");
         if (!containers.isEmpty()) {
             Pod pod = new PodBuilder()
@@ -105,14 +104,14 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
         return packageStatus;
     }
 
-    public List<Container> createInitOrContainersFromPipeline(Package pkg, String WordToSearch) {
+    public List<Container> createInitOrContainersFromPipeline(Package pkg, String action) {
         return Optional.ofNullable(pkg)
             .map(Package::getSpec)
             .map(PackageSpec::getPipeline)
             .map(Pipeline::getSteps)
             .orElse(Collections.emptyList())
             .stream()
-            .filter(s -> s.getName() != null && s.getName().startsWith(WordToSearch))
+            .filter(s -> s.getName() != null && s.getName().startsWith(action))
             .map(s -> {
                 ContainerBuilder builder = new ContainerBuilder()
                     .withName(s.getName())
@@ -120,7 +119,7 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                 if (s.getScript() != null && !s.getScript().isEmpty()) {
                     builder.withCommand(generatePodCommandFromScript(s.getScript()));
                 } else {
-                    builder.withCommand(generatePodCommandFromTemplate(s));
+                    builder.withCommand(generatePodCommandFromTemplate(s,getMode(action)));
                 }
                 return builder.build();
             })

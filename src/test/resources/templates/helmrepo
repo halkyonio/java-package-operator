@@ -1,0 +1,2 @@
+{#let helm=step.helm namespace=step.namespace}
+helm repo add {helm.chart.repoName} {helm.chart.repoUrl}{/let}

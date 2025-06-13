@@ -1,19 +1,15 @@
 package io.halkyon.platform.operator.model;
 
-import io.smallrye.config.WithDefault;
-
 public class Namespace {
     /**
      * The target name of the namespace where the resources should be deployed
      */
-    @WithDefault("default")
-    private String name;
+    private String name = "default";
 
     /**
      * Boolean indicating if the namespace should be created by the tool: helm, kubectl, etc
      */
-    @WithDefault("true")
-    private boolean createNamespace;
+    private boolean createNamespace = true;
 
     public String getName() {
         return name;

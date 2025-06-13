@@ -10,9 +10,9 @@ spec:
         steps:
           - name: install
             image: dtzar/helm-kubectl
-            namespace:
-              name: default
-              createNamespace: true
+            #namespace:
+            #  name: default
+            #  createNamespace: true
             helm:
               chart:
                 repoUrl: https://kubernetes.github.io/ingress-nginx
@@ -26,3 +26,12 @@ spec:
                     type: NodePort
                 ingress:
                   enabled: true
+
+
+          - name: uninstall
+            image: dtzar/helm-kubectl
+            #namespace:
+            #  name: default
+            helm:
+              chart:
+                name: ingress-nginx
