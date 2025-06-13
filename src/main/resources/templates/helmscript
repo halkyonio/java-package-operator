@@ -1,3 +1,4 @@
+{#let helm=step.helm namespace=step.namespace}
 cat << EOF > values.yml
 {helm.values}
 EOF
@@ -5,4 +6,6 @@ EOF
 helm repo add {helm.chart.name} {helm.chart.repoUrl}
 helm repo update
 
-helm install {helm.chart.name} {helm.chart.name}/{helm.chart.name}{#if version??} --version {version}{/}{#if namespace??} --namespace {namespace}{/}{#if createNamespace??} --create-namespace{/} -f values.yml
+helm uninstall {helm.chart.name} {#if namespace.name??} --namespace {namespace.name}{/}
+helm install {helm.chart.name} {helm.chart.name}/{helm.chart.name}{#if helm.chart.version??} --version {helm.chart.version}{/}{#if namespace.name??} --namespace {namespace.name}{/}{#if namespace.createNamespace??} --create-namespace{/} -f values.yml
+{/let}

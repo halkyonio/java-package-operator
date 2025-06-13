@@ -15,12 +15,7 @@ public class Step {
     private String id;
     private String script;
     private Helm helm;
-
-    @WithDefault("default")
-    private String namespace;
-
-    @WithDefault("true")
-    private Boolean createNamespace;
+    private Namespace namespace;
 
     @PreserveUnknownFields
     @JsonPropertyDescription("Values specifies the Helm values to be passed to the helm template command and defined as a map.")
@@ -66,22 +61,6 @@ public class Step {
         this.script = script;
     }
 
-    public String getNamespace() {
-        return namespace;
-    }
-
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
-
-    public Boolean getCreateNamespace() {
-        return createNamespace;
-    }
-
-    public void setCreateNamespace(Boolean createNamespace) {
-        this.createNamespace = createNamespace;
-    }
-
     public String getValues() {
         return values;
     }
@@ -96,6 +75,14 @@ public class Step {
 
     public void setHelm(Helm helm) {
         this.helm = helm;
+    }
+
+    public Namespace getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(Namespace namespace) {
+        this.namespace = namespace;
     }
 
 }

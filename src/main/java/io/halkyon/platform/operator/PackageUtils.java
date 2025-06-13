@@ -30,7 +30,7 @@ public class PackageUtils {
         String result = "";
         // We assume when there is a repoUrl, that the user would like to use Helm
         if (step.getHelm().getChart().getRepoUrl() != "") {
-            result = Templates.helmscript(step.getHelm()).render();
+            result = Templates.helmscript(step).render();
             LOG.info(result);
         }
         return Stream.concat(

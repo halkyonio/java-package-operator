@@ -4,9 +4,9 @@ kind: ServiceAccount
 metadata:
   annotations:
     app.quarkus.io/quarkus-version: 3.22.3
-    app.quarkus.io/commit-id: 2c095143f02392fd79a590d1f0a586ae0bf67660
+    app.quarkus.io/commit-id: 56e69dcc13bdc19d6c14f58fc82aae8efba13eb9
     app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-    app.quarkus.io/build-timestamp: 2025-06-13 - 09:14:04 +0000
+    app.quarkus.io/build-timestamp: 2025-06-13 - 12:57:48 +0000
   labels:
     app.kubernetes.io/name: platform-operator
     app.kubernetes.io/version: 0.1.0-SNAPSHOT
@@ -155,9 +155,9 @@ kind: Service
 metadata:
   annotations:
     app.quarkus.io/quarkus-version: 3.22.3
-    app.quarkus.io/commit-id: 2c095143f02392fd79a590d1f0a586ae0bf67660
+    app.quarkus.io/commit-id: 56e69dcc13bdc19d6c14f58fc82aae8efba13eb9
     app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-    app.quarkus.io/build-timestamp: 2025-06-13 - 09:14:04 +0000
+    app.quarkus.io/build-timestamp: 2025-06-13 - 12:57:48 +0000
   labels:
     app.kubernetes.io/name: platform-operator
     app.kubernetes.io/version: 0.1.0-SNAPSHOT
@@ -179,9 +179,9 @@ kind: Deployment
 metadata:
   annotations:
     app.quarkus.io/quarkus-version: 3.22.3
-    app.quarkus.io/commit-id: 2c095143f02392fd79a590d1f0a586ae0bf67660
+    app.quarkus.io/commit-id: 56e69dcc13bdc19d6c14f58fc82aae8efba13eb9
     app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-    app.quarkus.io/build-timestamp: 2025-06-13 - 09:14:04 +0000
+    app.quarkus.io/build-timestamp: 2025-06-13 - 12:57:48 +0000
   labels:
     app.kubernetes.io/name: platform-operator
     app.kubernetes.io/version: 0.1.0-SNAPSHOT
@@ -191,19 +191,19 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/version: 0.1.0-SNAPSHOT
       app.kubernetes.io/name: platform-operator
+      app.kubernetes.io/version: 0.1.0-SNAPSHOT
   template:
     metadata:
       annotations:
         app.quarkus.io/quarkus-version: 3.22.3
-        app.quarkus.io/commit-id: 2c095143f02392fd79a590d1f0a586ae0bf67660
+        app.quarkus.io/commit-id: 56e69dcc13bdc19d6c14f58fc82aae8efba13eb9
         app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-        app.quarkus.io/build-timestamp: 2025-06-13 - 09:14:04 +0000
+        app.quarkus.io/build-timestamp: 2025-06-13 - 12:57:48 +0000
       labels:
         app.kubernetes.io/managed-by: quarkus
-        app.kubernetes.io/version: 0.1.0-SNAPSHOT
         app.kubernetes.io/name: platform-operator
+        app.kubernetes.io/version: 0.1.0-SNAPSHOT
     spec:
       containers:
         - env:

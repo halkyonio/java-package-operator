@@ -45,8 +45,6 @@ spec:
                   steps:
                     items:
                       properties:
-                        createNamespace:
-                          type: "boolean"
                         description:
                           type: "string"
                         helm:
@@ -69,6 +67,8 @@ spec:
                                 version:
                                   type: "string"
                               type: "object"
+                            values:
+                              type: "string"
                           type: "object"
                         id:
                           type: "string"
@@ -77,7 +77,12 @@ spec:
                         name:
                           type: "string"
                         namespace:
-                          type: "string"
+                          properties:
+                            createNamespace:
+                              type: "boolean"
+                            name:
+                              type: "string"
+                          type: "object"
                         script:
                           type: "string"
                         values:
@@ -96,8 +101,6 @@ spec:
               steps:
                 items:
                   properties:
-                    createNamespace:
-                      type: "boolean"
                     description:
                       type: "string"
                     helm:
@@ -120,6 +123,8 @@ spec:
                             version:
                               type: "string"
                           type: "object"
+                        values:
+                          type: "string"
                       type: "object"
                     id:
                       type: "string"
@@ -128,7 +133,12 @@ spec:
                     name:
                       type: "string"
                     namespace:
-                      type: "string"
+                      properties:
+                        createNamespace:
+                          type: "boolean"
+                        name:
+                          type: "string"
+                      type: "object"
                     script:
                       type: "string"
                     values:
