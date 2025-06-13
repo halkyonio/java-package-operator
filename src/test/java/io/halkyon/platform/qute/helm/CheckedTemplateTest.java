@@ -16,7 +16,7 @@ public class CheckedTemplateTest {
     static final QuarkusUnitTest config = new QuarkusUnitTest()
         .withApplicationRoot(root -> root
             .addClass(Templates.class)
-            .addAsResource(new StringAsset("helm repo add {helm.chart.repoName} {helm.chart.repoUrl}"),"templates/CheckedTemplateTest/helm")
+            .addAsResource(new StringAsset("helm repo add {helm.chart.repoName} {helm.chart.repoUrl}"),"templates/helm")
         );
 
     @Test
@@ -32,7 +32,7 @@ public class CheckedTemplateTest {
         assertEquals(expected,Templates.helm(helm).render());
     }
 
-    @CheckedTemplate
+    @CheckedTemplate(basePath = "")
     public static class Templates {
         static native TemplateInstance helm(Helm helm);
     }

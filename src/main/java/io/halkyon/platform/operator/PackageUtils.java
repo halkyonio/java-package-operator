@@ -27,20 +27,10 @@ public class PackageUtils {
     }
 
     public static List<String> generatePodCommandFromTemplate(Step step) {
-        TemplateInstance helmscript = Templates.helmscript(new Helm());
         String result = "";
         // We assume when there is a repoUrl, that the user would like to use Helm
         if (step.getHelm().getChart().getRepoUrl() != "") {
-            Map<String, Map<?, ?>> data = new HashMap<>();
-            Map<String, Object> values = new HashMap<>();
-            values.put("chartName", step.getHelm().getChart().getName());
-            values.put("repoUrl", step.getHelm().getChart().getRepoUrl());
-            values.put("namespace", step.getNamespace());
-            values.put("helmValues", step.getValues());
-            values.put("version", step.getHelm().getChart().getVersion());
-            values.put("createNamespace", step.getCreateNamespace());
-            data.put("s", values);
-            result = helmscript.data(data).render();
+            result = Templates.helmscript(step.getHelm()).render();
             LOG.info(result);
         }
         return Stream.concat(
