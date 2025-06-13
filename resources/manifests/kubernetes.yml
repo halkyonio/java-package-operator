@@ -2,16 +2,11 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  annotations:
-    app.quarkus.io/quarkus-version: 3.22.3
-    app.quarkus.io/commit-id: 56e69dcc13bdc19d6c14f58fc82aae8efba13eb9
-    app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-    app.quarkus.io/build-timestamp: 2025-06-13 - 12:57:48 +0000
   labels:
     app.kubernetes.io/name: platform-operator
     app.kubernetes.io/version: 0.1.0-SNAPSHOT
-    app.kubernetes.io/managed-by: quarkus
-  name: platform-operator
+  name: package-operator
+  namespace: platform
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -88,7 +83,8 @@ roleRef:
   name: josdk-crd-validating-cluster-role
 subjects:
   - kind: ServiceAccount
-    name: platform-operator
+    name: package-operator
+    namespace: platform
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -103,7 +99,8 @@ roleRef:
   name: packagereconciler-cluster-role
 subjects:
   - kind: ServiceAccount
-    name: platform-operator
+    name: package-operator
+    namespace: platform
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -118,7 +115,8 @@ roleRef:
   name: josdk-crd-validating-cluster-role
 subjects:
   - kind: ServiceAccount
-    name: platform-operator
+    name: package-operator
+    namespace: platform
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -133,7 +131,8 @@ roleRef:
   name: platformreconciler-cluster-role
 subjects:
   - kind: ServiceAccount
-    name: platform-operator
+    name: package-operator
+    namespace: platform
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -148,16 +147,17 @@ roleRef:
   name: view
 subjects:
   - kind: ServiceAccount
-    name: platform-operator
+    name: package-operator
+    namespace: platform
 ---
 apiVersion: v1
 kind: Service
 metadata:
   annotations:
     app.quarkus.io/quarkus-version: 3.22.3
-    app.quarkus.io/commit-id: 56e69dcc13bdc19d6c14f58fc82aae8efba13eb9
+    app.quarkus.io/commit-id: 56ce0e51b11de5536c8043b106a00e3efc636cd2
     app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-    app.quarkus.io/build-timestamp: 2025-06-13 - 12:57:48 +0000
+    app.quarkus.io/build-timestamp: 2025-06-13 - 13:24:58 +0000
   labels:
     app.kubernetes.io/name: platform-operator
     app.kubernetes.io/version: 0.1.0-SNAPSHOT
@@ -179,9 +179,9 @@ kind: Deployment
 metadata:
   annotations:
     app.quarkus.io/quarkus-version: 3.22.3
-    app.quarkus.io/commit-id: 56e69dcc13bdc19d6c14f58fc82aae8efba13eb9
+    app.quarkus.io/commit-id: 56ce0e51b11de5536c8043b106a00e3efc636cd2
     app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-    app.quarkus.io/build-timestamp: 2025-06-13 - 12:57:48 +0000
+    app.quarkus.io/build-timestamp: 2025-06-13 - 13:24:58 +0000
   labels:
     app.kubernetes.io/name: platform-operator
     app.kubernetes.io/version: 0.1.0-SNAPSHOT
@@ -191,19 +191,19 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: platform-operator
       app.kubernetes.io/version: 0.1.0-SNAPSHOT
+      app.kubernetes.io/name: platform-operator
   template:
     metadata:
       annotations:
         app.quarkus.io/quarkus-version: 3.22.3
-        app.quarkus.io/commit-id: 56e69dcc13bdc19d6c14f58fc82aae8efba13eb9
+        app.quarkus.io/commit-id: 56ce0e51b11de5536c8043b106a00e3efc636cd2
         app.quarkus.io/vcs-uri: https://github.com/halkyonio/java-package-operator.git
-        app.quarkus.io/build-timestamp: 2025-06-13 - 12:57:48 +0000
+        app.quarkus.io/build-timestamp: 2025-06-13 - 13:24:58 +0000
       labels:
         app.kubernetes.io/managed-by: quarkus
-        app.kubernetes.io/name: platform-operator
         app.kubernetes.io/version: 0.1.0-SNAPSHOT
+        app.kubernetes.io/name: platform-operator
     spec:
       containers:
         - env:
@@ -248,4 +248,4 @@ spec:
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 10
-      serviceAccountName: platform-operator
+      serviceAccountName: package-operator
