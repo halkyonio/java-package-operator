@@ -61,8 +61,20 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                   .withLabels(createPackageLabels(pkg))
                 .endMetadata()
                 .withNewSpec()
-                  .withInitContainers(createInitOrContainersFromPipeline(pkg, "init"))
-                  .withContainers(createInitOrContainersFromPipeline(pkg, "install"))
+                  .withInitContainers(createContainersFromPipeline(
+                      pkg,
+                      s -> s.getName() != null && s.getName().startsWith("init"),
+                      s -> s.getScript() != null && !s.getScript().isEmpty() ?
+                          generatePodCommandFromScript(s.getScript()) :
+                          generatePodCommandFromTemplate(s,Mode.INSTALL)) // TODO: Review the code as Mode.INSTALL should not be passed here !
+                  )
+                  .withContainers(createContainersFromPipeline(
+                      pkg,
+                      s -> s.getName() != null && s.getName().startsWith("install"),
+                      s -> s.getScript() != null && !s.getScript().isEmpty() ?
+                          generatePodCommandFromScript(s.getScript()) :
+                          generatePodCommandFromTemplate(s,Mode.INSTALL))
+                  )
                   .withRestartPolicy("Never") // To avoid CrashLoopbackOff as pod is restarting
                 .endSpec()
                 .build();
@@ -131,32 +143,6 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
         packageStatus.setName(pkg.getMetadata().getName());
         packageStatus.setInstallationStatus(status);
         return packageStatus;
-    }
-
-    public List<Container> createInitOrContainersFromPipeline(Package pkg, String action) {
-        return Optional.ofNullable(pkg)
-            .map(Package::getSpec)
-            .map(PackageSpec::getPipeline)
-            .map(Pipeline::getSteps)
-            .orElse(Collections.emptyList())
-            .stream()
-            .filter(s -> s.getName() != null && s.getName().startsWith(action))
-            .map(s -> {
-                // TODO: To be improved if a trick exists to generate the object even if not defined within the YAML
-                if (s.getNamespace() == null) {
-                    s.setNamespace(new Namespace());
-                }
-                ContainerBuilder builder = new ContainerBuilder()
-                    .withName(s.getName())
-                    .withImage(s.getImage());
-                if (s.getScript() != null && !s.getScript().isEmpty()) {
-                    builder.withCommand(generatePodCommandFromScript(s.getScript()));
-                } else {
-                    builder.withCommand(generatePodCommandFromTemplate(s,getMode(action)));
-                }
-                return builder.build();
-            })
-            .collect(Collectors.toList());
     }
 
     /**
