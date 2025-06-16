@@ -79,7 +79,7 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
     public DeleteControl cleanup(Package pkg, Context<Package> context) throws Exception {
         LOG.info("Creating a pod to uninstall the package {}",pkg.getMetadata().getName());
 
-        var containers = createInitOrContainersFromPipeline(pkg, "uninstall");
+        var containers = createUninstallContainerFromPipeline(pkg, "uninstall");
         if (!containers.isEmpty()) {
             Pod pod = new PodBuilder()
                 //@formatter:off
@@ -140,6 +140,28 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                 } else {
                     builder.withCommand(generatePodCommandFromTemplate(s,getMode(action)));
                 }
+                return builder.build();
+            })
+            .collect(Collectors.toList());
+    }
+
+    public List<Container> createUninstallContainerFromPipeline(Package pkg, String action) {
+        return Optional.ofNullable(pkg)
+            .map(Package::getSpec)
+            .map(PackageSpec::getPipeline)
+            .map(Pipeline::getSteps)
+            .orElse(Collections.emptyList())
+            .stream()
+            // We generate a container when the pipeline contains a step action and helm
+            .filter(s -> s.getName() != null && s.getName().startsWith(action) && s.getHelm() != null)
+            .map(s -> {
+                if (s.getNamespace() == null) {
+                    s.setNamespace(new Namespace());
+                }
+                ContainerBuilder builder = new ContainerBuilder()
+                    .withName(s.getName())
+                    .withImage(s.getImage())
+                    .withCommand(generatePodCommandFromTemplate(s,getMode(action)));
                 return builder.build();
             })
             .collect(Collectors.toList());
