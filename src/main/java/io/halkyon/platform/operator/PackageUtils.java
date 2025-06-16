@@ -24,8 +24,22 @@ public class PackageUtils {
             .collect(Collectors.toList());
     }
 
-    public static List<String> generatePodCommandFromTemplate(Step step, Mode action) {
+    public static List<String> generatePodCommandFromTemplate(Step step, boolean delete) {
         String result = "";
+        Mode action;
+
+        // TODO: To be improved
+        if (delete) {
+            action = Mode.UNINSTALL;
+        } else {
+            if (step.getName().startsWith("init") && step.getWaitCondition() != null) {
+                action = Mode.WAIT_FOR;
+            } else if (step.getName().startsWith("install") && step.getHelm() != null) {
+                action = Mode.INSTALL;
+            } else {
+                action = Mode.UNINSTALL;
+            }
+        }
 
         switch (action) {
             case Mode.WAIT_FOR:

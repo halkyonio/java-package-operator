@@ -66,14 +66,14 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                       s -> s.getName() != null && s.getName().startsWith("init"),
                       s -> s.getScript() != null && !s.getScript().isEmpty() ?
                           generatePodCommandFromScript(s.getScript()) :
-                          generatePodCommandFromTemplate(s,Mode.INIT))
+                          generatePodCommandFromTemplate(s, false))
                   )
                   .withContainers(createContainersFromPipeline(
                       pkg,
                       s -> s.getName() != null && s.getName().startsWith("install"),
                       s -> s.getScript() != null && !s.getScript().isEmpty() ?
                           generatePodCommandFromScript(s.getScript()) :
-                          generatePodCommandFromTemplate(s,Mode.INSTALL))
+                          generatePodCommandFromTemplate(s, false))
                   )
                   .withRestartPolicy("Never") // To avoid CrashLoopbackOff as pod is restarting
                 .endSpec()
@@ -100,7 +100,7 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
         var containers = createContainersFromPipeline(
             pkg,
             s -> s.getName() != null && s.getName().startsWith("install") && s.getHelm() != null,
-            s -> generatePodCommandFromTemplate(s, Mode.UNINSTALL)
+            s -> generatePodCommandFromTemplate(s, true)
         );
         if (!containers.isEmpty()) {
             Job job = new JobBuilder()

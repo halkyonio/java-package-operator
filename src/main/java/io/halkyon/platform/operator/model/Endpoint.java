@@ -2,7 +2,7 @@ package io.halkyon.platform.operator.model;
 
 public class Endpoint {
     private String name;
-    private String port;
+    private Integer port;
     private String path;
 
     public String getName() {
@@ -13,11 +13,11 @@ public class Endpoint {
         this.name = name;
     }
 
-    public String getPort() {
+    public Integer getPort() {
         return port;
     }
 
-    public void setPort(String port) {
+    public void setPort(Integer port) {
         this.port = port;
     }
 
