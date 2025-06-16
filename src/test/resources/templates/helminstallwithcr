@@ -6,8 +6,8 @@ helm repo add {helm.chart.name} {helm.chart.repoUrl}
 helm repo update
 
 helm install {helm.chart.name} {helm.chart.name}/{helm.chart.name} \
-  {#if helm.chart.version??} --version {helm.chart.version} \ {/}
-  {#if namespace.name??} --namespace {namespace.name} \ {/}
-  {#if namespace.createNamespace??} --create-namespace \ {/}
+  {#if helm.chart.version??} --version {helm.chart.version} {/}
+  {#if namespace.name??} --namespace {namespace.name} {/}
+  {#if namespace.createNamespace??} --create-namespace {/}
   -f values.yml
 {/let}
