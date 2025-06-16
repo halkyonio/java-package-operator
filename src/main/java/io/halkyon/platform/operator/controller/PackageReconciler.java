@@ -122,7 +122,7 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                         c.getStatus().getSucceeded() != null &&
                         c.getStatus().getSucceeded().equals(1), 60, TimeUnit.SECONDS);
         }
-        LOG.info("Waiting till the job to uninstall succeeded !");
+        LOG.info("Job to uninstall succeeded. The package will be now deleted like the resources owned !");
         return DeleteControl.defaultDelete();
     }
 
