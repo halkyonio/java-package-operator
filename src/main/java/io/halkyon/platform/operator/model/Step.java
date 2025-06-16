@@ -16,6 +16,7 @@ public class Step {
     private Helm helm;
     private WaitCondition waitCondition;
     private Namespace namespace;
+    private boolean toBeDeleted;
 
     @PreserveUnknownFields
     @JsonPropertyDescription("Values specifies the Helm values to be passed to the helm template command and defined as a map.")
@@ -91,6 +92,14 @@ public class Step {
 
     public void setWaitCondition(WaitCondition waitCondition) {
         this.waitCondition = waitCondition;
+    }
+
+    public boolean isToBeDeleted() {
+        return toBeDeleted;
+    }
+
+    public void setToBeDeleted(boolean toBeDeleted) {
+        this.toBeDeleted = toBeDeleted;
     }
 
 }

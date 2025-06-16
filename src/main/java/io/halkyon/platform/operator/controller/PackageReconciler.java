@@ -66,14 +66,14 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                       s -> s.getName() != null && s.getName().startsWith("init"),
                       s -> s.getScript() != null && !s.getScript().isEmpty() ?
                           generatePodCommandFromScript(s.getScript()) :
-                          generatePodCommandFromTemplate(s, false))
+                          generatePodCommandFromTemplate(s,actionToDo(s, false)))
                   )
                   .withContainers(createContainersFromPipeline(
                       pkg,
                       s -> s.getName() != null && s.getName().startsWith("install"),
                       s -> s.getScript() != null && !s.getScript().isEmpty() ?
                           generatePodCommandFromScript(s.getScript()) :
-                          generatePodCommandFromTemplate(s, false))
+                          generatePodCommandFromTemplate(s,actionToDo(s, false)))
                   )
                   .withRestartPolicy("Never") // To avoid CrashLoopbackOff as pod is restarting
                 .endSpec()
@@ -100,7 +100,7 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
         var containers = createContainersFromPipeline(
             pkg,
             s -> s.getName() != null && s.getName().startsWith("install") && s.getHelm() != null,
-            s -> generatePodCommandFromTemplate(s, true)
+            s -> generatePodCommandFromTemplate(s,actionToDo(s, true))
         );
         if (!containers.isEmpty()) {
             Job job = new JobBuilder()
@@ -134,7 +134,7 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                         c.getStatus().getSucceeded() != null &&
                         c.getStatus().getSucceeded().equals(1), 60, TimeUnit.SECONDS);
         }
-        LOG.info("Job to uninstall succeeded. The package will be now deleted like the resources owned !");
+        LOG.info("Job to uninstall the package {} succeeded. The package will be now deleted like the resources owned !",pkg.getMetadata().getName());
         return DeleteControl.defaultDelete();
     }
 
@@ -165,9 +165,9 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
             .map(Package::getSpec)
             .map(PackageSpec::getPipeline)
             .map(Pipeline::getSteps)
-            .orElse(Collections.emptyList()) // Provide an empty list if any part of the path is null
+            .orElse(Collections.emptyList())
             .stream()
-            .filter(stepFilter) // Apply the custom filtering logic
+            .filter(stepFilter)
             .map(s -> {
                 // Common logic for all containers, regardless of filter or command generation
                 // This 'namespace' initialization was common to both original methods
