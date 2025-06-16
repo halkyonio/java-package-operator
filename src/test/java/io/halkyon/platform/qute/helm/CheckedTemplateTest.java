@@ -73,6 +73,54 @@ public class CheckedTemplateTest {
     }
 
     @Test
+    public void testHelmInstallAndMultiLines() {
+        String helmValues = """
+            controller:
+              hostPort:
+                enabled: true
+              service:
+                type: NodePort
+            ingress:
+              enabled: true
+            """;
+        String expected = """
+            cat << EOF > values.yml
+            controller:
+              hostPort:
+                enabled: true
+              service:
+                type: NodePort
+            ingress:
+              enabled: true
+            EOF
+            
+            helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+            helm repo update
+            
+            helm install ingress-nginx ingress-nginx/ingress-nginx \\
+            
+              --namespace default \\
+              --create-namespace \\
+              -f values.yml""";
+
+        Step step = new Step();
+        Namespace namespace = new Namespace();
+
+        Helm helm = new Helm();
+
+        Helm.Chart chart = new Helm.Chart();
+        chart.setRepoUrl("https://kubernetes.github.io/ingress-nginx");
+        chart.setName("ingress-nginx");
+        helm.setChart(chart);
+        helm.setValues(helmValues);
+
+        step.setHelm(helm);
+        step.setNamespace(namespace);
+
+        assertEquals(expected,Templates.helminstallwithcr(step).render());
+    }
+
+    @Test
     public void testHelmUninstall() {
         String expected = "helm uninstall nginx-ingress --namespace default";
 
@@ -94,6 +142,7 @@ public class CheckedTemplateTest {
     public static class Templates {
         static native TemplateInstance helmrepo(Step step);
         static native TemplateInstance helminstall(Step step);
+        static native TemplateInstance helminstallwithcr(Step step);
         static native TemplateInstance helmuninstall(Step step);
     }
 
