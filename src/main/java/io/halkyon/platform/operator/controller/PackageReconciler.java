@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static io.halkyon.platform.operator.PackageUtils.*;
@@ -60,7 +61,7 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                 .endSpec()
                 .build();
                 //@formatter:on
-            //pod.addOwnerReference(pkg);
+            pod.addOwnerReference(pkg);
             //pod.addFinalizer("packages.halkyon.io/finalizer");
 
             context.getClient().pods().inNamespace(pkg.getMetadata().getNamespace()).resource(pod).serverSideApply();
@@ -93,13 +94,22 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                 .endSpec()
                 .build();
                 //@formatter:on
-            //pod.addOwnerReference(pkg);
+            pod.addOwnerReference(pkg);
             //pod.addFinalizer("packages.halkyon.io/finalizer");
             LOG.info("Pod generated: {}", Serialization.asYaml(pod));
             context.getClient().pods().inNamespace(pkg.getMetadata().getNamespace()).resource(pod).serverSideApply();
+
+            // Include a wait for condition till the pods completed
+            context.getClient().pods()
+                .inNamespace(pkg.getMetadata().getNamespace())
+                .withName("uninstall-"+pkg.getMetadata().getName())
+                .waitUntilCondition(c ->
+                    c != null &&
+                        c.getStatus() != null &&
+                        c.getStatus().getPhase().contains("Succeeded"), 60, TimeUnit.SECONDS);
         }
         LOG.info("Waiting till the pod to uninstall succeeded !");
-        return DeleteControl.noFinalizerRemoval();
+        return DeleteControl.defaultDelete();
     }
 
     public PackageStatus updatePackageStatus(String status, Package pkg) {
