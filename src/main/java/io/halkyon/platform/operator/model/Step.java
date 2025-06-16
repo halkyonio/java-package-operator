@@ -14,6 +14,7 @@ public class Step {
     private String id;
     private String script;
     private Helm helm;
+    private WaitCondition waitCondition;
     private Namespace namespace;
 
     @PreserveUnknownFields
@@ -82,6 +83,14 @@ public class Step {
 
     public void setNamespace(Namespace namespace) {
         this.namespace = namespace;
+    }
+
+    public WaitCondition getWaitCondition() {
+        return waitCondition;
+    }
+
+    public void setWaitCondition(WaitCondition waitCondition) {
+        this.waitCondition = waitCondition;
     }
 
 }

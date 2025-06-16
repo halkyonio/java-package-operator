@@ -33,12 +33,20 @@ spec:
         steps:
           - name: init
             image: dtzar/helm-kubectl
-            script: |
-              echo "WaitFor Ingress"
-              until curl -s http://ingress-nginx-controller-admission.default:443/healthz; do
-                echo "Waiting for service to be ready..."
-                sleep 5
-              done
+            namespace:
+              name: default
+            waitCondition:
+              type: service
+              endpoint:
+                name: ingress-nginx-controller-admission
+                port: 443
+              path: /health
+            #script: |
+            #  echo "WaitFor Ingress"
+            #  until curl -s http://ingress-nginx-controller-admission.default:443/healthz; do
+            #    echo "Waiting for service to be ready..."
+            #    sleep 5
+            #  done
 
           - name: install
             image: dtzar/helm-kubectl

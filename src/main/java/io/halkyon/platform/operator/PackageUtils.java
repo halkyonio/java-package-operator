@@ -28,7 +28,10 @@ public class PackageUtils {
         String result = "";
 
         switch (action) {
-            case Mode.INSTALL:
+            case Mode.WAIT_FOR:
+                result = Templates.waitscript(step).render();
+                break;
+            case Mode.INIT, Mode.INSTALL:
                 result = Templates.helmscript(step).render();
                 break;
             case Mode.UNINSTALL:

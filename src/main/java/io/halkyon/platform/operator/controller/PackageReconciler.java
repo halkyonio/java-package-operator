@@ -66,7 +66,7 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                       s -> s.getName() != null && s.getName().startsWith("init"),
                       s -> s.getScript() != null && !s.getScript().isEmpty() ?
                           generatePodCommandFromScript(s.getScript()) :
-                          generatePodCommandFromTemplate(s,Mode.INSTALL)) // TODO: Review the code as Mode.INSTALL should not be passed here !
+                          generatePodCommandFromTemplate(s,Mode.INIT))
                   )
                   .withContainers(createContainersFromPipeline(
                       pkg,
