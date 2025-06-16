@@ -1,12 +1,16 @@
 package io.halkyon.platform.operator.controller;
 
 import io.fabric8.kubernetes.api.model.*;
+import io.fabric8.kubernetes.api.model.batch.v1.Job;
+import io.fabric8.kubernetes.api.model.batch.v1.JobBuilder;
 import io.fabric8.kubernetes.client.utils.Serialization;
+import io.halkyon.platform.operator.Mode;
 import io.halkyon.platform.operator.crd.Package;
 import io.halkyon.platform.operator.crd.PackageSpec;
 import io.halkyon.platform.operator.crd.PackageStatus;
 import io.halkyon.platform.operator.model.Namespace;
 import io.halkyon.platform.operator.model.Pipeline;
+import io.halkyon.platform.operator.model.Step;
 import io.javaoperatorsdk.operator.api.config.informer.InformerEventSourceConfiguration;
 import io.javaoperatorsdk.operator.api.reconciler.*;
 import io.javaoperatorsdk.operator.api.reconciler.Context;
@@ -17,6 +21,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static io.halkyon.platform.operator.PackageUtils.*;
@@ -77,11 +83,15 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
 
     @Override
     public DeleteControl cleanup(Package pkg, Context<Package> context) throws Exception {
-        LOG.info("Creating a pod to uninstall the package {}",pkg.getMetadata().getName());
+        LOG.info("Creating a job to uninstall the package {}",pkg.getMetadata().getName());
 
-        var containers = createUninstallContainerFromPipeline(pkg, "uninstall");
+        var containers = createContainersFromPipeline(
+            pkg,
+            s -> s.getName() != null && s.getName().startsWith("install") && s.getHelm() != null,
+            s -> generatePodCommandFromTemplate(s, Mode.UNINSTALL)
+        );
         if (!containers.isEmpty()) {
-            Pod pod = new PodBuilder()
+            Job job = new JobBuilder()
                 //@formatter:off
                 .withNewMetadata()
                   .withName("uninstall-"+pkg.getMetadata().getName())
@@ -89,26 +99,30 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                   .withLabels(createPackageLabels(pkg))
                 .endMetadata()
                 .withNewSpec()
-                  .withContainers(containers)
-                  .withRestartPolicy("Never") // To avoid CrashLoopbackOff as pod is restarting
+                  .withNewTemplate()
+                    .withNewSpec()
+                      .withContainers(containers)
+                      .withRestartPolicy("Never")
+                    .endSpec()
+                  .endTemplate()
                 .endSpec()
                 .build();
                 //@formatter:on
-            pod.addOwnerReference(pkg);
-            //pod.addFinalizer("packages.halkyon.io/finalizer");
-            LOG.info("Pod generated: {}", Serialization.asYaml(pod));
-            context.getClient().pods().inNamespace(pkg.getMetadata().getNamespace()).resource(pod).serverSideApply();
+            job.addOwnerReference(pkg);
+            LOG.debug("job generated: {}", Serialization.asYaml(job));
+            context.getClient().resources(Job.class).inNamespace(pkg.getMetadata().getNamespace()).resource(job).serverSideApply();
 
-            // Include a wait for condition till the pods completed
-            context.getClient().pods()
+            // Include a wait for condition till the job succeeded
+            context.getClient().resources(Job.class)
                 .inNamespace(pkg.getMetadata().getNamespace())
                 .withName("uninstall-"+pkg.getMetadata().getName())
                 .waitUntilCondition(c ->
                     c != null &&
                         c.getStatus() != null &&
-                        c.getStatus().getPhase().contains("Succeeded"), 60, TimeUnit.SECONDS);
+                        c.getStatus().getSucceeded() != null &&
+                        c.getStatus().getSucceeded().equals(1), 60, TimeUnit.SECONDS);
         }
-        LOG.info("Waiting till the pod to uninstall succeeded !");
+        LOG.info("Waiting till the job to uninstall succeeded !");
         return DeleteControl.defaultDelete();
     }
 
@@ -145,26 +159,46 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
             .collect(Collectors.toList());
     }
 
-    public List<Container> createUninstallContainerFromPipeline(Package pkg, String action) {
+    /**
+     * Creates a list of Kubernetes Container objects based on the provided package pipeline steps.
+     *
+     * @param pkg The Package object containing the pipeline steps.
+     * @param stepFilter A {@link Predicate} to determine which steps should be processed into containers.
+     * This allows for flexible filtering logic (e.g., by name prefix, by presence of Helm config).
+     * @param commandGenerator A {@link Function} that takes a {@link Step} and returns the
+     * appropriate {@link List<String>} command for the container.
+     * This encapsulates the logic for `generatePodCommandFromScript` vs `generatePodCommandFromTemplate`.
+     * @return A {@link List} of {@link Container} objects. Returns an empty list if no steps are found or no steps match the filter.
+     */
+    public List<Container> createContainersFromPipeline(
+        Package pkg,
+        Predicate<Step> stepFilter,
+        Function<Step, List<String>> commandGenerator) {
+
         return Optional.ofNullable(pkg)
             .map(Package::getSpec)
             .map(PackageSpec::getPipeline)
             .map(Pipeline::getSteps)
-            .orElse(Collections.emptyList())
+            .orElse(Collections.emptyList()) // Provide an empty list if any part of the path is null
             .stream()
-            // We generate a container when the pipeline contains a step action and helm
-            .filter(s -> s.getName() != null && s.getName().startsWith(action) && s.getHelm() != null)
+            .filter(stepFilter) // Apply the custom filtering logic
             .map(s -> {
+                // Common logic for all containers, regardless of filter or command generation
+                // This 'namespace' initialization was common to both original methods
                 if (s.getNamespace() == null) {
                     s.setNamespace(new Namespace());
                 }
+
                 ContainerBuilder builder = new ContainerBuilder()
                     .withName(s.getName())
-                    .withImage(s.getImage())
-                    .withCommand(generatePodCommandFromTemplate(s,getMode(action)));
-                return builder.build();
+                    .withImage(s.getImage());
+
+                // Apply the custom command generation logic using the provided function
+                builder.withCommand(commandGenerator.apply(s));
+
+                return builder.build(); // Build the Kubernetes Container object
             })
-            .collect(Collectors.toList());
+            .collect(Collectors.toList()); // Collect all built containers into a list
     }
 
 }
