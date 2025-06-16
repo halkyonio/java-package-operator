@@ -1,11 +1,11 @@
 apiVersion: halkyon.io/v1alpha1
 kind: Platform
 metadata:
-  name: generate-helm-command
+  name: ingress-helm
   namespace: platform
 spec:
   packages:
-    - name: generate-helm-command
+    - name: ingress-helm
       pipeline:
         steps:
           - name: install
@@ -27,11 +27,11 @@ spec:
                 ingress:
                   enabled: true
 
-
-          - name: uninstall
-            image: dtzar/helm-kubectl
-            #namespace:
-            #  name: default
-            helm:
-              chart:
-                name: ingress-nginx
+          # THE CONTROLLER CAN GENERATE IT
+          #- name: uninstall
+          #  image: dtzar/helm-kubectl
+          #  #namespace:
+          #  #  name: default
+          #  helm:
+          #    chart:
+          #      name: ingress-nginx
