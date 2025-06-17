@@ -17,6 +17,7 @@ public class Step {
     private WaitCondition waitCondition;
     private Namespace namespace;
     private boolean toBeDeleted;
+    private Manifest manifest;
 
     @PreserveUnknownFields
     @JsonPropertyDescription("Values specifies the Helm values to be passed to the helm template command and defined as a map.")
@@ -100,6 +101,14 @@ public class Step {
 
     public void setToBeDeleted(boolean toBeDeleted) {
         this.toBeDeleted = toBeDeleted;
+    }
+
+    public Manifest getManifest() {
+        return manifest;
+    }
+
+    public void setManifest(Manifest manifest) {
+        this.manifest = manifest;
     }
 
 }

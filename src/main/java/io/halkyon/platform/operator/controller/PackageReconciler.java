@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -64,16 +63,12 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                   .withInitContainers(createContainersFromPipeline(
                       pkg,
                       s -> s.getName() != null && s.getName().startsWith("init"),
-                      s -> s.getScript() != null && !s.getScript().isEmpty() ?
-                          generatePodCommandFromScript(s.getScript()) :
-                          generatePodCommandFromTemplate(s,actionToDo(s, false)))
+                      false)
                   )
                   .withContainers(createContainersFromPipeline(
                       pkg,
                       s -> s.getName() != null && s.getName().startsWith("install"),
-                      s -> s.getScript() != null && !s.getScript().isEmpty() ?
-                          generatePodCommandFromScript(s.getScript()) :
-                          generatePodCommandFromTemplate(s,actionToDo(s, false)))
+                      false)
                   )
                   .withRestartPolicy("Never") // To avoid CrashLoopbackOff as pod is restarting
                 .endSpec()
@@ -99,9 +94,9 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
 
         var containers = createContainersFromPipeline(
             pkg,
-            s -> s.getName() != null && s.getName().startsWith("install") && s.getHelm() != null,
-            s -> generatePodCommandFromTemplate(s,actionToDo(s, true))
-        );
+            s -> s.getName() != null && s.getName().startsWith("install"),
+            true);
+
         if (!containers.isEmpty()) {
             Job job = new JobBuilder()
                 //@formatter:off
@@ -151,36 +146,41 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
      * @param pkg The Package object containing the pipeline steps.
      * @param stepFilter A {@link Predicate} to determine which steps should be processed into containers.
      * This allows for flexible filtering logic (e.g., by name prefix, by presence of Helm config).
-     * @param commandGenerator A {@link Function} that takes a {@link Step} and returns the
-     * appropriate {@link List<String>} command for the container.
-     * This encapsulates the logic for `generatePodCommandFromScript` vs `generatePodCommandFromTemplate`.
+     * @param cleanUpFlag A {@link boolean} indicating if we will delete the resources of a package
      * @return A {@link List} of {@link Container} objects. Returns an empty list if no steps are found or no steps match the filter.
      */
     public List<Container> createContainersFromPipeline(
         Package pkg,
         Predicate<Step> stepFilter,
-        Function<Step, List<String>> commandGenerator) {
+        boolean cleanUpFlag) {
 
-        return Optional.ofNullable(pkg)
+        List<Step> stepsList = Optional.ofNullable(pkg)
             .map(Package::getSpec)
             .map(PackageSpec::getPipeline)
             .map(Pipeline::getSteps)
-            .orElse(Collections.emptyList())
-            .stream()
+            .orElse(Collections.emptyList());
+
+        return stepsList.stream()
             .filter(stepFilter)
             .map(s -> {
-                // Common logic for all containers, regardless of filter or command generation
-                // This 'namespace' initialization was common to both original methods
+                // Create a namespace object to get the default values
                 if (s.getNamespace() == null) {
                     s.setNamespace(new Namespace());
                 }
 
+                Optional<Mode> actionMode = determineAction(s, cleanUpFlag);
+                List<String> command;
+                if (actionMode.isPresent()) {
+                    Mode mode = actionMode.get();
+                    command = generatePodCommand(s, mode);
+                } else {
+                    throw new RuntimeException("No specific action mode determined for step: " + s.getName() + ". Operation aborted.");
+                }
+
                 ContainerBuilder builder = new ContainerBuilder()
                     .withName(s.getName())
-                    .withImage(s.getImage());
-
-                // Apply the custom command generation logic using the provided function
-                builder.withCommand(commandGenerator.apply(s));
+                    .withImage(s.getImage())
+                    .withCommand(command);
 
                 return builder.build(); // Build the Kubernetes Container object
             })

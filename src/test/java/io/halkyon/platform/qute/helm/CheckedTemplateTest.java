@@ -33,7 +33,7 @@ public class CheckedTemplateTest {
     @Test
     public void testHelmChartName() {
         String expected = """
-            cat << EOF > values.yml
+            cat << 'EOF' > values.yml
             EOF
             
             helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
@@ -75,7 +75,7 @@ public class CheckedTemplateTest {
               enabled: true
             """;
         String expected = """
-            cat << EOF > values.yml
+            cat << 'EOF' > values.yml
             controller:
               hostPort:
                 enabled: true
@@ -122,7 +122,7 @@ public class CheckedTemplateTest {
               enabled: true
             """;
         String expected = """
-            cat << EOF > values.yml
+            cat << 'EOF' > values.yml
             controller:
               hostPort:
                 enabled: true
