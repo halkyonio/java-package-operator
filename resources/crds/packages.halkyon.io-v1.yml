@@ -72,6 +72,11 @@ spec:
                           type: "string"
                         image:
                           type: "string"
+                        manifest:
+                          properties:
+                            url:
+                              type: "string"
+                          type: "object"
                         name:
                           type: "string"
                         namespace:
@@ -150,6 +155,11 @@ spec:
                       type: "string"
                     image:
                       type: "string"
+                    manifest:
+                      properties:
+                        url:
+                          type: "string"
+                      type: "object"
                     name:
                       type: "string"
                     namespace:
