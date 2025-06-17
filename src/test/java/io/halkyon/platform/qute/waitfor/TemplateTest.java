@@ -14,7 +14,7 @@ public class TemplateTest {
     public void testWaitForScript() {
         String expected = """
             echo "Wait for ingress-nginx-controller-admission ready ..."
-            until curl -s http://ingress-nginx-controller-admission.default:443/; do
+            until curl -ks http://ingress-nginx-controller-admission.default:443/; do
               echo "Waiting for service to be ready..."
               sleep 5
             done""";
