@@ -42,7 +42,7 @@ spec:
               endpoint:
                 name: ingress-nginx-controller-admission
                 port: 443
-              path: /health
+              path: health
 
           - name: install
             image: dtzar/helm-kubectl
@@ -98,11 +98,8 @@ spec:
           - name: install
             image: dtzar/helm-kubectl
             manifest:
-              url: https://github.com/cert-manager/cert-manager/releases/download/v1.17.2/cert-manager.yaml #kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.2/cert-manager.yaml
-          #- name: uninstall
-          #  image: dtzar/helm-kubectl
-          #  script: |
-          #    kubectl delete -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.2/cert-manager.yaml
+              url: https://github.com/cert-manager/cert-manager/releases/download/v1.17.2/cert-manager.yaml
+
     - name: kratix
       description: "kratix package"
       pipeline:
@@ -114,18 +111,15 @@ spec:
             waitCondition:
               type: service
               endpoint:
+                protocol: https
                 name: cert-manager-webhook
                 port: 443
-              path: /health
+              path: health
 
           - name: install
             image: dtzar/helm-kubectl
             manifest:
-              url: https://github.com/syntasso/kratix/releases/latest/download/kratix.yaml #kubectl apply -f https://github.com/syntasso/kratix/releases/latest/download/kratix.yaml
-          #- name: uninstall
-          #  image: dtzar/helm-kubectl
-          #  script: |
-          #    kubectl delete -f https://github.com/syntasso/kratix/releases/latest/download/kratix.yaml
+              url: https://github.com/syntasso/kratix/releases/latest/download/kratix.yaml
 
     - name: argocd
       description: "argocd package"

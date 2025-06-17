@@ -24,6 +24,8 @@ spec:
               packages:
                 items:
                   properties:
+                    counter:
+                      type: "integer"
                     description:
                       type: "string"
                     id:
@@ -117,6 +119,8 @@ spec:
                                         type: "string"
                                       port:
                                         type: "integer"
+                                      protocol:
+                                        type: "string"
                                     type: "object"
                                   namespace:
                                     type: "string"
@@ -169,6 +173,8 @@ spec:
                 type: "string"
               packageToProcess:
                 properties:
+                  counter:
+                    type: "integer"
                   description:
                     type: "string"
                   id:
@@ -262,6 +268,8 @@ spec:
                                       type: "string"
                                     port:
                                       type: "integer"
+                                    protocol:
+                                      type: "string"
                                   type: "object"
                                 namespace:
                                   type: "string"
@@ -288,6 +296,8 @@ spec:
               packages:
                 items:
                   properties:
+                    counter:
+                      type: "integer"
                     description:
                       type: "string"
                     id:
@@ -381,6 +391,8 @@ spec:
                                         type: "string"
                                       port:
                                         type: "integer"
+                                      protocol:
+                                        type: "string"
                                     type: "object"
                                   namespace:
                                     type: "string"

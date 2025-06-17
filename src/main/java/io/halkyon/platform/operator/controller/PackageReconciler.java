@@ -51,13 +51,13 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
 
         var previousPod = context.getSecondaryResource(Pod.class).orElse(null);
         if (previousPod == null) {
-            LOG.info("Creating the pod for the package {}",pkg.getMetadata().getName());
+            LOG.info("Creating the pod for the package {}, having as position: {}",pkg.getMetadata().getName(),pkg.getMetadata().getLabels().get(PACKAGE_ORDER_LABEL));
             Pod pod = new PodBuilder()
                 //@formatter:off
                 .withNewMetadata()
                   .withName(pkg.getMetadata().getName())
                   .withNamespace(pkg.getMetadata().getNamespace())
-                  .withLabels(createPackageLabels(pkg))
+                  .withLabels(createResourceLabels(pkg))
                 .endMetadata()
                 .withNewSpec()
                   .withInitContainers(createContainersFromPipeline(
@@ -75,7 +75,6 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                 .build();
                 //@formatter:on
             pod.addOwnerReference(pkg);
-            //pod.addFinalizer("packages.halkyon.io/finalizer");
 
             context.getClient().pods().inNamespace(pkg.getMetadata().getNamespace()).resource(pod).serverSideApply();
         } else {
@@ -90,47 +89,7 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
 
     @Override
     public DeleteControl cleanup(Package pkg, Context<Package> context) throws Exception {
-        LOG.info("Creating a job to uninstall the package {}",pkg.getMetadata().getName());
-
-        var containers = createContainersFromPipeline(
-            pkg,
-            s -> s.getName() != null && s.getName().startsWith("install"),
-            true);
-
-        if (!containers.isEmpty()) {
-            Job job = new JobBuilder()
-                //@formatter:off
-                .withNewMetadata()
-                  .withName("uninstall-"+pkg.getMetadata().getName())
-                  .withNamespace(pkg.getMetadata().getNamespace())
-                  .withLabels(createPackageLabels(pkg))
-                .endMetadata()
-                .withNewSpec()
-                  .withNewTemplate()
-                    .withNewSpec()
-                      .withContainers(containers)
-                      .withRestartPolicy("Never")
-                    .endSpec()
-                  .endTemplate()
-                .endSpec()
-                .build();
-                //@formatter:on
-            job.addOwnerReference(pkg);
-            LOG.debug("job generated: {}", Serialization.asYaml(job));
-            context.getClient().resources(Job.class).inNamespace(pkg.getMetadata().getNamespace()).resource(job).serverSideApply();
-
-            // Include a wait for condition till the job succeeded
-            context.getClient().resources(Job.class)
-                .inNamespace(pkg.getMetadata().getNamespace())
-                .withName("uninstall-"+pkg.getMetadata().getName())
-                .waitUntilCondition(c ->
-                    c != null &&
-                        c.getStatus() != null &&
-                        c.getStatus().getSucceeded() != null &&
-                        c.getStatus().getSucceeded().equals(1), 60, TimeUnit.SECONDS);
-        }
-        LOG.info("Job to uninstall the package {} succeeded. The package will be now deleted like the resources owned !",pkg.getMetadata().getName());
-        return DeleteControl.defaultDelete();
+         return DeleteControl.defaultDelete();
     }
 
     public PackageStatus updatePackageStatus(String status, Package pkg) {
@@ -149,7 +108,7 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
      * @param cleanUpFlag A {@link boolean} indicating if we will delete the resources of a package
      * @return A {@link List} of {@link Container} objects. Returns an empty list if no steps are found or no steps match the filter.
      */
-    public List<Container> createContainersFromPipeline(
+    public static List<Container> createContainersFromPipeline(
         Package pkg,
         Predicate<Step> stepFilter,
         boolean cleanUpFlag) {

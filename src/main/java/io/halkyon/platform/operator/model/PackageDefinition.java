@@ -12,6 +12,7 @@ public class PackageDefinition {
     private Pipeline pipeline;
     private String runAfter;
     private String status;
+    private Integer counter;
 
     public String getId() {
         return id;
@@ -89,6 +90,14 @@ public class PackageDefinition {
 
     public void setKubernetesJob(KubernetesJob kubernetesJob) {
         this.kubernetesJob = kubernetesJob;
+    }
+
+    public Integer getCounter() {
+        return counter;
+    }
+
+    public void setCounter(Integer counter) {
+        this.counter = counter;
     }
 
     @Override

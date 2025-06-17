@@ -17,3 +17,16 @@ spec:
             image: registry.access.redhat.com/ubi9
             script: |
               echo "I say good bye"
+
+    - name: say-bonjour
+      pipeline:
+        steps:
+          - name: install
+            image: registry.access.redhat.com/ubi9
+            script: |
+              echo "Je dis bonjour"
+
+          - name: uninstall
+            image: registry.access.redhat.com/ubi9
+            script: |
+              echo "Je dis au revoir"

@@ -1,6 +1,6 @@
 {#let wait=step.waitCondition namespace=step.namespace}
 echo "Wait for {wait.endpoint.name} ready ..."
-until curl -s http://{wait.endpoint.name}.{namespace.name}:{wait.endpoint.port}/{wait.path}; do
+until curl -ks {wait.endpoint.protocol}://{wait.endpoint.name}.{namespace.name}:{wait.endpoint.port}/{wait.path}; do
   echo "Waiting for service to be ready..."
   sleep 5
 done

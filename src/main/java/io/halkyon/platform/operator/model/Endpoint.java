@@ -4,6 +4,7 @@ public class Endpoint {
     private String name;
     private Integer port;
     private String path;
+    private String protocol = "http";
 
     public String getName() {
         return name;
@@ -27,5 +28,13 @@ public class Endpoint {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
     }
 }

@@ -15,6 +15,7 @@ public class PackageUtils {
 
     public final static String INSTALLATION_SUCCEEDED = "installation succeeded";
     public final static String PACKAGE_LABEL_SELECTOR = "io.halkyon.package";
+    public final static String PACKAGE_ORDER_LABEL = "io.halkyon.package.order";
     public final static String INSTALLATION_FAILED = "installation failed";
 
     public static List<String> generatePodCommand(Step step, Mode action) {
@@ -52,7 +53,7 @@ public class PackageUtils {
     /**
      * Determines the appropriate action Mode for a given Step, considering cleanup logic first.
      *
-     * @param step The Step object to evaluate.
+     * @param step    The Step object to evaluate.
      * @param cleanup A boolean flag indicating if the overall operation is a cleanup.
      * @return An Optional containing the determined Mode, or empty if no specific mode is matched.
      */
@@ -99,9 +100,16 @@ public class PackageUtils {
         return Optional.empty();
     }
 
-    public static LinkedHashMap<String, String> createPackageLabels(Package pkg) {
+    public static LinkedHashMap<String, String> createResourceLabels(Package pkg) {
         LinkedHashMap<String, String> labels = new LinkedHashMap<>();
         labels.put(PACKAGE_LABEL_SELECTOR, pkg.getMetadata().getName());
+        return labels;
+    }
+
+    public static LinkedHashMap<String, String> createPackageLabels(Package pkg, Integer order) {
+        LinkedHashMap<String, String> labels = new LinkedHashMap<>();
+        labels.put(PACKAGE_LABEL_SELECTOR, pkg.getMetadata().getName());
+        labels.put(PACKAGE_ORDER_LABEL, String.valueOf(order));
         return labels;
     }
 
@@ -181,14 +189,38 @@ public class PackageUtils {
         return linkedList;
     }
 
-    public static Mode getMode(String value) {
-        if (value == null) {
-            throw new IllegalArgumentException("Input string cannot be null");
+    /**
+     * Sorts a list of Packages in reversing order based on the "io.halkyon.package.order" label.
+     * Packages without a valid numerical order label will be treated as the lowest priority (appear last in reverse order).
+     *
+     * @param packages The list of Package objects to sort.
+     * @return A new List containing the sorted Packages.
+     */
+    public static List<Package> sortPackagesByOrderLabel(Set<Package> packages) {
+        if (packages == null || packages.isEmpty()) {
+            return Collections.emptyList();
         }
-        try {
-            return Mode.valueOf(value.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid Mode: " + value, e);
-        }
+
+        return packages.stream()
+            .sorted(Comparator.comparing(
+                    obj -> {
+                        Package pkg = (Package) obj;
+                        String orderString = pkg.getMetadata().getLabels().get(PACKAGE_ORDER_LABEL);
+
+                        if (orderString == null || orderString.isBlank()) { // Check for null or blank
+                            return Integer.MIN_VALUE;
+                        }
+
+                        try {
+                            return Integer.parseInt(orderString);
+                        } catch (NumberFormatException e) {
+                            LOG.warn("!!! Invalid number format for package order label on package '" + pkg.getMetadata().getName() + "': " + orderString);
+                            return Integer.MIN_VALUE; // Handle parsing error: treat as lowest priority
+                        }
+                    },
+                    Comparator.naturalOrder()
+                )
+                .reversed())
+            .collect(Collectors.toList());
     }
 }

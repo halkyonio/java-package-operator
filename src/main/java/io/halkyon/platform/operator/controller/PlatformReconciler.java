@@ -1,5 +1,8 @@
 package io.halkyon.platform.operator.controller;
 
+import io.fabric8.kubernetes.api.model.batch.v1.Job;
+import io.fabric8.kubernetes.api.model.batch.v1.JobBuilder;
+import io.fabric8.kubernetes.client.utils.Serialization;
 import io.halkyon.platform.operator.crd.Package;
 import io.halkyon.platform.operator.crd.PackageSpec;
 import io.halkyon.platform.operator.crd.Platform;
@@ -17,10 +20,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static io.halkyon.platform.operator.PackageUtils.*;
+import static io.halkyon.platform.operator.controller.PackageReconciler.createContainersFromPipeline;
 
 /*
 @Workflow(
@@ -62,23 +67,33 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
         if (previousPackages == null) {
             // When the previous package is null, then we process the first package of the list
             pkgDefinition = pkgs.getFirst();
+            pkgDefinition.setCounter(1);
         } else {
-            // As a Package has already been processed, we will check its status is "installation succeeded"
-            // and remove it from the list of the to be processed to pick up the next one
-            Set<String> succeededNames = previousPackages.stream()
-                .filter(pkg -> pkg.getStatus() != null && pkg.getStatus().getInstallationStatus() != null)
-                .filter(pkg -> INSTALLATION_SUCCEEDED.equalsIgnoreCase(pkg.getStatus().getInstallationStatus()))
+            // As a Package has already been processed, we will check if status is "installation succeeded"
+            // and remove it from the list to be processed to pick up the next one
+            List<Package> succeededPkgList = previousPackages.stream()
+                .filter(pkg ->
+                    pkg.getStatus() != null &&
+                    pkg.getStatus().getInstallationStatus() != null &&
+                    INSTALLATION_SUCCEEDED.equalsIgnoreCase(pkg.getStatus().getInstallationStatus())).collect(Collectors.toList());
+
+            // Count how many packages succeeded to increase the counter
+            Integer counter = (int)succeededPkgList.size();
+
+            // Create a set of the succeeded names
+            Set<String> succeededPackages = succeededPkgList.stream()
                 .map(pkg -> pkg.getMetadata().getName())
                 .collect(Collectors.toSet());
 
             List<PackageDefinition> remaining = pkgs.stream()
-                .filter(pkg -> !succeededNames.contains(pkg.getName()))
+                .filter(pkg -> !succeededPackages.contains(pkg.getName()))
                 .toList();
 
             Optional<PackageDefinition> nextToProcess = remaining.stream().findFirst();
             if (nextToProcess.isPresent()) {
                 LOG.info("Next package to create: " + nextToProcess.get().getName());
                 pkgDefinition = nextToProcess.get();
+                pkgDefinition.setCounter(counter + 1);
             }
         }
         if (pkgDefinition != null) {
@@ -104,37 +119,12 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
 
     }
 
-    /**
-     * Creates a new List<PackageDefinition> by combining an existing list
-     * and a new PackageDefinition object.
-     * The original list is not modified.
-     *
-     * @param originalList The list to which you want to conceptually "append".
-     * @param newPackage The new object to append.
-     * @return A new List containing all elements from the original list plus the newPackage.
-     */
-    public static List<PackageDefinition> appendPackage(
-        List<PackageDefinition> originalList, PackageDefinition newPackage) {
-
-        // If the original list is null, treat it as an empty list
-        // and just create a new list containing only the new package.
-        if (originalList == null) {
-            return Collections.singletonList(newPackage);
-        }
-
-        return Stream.concat(
-                originalList.stream(),
-                Stream.of(newPackage)
-            )
-            .collect(Collectors.toList());
-    }
-
 
     private Package createPackageCR(PackageDefinition pkgDefinition, Platform platform) {
         Package pkg = new Package();
         pkg.getMetadata().setName(pkgDefinition.getName());
         pkg.getMetadata().setNamespace(platform.getMetadata().getNamespace());
-        pkg.getMetadata().setLabels(createPackageLabels(pkg));
+        pkg.getMetadata().setLabels(createPackageLabels(pkg, pkgDefinition.getCounter()));
         pkg.addOwnerReference(platform);
 
         PackageSpec pkgSpec = new PackageSpec();
@@ -149,6 +139,50 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
     @Override
     public DeleteControl cleanup(Platform platform, Context<Platform> context) throws Exception {
         LOG.info("Platform resource: {} deleted", platform.getMetadata().getName());
+        Set<Package> pkgs = context.getSecondaryResources(Package.class);
+        List<Package> sortedPkgs = sortPackagesByOrderLabel(pkgs);
+
+        sortedPkgs.forEach(pkg -> {
+            LOG.info("Creating a job to uninstall the package {}, having position: {}", pkg.getMetadata().getName(),pkg.getMetadata().getLabels().get(PACKAGE_ORDER_LABEL));
+            var containers = createContainersFromPipeline(
+                pkg,
+                s -> s.getName() != null && s.getName().startsWith("install"),
+                true);
+
+            if (!containers.isEmpty()) {
+                Job job = new JobBuilder()
+                    //@formatter:off
+                .withNewMetadata()
+                .withName("uninstall-"+pkg.getMetadata().getName())
+                .withNamespace(pkg.getMetadata().getNamespace())
+                .withLabels(createResourceLabels(pkg))
+                .endMetadata()
+                .withNewSpec()
+                .withNewTemplate()
+                .withNewSpec()
+                .withContainers(containers)
+                .withRestartPolicy("Never")
+                .endSpec()
+                .endTemplate()
+                .endSpec()
+                .build();
+            //@formatter:on
+                job.addOwnerReference(pkg);
+                LOG.debug("job generated: {}", Serialization.asYaml(job));
+                context.getClient().resources(Job.class).inNamespace(pkg.getMetadata().getNamespace()).resource(job).serverSideApply();
+
+                // Include a wait for condition till the job succeeded
+                context.getClient().resources(Job.class)
+                    .inNamespace(pkg.getMetadata().getNamespace())
+                    .withName("uninstall-" + pkg.getMetadata().getName())
+                    .waitUntilCondition(c ->
+                        c != null &&
+                            c.getStatus() != null &&
+                            c.getStatus().getSucceeded() != null &&
+                            c.getStatus().getSucceeded().equals(1), 60, TimeUnit.SECONDS);
+            }
+            LOG.info("Job to uninstall the package {} succeeded.", pkg.getMetadata().getName());
+        });
         return DeleteControl.defaultDelete();
     }
 }
