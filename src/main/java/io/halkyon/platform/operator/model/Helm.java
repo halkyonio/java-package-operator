@@ -31,10 +31,10 @@ public class Helm {
 
     public static class Chart {
         /**
-         * The name of the chart to be installed. The name corresponds to one of the entries of the chart repository index.yaml file
-         * This name is also used as the repository name and if not specified as release name
+         * The name of the chart corresponds to one of the entries of the chart repository index.yaml file
+         * By convention, this name is also used as the repository name to be created locally and as release name to be installed.
          *
-         * helm repo add <chart.name> or <release.repoName> <chart.repoUrl>
+         * helm repo add <chart.name> <chart.repoUrl>
          * helm install <chart.name> or <release.name> <chart.name>/<chart.name>
          */
         private String name;
@@ -45,22 +45,9 @@ public class Helm {
         private String repoUrl;
 
         /**
-         * The name of the chart's repository. If not defined, the chart name will be used
-         */
-        private String repoName;
-
-        /**
          * The version of the chart
          */
         private String version;
-
-        public String getRepoName() {
-            return repoName;
-        }
-
-        public void setRepoName(String repoName) {
-            this.repoName = repoName;
-        }
 
         public String getName() {
             return name;
@@ -87,7 +74,7 @@ public class Helm {
         }
     }
 
-    public class Release {
+    public static class Release {
         /**
          * The name of the release to be installed. If not defined, then the chart name will be used
          */

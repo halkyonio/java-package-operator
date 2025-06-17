@@ -1,3 +1,3 @@
 {#let helm=step.helm namespace=step.namespace}
-helm uninstall {helm.chart.name} {#if namespace.name??} --namespace {namespace.name}{/}
+helm uninstall {#if helm.release.name??}{helm.release.name}{#else}{helm.chart.name}{/if} {#if namespace.name??} --namespace {namespace.name}{/}
 {/let}

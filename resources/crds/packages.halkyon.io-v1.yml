@@ -53,8 +53,6 @@ spec:
                               properties:
                                 name:
                                   type: "string"
-                                repoName:
-                                  type: "string"
                                 repoUrl:
                                   type: "string"
                                 version:
@@ -87,11 +85,33 @@ spec:
                           type: "object"
                         script:
                           type: "string"
+                        toBeDeleted:
+                          type: "boolean"
                         values:
                           description: "Values specifies the Helm values to be passed\
                             \ to the helm template command and defined as a map."
                           type: "string"
                           x-kubernetes-preserve-unknown-fields: true
+                        waitCondition:
+                          properties:
+                            endpoint:
+                              properties:
+                                name:
+                                  type: "string"
+                                path:
+                                  type: "string"
+                                port:
+                                  type: "integer"
+                              type: "object"
+                            namespace:
+                              type: "string"
+                            path:
+                              type: "string"
+                            timeOut:
+                              type: "string"
+                            type:
+                              type: "string"
+                          type: "object"
                       required:
                       - "image"
                       - "name"
@@ -110,8 +130,6 @@ spec:
                         chart:
                           properties:
                             name:
-                              type: "string"
-                            repoName:
                               type: "string"
                             repoUrl:
                               type: "string"
@@ -145,11 +163,33 @@ spec:
                       type: "object"
                     script:
                       type: "string"
+                    toBeDeleted:
+                      type: "boolean"
                     values:
                       description: "Values specifies the Helm values to be passed\
                         \ to the helm template command and defined as a map."
                       type: "string"
                       x-kubernetes-preserve-unknown-fields: true
+                    waitCondition:
+                      properties:
+                        endpoint:
+                          properties:
+                            name:
+                              type: "string"
+                            path:
+                              type: "string"
+                            port:
+                              type: "integer"
+                          type: "object"
+                        namespace:
+                          type: "string"
+                        path:
+                          type: "string"
+                        timeOut:
+                          type: "string"
+                        type:
+                          type: "string"
+                      type: "object"
                   required:
                   - "image"
                   - "name"

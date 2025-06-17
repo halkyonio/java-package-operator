@@ -91,41 +91,34 @@ spec:
                       paths:
                         - path: /
                           pathType: Prefix
-    #- name: argocd
-    #  description: "argocd package"
-    #  pipeline:
-    #    steps:
-    #      - name: install
-    #        image: dtzar/helm-kubectl
-    #        script: |
-    #          cat << 'EOF' > values.yml
-    #          configs:
-    #           secret:
-    #             argocdServerAdminPassword: $2a$10$lsTGT/O94tQBTs4gdtQmBuQ3R3jgfSizvPSzl6ySt2cn6OktKVwAy
-    #          global:
-    #            domain: argocd.localtest.me
-    #          certificate:
-    #            enabled: true
-    #          server:
-    #            ingress:
-    #              enabled: true
-    #              ingressClassName: nginx
-    #              annotations:
-    #                nginx.ingress.kubernetes.io/backend-protocol: HTTPS
-    #                nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    #                nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-    #              tls: true
-    #          EOF
-    #          cat values.yml
-    #          helm repo add argo https://argoproj.github.io/argo-helm
-    #          helm repo update
-    #          helm uninstall argocd -n argocd || echo "Release 'argocd' not found. Continuing..."
-    #          helm install argocd argo/argo-cd \
-    #             --namespace argocd \
-    #             --create-namespace \
-    #             -f values.yml
-    #
-    #      - name: uninstall
-    #        image: dtzar/helm-kubectl
-    #        script: |
-    #          helm uninstall argocd -n argocd
+    - name: argocd
+      description: "argocd package"
+      pipeline:
+        steps:
+          - name: install
+            image: dtzar/helm-kubectl
+            namespace:
+              name: argocd
+            helm:
+              chart:
+                repoUrl: https://argoproj.github.io/argo-helm
+                name: argo-cd
+              release:
+                name: argocd
+              values: |
+                configs:
+                  secret:
+                    argocdServerAdminPassword: $2a$10$lsTGT/O94tQBTs4gdtQmBuQ3R3jgfSizvPSzl6ySt2cn6OktKVwAy
+                global:
+                  domain: argocd.localtest.me
+                certificate:
+                  enabled: true
+                server:
+                  ingress:
+                    enabled: true
+                    ingressClassName: nginx
+                    annotations:
+                      nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+                      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+                      nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+                    tls: true

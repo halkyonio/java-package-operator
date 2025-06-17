@@ -121,7 +121,8 @@ spec:
             helm:
               chart:
                 repoUrl: https://argoproj.github.io/argo-helm
-                repoName: argo-cd
+                name: argo-cd
+              release:
                 name: argocd
             values: |
               configs:

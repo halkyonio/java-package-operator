@@ -1,5 +1,6 @@
 package io.halkyon.platform.qute.helm;
 
+import io.halkyon.platform.operator.Templates;
 import io.halkyon.platform.operator.model.Helm;
 import io.halkyon.platform.operator.model.Namespace;
 import io.halkyon.platform.operator.model.Step;
@@ -26,7 +27,40 @@ public class CheckedTemplateTest {
 
         helm.setChart(chart);
         step.setHelm(helm);
-        assertEquals(expected,Templates.helmrepo(step).render());
+        assertEquals(expected,TestTemplates.helmrepo(step).render());
+    }
+
+    @Test
+    public void testHelmChartName() {
+        String expected = """
+            cat << EOF > values.yml
+            EOF
+            
+            helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+            helm repo update
+            
+            helm install my-ingress-nginx ingress-nginx/ingress-nginx --namespace default --create-namespace -f values.yml
+            """;
+
+        Step step = new Step();
+        Namespace namespace = new Namespace();
+
+        Helm helm = new Helm();
+
+        Helm.Chart chart = new Helm.Chart();
+        chart.setRepoUrl("https://kubernetes.github.io/ingress-nginx");
+        chart.setName("ingress-nginx");
+
+        Helm.Release release = new Helm.Release();
+        release.setName("my-ingress-nginx");
+
+        helm.setChart(chart);
+        helm.setRelease(release);
+
+        step.setHelm(helm);
+        step.setNamespace(namespace);
+
+        assertEquals(expected, Templates.helmscript(step).render());
     }
 
     @Test
@@ -54,7 +88,8 @@ public class CheckedTemplateTest {
             helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
             helm repo update
             
-            helm install ingress-nginx ingress-nginx/ingress-nginx --namespace default --create-namespace -f values.yml""";
+            helm install ingress-nginx ingress-nginx/ingress-nginx --namespace default --create-namespace -f values.yml
+            """;
 
         Step step = new Step();
         Namespace namespace = new Namespace();
@@ -70,7 +105,7 @@ public class CheckedTemplateTest {
         step.setHelm(helm);
         step.setNamespace(namespace);
 
-        assertEquals(expected,Templates.helminstall(step).render());
+        assertEquals(expected, Templates.helmscript(step).render());
     }
 
     // TODO: To be reviewed as don't work ...
@@ -120,7 +155,7 @@ public class CheckedTemplateTest {
         step.setHelm(helm);
         step.setNamespace(namespace);
 
-        assertEquals(expected,Templates.helminstallwithcr(step).render());
+        assertEquals(expected,TestTemplates.helminstallwithcr(step).render());
     }
 
     @Test
@@ -138,13 +173,12 @@ public class CheckedTemplateTest {
         step.setHelm(helm);
         step.setNamespace(namespace);
 
-        assertEquals(expected,Templates.helmuninstall(step).render());
+        assertEquals(expected,TestTemplates.helmuninstall(step).render());
     }
 
     @CheckedTemplate(basePath = "")
-    public static class Templates {
+    public static class TestTemplates {
         static native TemplateInstance helmrepo(Step step);
-        static native TemplateInstance helminstall(Step step);
         static native TemplateInstance helminstallwithcr(Step step);
         static native TemplateInstance helmuninstall(Step step);
     }

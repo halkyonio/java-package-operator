@@ -27,7 +27,7 @@ public class TemplateTest {
         Endpoint endpoint = new Endpoint();
         endpoint.setName("ingress-nginx-controller-admission");
         endpoint.setPath("/healthz");
-        endpoint.setPort("443");
+        endpoint.setPort(443);
         waitCondition.setEndpoint(endpoint);
 
         step.setWaitCondition(waitCondition);
