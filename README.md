@@ -35,7 +35,7 @@ For each package, you will declare a pipeline including steps: `init` (optional)
 
 **Note**: Until now it is mandatory to adopt this naming convention of the steps as the controller is searching about them !
 
-The step `install` will be used to perform a task which can be declared part of the `script` field or using tools such as: `helm`, `kubectl` configured respectively with the fields: `helm` and `file`
+The step `install` will be used to perform a task which can be declared part of the `script` field or using tools such as: `helm`, `kubectl` configured respectively with the fields: `helm` and `file`. This is what we have done hereafter using the `helm` and `chart` fields
 
 ```yaml
 apiVersion: halkyon.io/v1alpha1
@@ -54,7 +54,7 @@ spec:
             helm:
               chart:
 ```
-The target namespace where the resources should be deployed is defined using the field: `namespace`. If not specifield, they will be deployed under the `default` namespace.
+The target namespace where the resources should be deployed is defined using the field: `namespace` and `name`. If not specified, they will be deployed under the `default` namespace.
 
 ```yaml
 apiVersion: halkyon.io/v1alpha1
