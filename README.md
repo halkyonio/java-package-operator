@@ -1,28 +1,83 @@
 # Java Platform Kubernetes operator
 
-The Java Platform Kubernetes operator projects aims to provision a cluster without the pain to have to deal with scripts locally (bash, python, etc), to manage the depends on or to wait till services, resources (deployment, pod, ...) are up and running.
+The Java Platform Kubernetes operator projects aims to provision a cluster without the pain to have to deal with scripts locally (bash, python, etc), to manage the dependencies or to wait till services, resources (deployment, pod, ...) are up and running.
 
-With the help of our `Platform Custom Resource`, you can declare using the section `Packages` what you would like to install (ingress, backstage, gitea, argocd, etc) and the `How` is defined part of a simple Pipeline composed of steps able to perform: init, install, uninstall or do something post-installation.
+With the help of our `Platform Custom Resource`, you can declare using the section `Packages` what you would like to install (ingress, backstage, gitea, argocd, etc) and the `How` is defined part of a simple Pipeline composed of steps able to perform: init, install, uninstall or something post-installation.
 
 This project is still a WIP and additional features, improvements will come such as:
 
-- Add `step` field to specify the tool to be used: helm, file, kustomize, etc and their parameters or values to be passed to Helm
 - Support to mount script(s) to be executed part of pipeline step(s)
-- Delete the pod used to `uninstall` a package when the Package CR is deleted
 - Implement a simple mechanism to start a container when the previous finished (mounted volume with shared files, etc)
 
 ## Rational of this project
 
-While several projects already exist to install and sync resources: Argocd, Kro, Crossplane, ... most of them don't support to define easily steps to be executed, before or after a package is installed, rely on user's scripts to define the scenario to be executed when x packages are installed able to verify if pod, deployment, service are ready, if a health check endpoint returns a HTTP 200 response, etc and don't support to declare the dependencies between the packages/applications: https://github.com/argoproj/argo-cd/issues/7437
+While several projects already exist to install and sync resources: Argocd, Kro, Crossplane, ... most of them don't support to define easily steps to be executed, before or after a package is installed, rely heavily on user's scripts to define the scenario to be executed when x packages are installed able to verify if pod, deployment, service are ready, if a health check endpoint returns an HTTP 200 response, etc and don't support to declare the dependencies between the packages/applications: https://github.com/argoproj/argo-cd/issues/7437
 
-TODO
-
+TODO: To be continued
 
 ## How to play with it
 
-Install locally a Kubernetes cluster running the `Platform controller` using the [Java Kind client](https://github.com/halkyonio/java-kind-client)
+Install locally a Kubernetes cluster running our `Platform controller` using the [Java Kind client](https://github.com/halkyonio/java-kind-client)
 
-Create next a `Platform` definition file packaging by example: `ingress` and `gitea`
+Create next a `Platform` definition [file](resources/examples/platform-ingress-gitea.yml) packaging by example: `ingress` and `gitea`.
+For that purpose, you will have to create a custom resource file having the following structure:
+
+```yaml
+apiVersion: halkyon.io/v1alpha1
+kind: Platform
+metadata:
+  name: ingress-gitea
+...  
+spec:
+  packages:
+```
+For each package, you will declare a pipeline including steps: `init` (optional) or `install`. 
+
+**Note**: Until now it is mandatory to adopt this naming convention of the steps as the controller is searching about them !
+
+The step `install` will be used to perform a task which can be declared part of the `script` field or using tools such as: `helm`, `kubectl` configured respectively with the fields: `helm` and `file`
+
+```yaml
+apiVersion: halkyon.io/v1alpha1
+kind: Platform
+metadata:
+  name: ingress-gitea
+...  
+spec:
+  packages:
+    - name: nginx-ingress
+      description: "nginx-ingress package"
+      pipeline:
+        steps:
+          - name: install
+            image: dtzar/helm-kubectl
+            helm:
+              chart:
+```
+The target namespace where the resources should be deployed is defined using the field: `namespace`. If not specifield, they will be deployed under the `default` namespace.
+
+```yaml
+apiVersion: halkyon.io/v1alpha1
+kind: Platform
+metadata:
+  name: ingress-gitea
+...  
+spec:
+  packages:
+    - name: nginx-ingress
+      description: "nginx-ingress package"
+      pipeline:
+        steps:
+          - name: install
+            image: dtzar/helm-kubectl
+            namespace:
+              name: ingress
+            helm:
+              chart:
+```
+
+For helm, you will configure the parameters such as the url of the chart repository (= index.yaml), its version and the name of the chart to be fetched from the repository and to be deployed. The helm values will be defined using the `values` field.
+
 ```yaml
 apiVersion: halkyon.io/v1alpha1
 kind: Platform
@@ -37,123 +92,134 @@ spec:
       description: "nginx-ingress package"
       pipeline:
         steps:
-          - name: install-nginx-ingress
+          - name: install
             image: dtzar/helm-kubectl
-            repoUrl: https://kubernetes.github.io/ingress-nginx
-            version: 4.12.2
-            script: |
-              cat << EOF > values.yml
-              controller:
-                hostPort:
+            namespace:
+              name: ingress
+            helm:
+              chart:
+                repoUrl: https://kubernetes.github.io/ingress-nginx
+                name: ingress-nginx
+                version: 4.12.2
+              values: |
+                controller:
+                  hostPort:
+                    enabled: true
+                  service:
+                    type: NodePort
+                ingress:
                   enabled: true
-                service:
-                  type: NodePort
-              ingress:
-                enabled: true
-              EOF
-              helm repo add ingress https://kubernetes.github.io/ingress-nginx
-              helm repo update
-              helm uninstall nginx-ingress -n ingress || echo "Release 'nginx-ingress' not found. Continuing..."
-              helm install nginx-ingress ingress/ingress-nginx \
-                 --version 4.12.2 \
-                 --namespace ingress \
-                 --create-namespace \
-                 -f values.yml
-              echo "This is installation step"
-            values: |
-              ingress:
-                enabled: true
-          - name: post-install
-            image: dtzar/helm-kubectl
-            script: |
-              echo "WaitFor Ingress"
-              # kubectl rollout status deployment nginx-ingress-ingress-nginx-controller -n ingress --timeout=90s
-              until curl -s http://nginx-ingress-ingress-nginx-controller-admission.ingress.svc.cluster.local:443/healthz; do
-                echo "Waiting for service to be ready..."
-                sleep 5
-              done
-              echo "Ingress Webhook Service is ready!"
-          - name: uninstall
-            image: dtzar/helm-kubectl
-            script: |
-              helm uninstall nginx-ingress -n ingress
+```
 
+When it is needed to process to a step before to install a package, we will use the `init` step. Until now, this step content will be used to configure a pod's init container. The `init` step can be used to generate a configMap, a kubernetes resource not packaged part of the manifest or as helm chart template but can also be used to wait till a service, endpoint is ready, healthy as we will do with the package gitea
+
+```yaml
     - name: gitea
       description: "gitea package"
       pipeline:
         steps:
           - name: init
             image: dtzar/helm-kubectl
-            script: |
-              echo "WaitFor Ingress"
-              # kubectl rollout status deployment nginx-ingress-ingress-nginx-controller -n ingress --timeout=90s
-              until curl -s http://nginx-ingress-ingress-nginx-controller-admission.ingress.svc.cluster.local:443/healthz; do
-                echo "Waiting for service to be ready..."
-                sleep 5
-              done
+            namespace:
+              name: default
+            waitCondition:
+              type: service
+              endpoint:
+                name: ingress-nginx-controller-admission
+                port: 443
+              path: /health
+
           - name: install
             image: dtzar/helm-kubectl
-            script: |
-              cat << EOF > values.yml
-              redis-cluster:
-                enabled: false
-              postgresql:
-                enabled: false
-              postgresql-ha:
-                enabled: false
-              valkey-cluster:
-                enabled: false
-              persistence:
-                enabled: false
-              gitea:
-                admin:
-                  # existingSecret: <NAME_OF_SECRET>
-                  username: "giteaAdmin"
-                  password: "developer"
-                  email: "gi@tea.com"
-                config:
-                  database:
-                    DB_TYPE: sqlite3
-                  session:
-                    PROVIDER: memory
-                  cache:
-                    ADAPTER: memory
-                  queue:
-                    TYPE: level
-              service:
-                ssh:
-                  type: NodePort
-                  nodePort: 32222
-                  externalTrafficPolicy: Local
-              ingress:
-                enabled: true
-                className: nginx
-                hosts:
-                  - host: gitea.localtest.me
-                    paths:
-                      - path: /
-                        pathType: Prefix
-              EOF
-              helm repo add gitea-charts https://dl.gitea.com/charts/
-              helm repo update
-              helm uninstall gitea -n gitea || echo "Release 'gitea' not found. Continuing..."
-              helm install gitea gitea-charts/gitea \
-                -n gitea \
-                --create-namespace \
-                -f values.yml
-
-          - name: uninstall
-            image: dtzar/helm-kubectl
-            script: |
-              helm uninstall gitea -n gitea
+            namespace:
+              name: gitea
+            helm:
+              chart:
+                repoUrl: https://dl.gitea.com/charts/
+                name: gitea
+              values: |
+                redis-cluster:
+                  enabled: false
+                postgresql:
+                  enabled: false
+                postgresql-ha:
+                  enabled: false
+                valkey-cluster:
+                  enabled: false
+                persistence:
+                  enabled: false
+                gitea:
+                  admin:
+                    # existingSecret: <NAME_OF_SECRET>
+                    username: "giteaAdmin"
+                    password: "developer"
+                    email: "gi@tea.com"
+                  config:
+                    database:
+                      DB_TYPE: sqlite3
+                    session:
+                      PROVIDER: memory
+                    cache:
+                      ADAPTER: memory
+                    queue:
+                      TYPE: level
+                service:
+                  ssh:
+                    type: NodePort
+                    nodePort: 32222
+                    externalTrafficPolicy: Local
+                ingress:
+                  enabled: true
+                  className: nginx
+                  hosts:
+                    - host: gitea.localtest.me
+                      paths:
+                        - path: /
+                          pathType: Prefix
 ```
-Deploy it
+
+Deploy now the platform yaml file using the example file: 
 ```shell
-kubectl apply -f my-platform.yaml
+kubectl apply -f resources/examples/platform-ingress-gitea.yml
 ```
-Check the pods created and if gitea is running, access its url: `https://gitea.localtest.me:8443`
 
-**Note**: To clean up the cluster, simply delete the manifest file installed !
+Check the platform resource and status
+```shell
+kubectl get platform/ingress-gitea -n platform
+NAME            AGE
+ingress-gitea   25s
+
+kubectl get platform/ingress-gitea -n platform -ojson | jq -r '.status.conditions'
+[
+  {
+    "message": "Deploying the package: nginx-ingress",
+    "type": "Deploying"
+  },
+  {
+    "message": "Deploying the package: nginx-ingress",
+    "type": "Deploying"
+  },
+  {
+    "message": "Deploying the package: nginx-ingress",
+    "type": "Deploying"
+  },
+  {
+    "message": "Deploying the package: gitea",
+    "type": "Deploying"
+  },
+  {
+    "message": "Deploying the package: gitea",
+    "type": "Deploying"
+  }
+]
+```
+
+When done, access the gitea url: `https://gitea.localtest.me:8443` and log on using as username/password: `giteaAdmin` and `developer`
+
+**Note**: To clean up the cluster, simply delete the platform resource file installed
+```shell
+kubectl delete -f resources/examples/platform-ingress-gitea.yml
+```
 
 Enjoy ;-)
 
