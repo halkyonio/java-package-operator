@@ -210,6 +210,7 @@
                         <version>3.11.2</version>
                         <executions>
                             <execution>
+                                <phase>package</phase>
                                 <goals>
                                     <goal>jar</goal>
                                 </goals>
