@@ -196,9 +196,11 @@
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
+                                <!-- TO RELEASE LOCALLY
                                 <configuration>
                                   <keyname>cmoullia@redhat.com</keyname>
                                 </configuration>
+                                -->
                             </execution>
                         </executions>
                     </plugin>
