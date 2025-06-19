@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.halkyon</groupId>
     <artifactId>platform-operator</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>0.1.1</version>
 
     <name>Java Platform Operator</name>
     <description>Java Platform Operator able to provision a kubernetes cluster with applications/packages</description>
