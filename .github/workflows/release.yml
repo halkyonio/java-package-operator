@@ -21,9 +21,12 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE # Don't work => ${{ secrets.GPG_PASSPHRASE }} as env var name should be defined
 
+      - name: Check the gpg key
+        run: |
+          gpg --list-keys
       - name: Publish package
         run: |
-          mvn -B -ntp deploy -DskipTests -Prelease
+          mvn -B -ntp deploy -DskipTests -Prelease -X
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
