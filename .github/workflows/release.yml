@@ -37,11 +37,20 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: Create release
+        uses: release-drafter/release-drafter@v6
+            # (Optional) specify config name to use, relative to .github/. Default: release-drafter.yml
+            # with:
+            #   config-name: my-config.yml
+            #   disable-autolabeler: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref_name }}
-        run: |
-          gh release create "$tag" \
-              --repo="$GITHUB_REPOSITORY" \
-              --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
-              --generate-notes
+
+      #- name: Create release
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #    tag: ${{ github.ref_name }}
+      #  run: |
+      #    gh release create "$tag" \
+      #        --repo="$GITHUB_REPOSITORY" \
+      #        --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
+      #        --generate-notes
