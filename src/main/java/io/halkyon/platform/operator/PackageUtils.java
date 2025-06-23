@@ -71,7 +71,7 @@ public class PackageUtils {
             }
             if (step.getManifest() != null) {
                 // If in cleanup mode and the step has Manifest configuration, it's a Manifest uninstall
-                return Optional.of(Mode.MANIFEST_UNINSTALL); // <-- New cleanup condition
+                return Optional.of(Mode.MANIFEST_UNINSTALL);
             }
             if (step.getScript() != null) {
                 return Optional.of(Mode.SCRIPT_UNINSTALL);
