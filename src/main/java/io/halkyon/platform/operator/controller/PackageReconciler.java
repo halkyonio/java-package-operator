@@ -1,9 +1,6 @@
 package io.halkyon.platform.operator.controller;
 
 import io.fabric8.kubernetes.api.model.*;
-import io.fabric8.kubernetes.api.model.batch.v1.Job;
-import io.fabric8.kubernetes.api.model.batch.v1.JobBuilder;
-import io.fabric8.kubernetes.client.utils.Serialization;
 import io.halkyon.platform.operator.Mode;
 import io.halkyon.platform.operator.crd.Package;
 import io.halkyon.platform.operator.crd.PackageSpec;
@@ -20,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -111,7 +107,7 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
     public static List<Container> createContainersFromPipeline(
         Package pkg,
         Predicate<Step> stepFilter,
-        boolean cleanUpFlag) {
+        boolean cleanUp) {
 
         List<Step> stepsList = Optional.ofNullable(pkg)
             .map(Package::getSpec)
@@ -127,7 +123,7 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                     s.setNamespace(new Namespace());
                 }
 
-                Optional<Mode> actionMode = determineAction(s, cleanUpFlag);
+                Optional<Mode> actionMode = determineAction(s, cleanUp);
                 List<String> command;
                 if (actionMode.isPresent()) {
                     Mode mode = actionMode.get();
@@ -137,13 +133,26 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                 }
 
                 ContainerBuilder builder = new ContainerBuilder()
-                    .withName(s.getName())
+                    .withName(generateContainerName(cleanUp == true ? "uninstall" : s.getName()))
                     .withImage(s.getImage())
                     .withCommand(command);
 
-                return builder.build(); // Build the Kubernetes Container object
+                return builder.build();
             })
-            .collect(Collectors.toList()); // Collect all built containers into a list
+            .collect(Collectors.toList());
+    }
+
+    private static String generateContainerName(String actionName) {
+        int leftLimit = 48; // numeral '0'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 10;
+        Random random = new Random();
+
+        return actionName + "-" + random.ints(leftLimit, rightLimit + 1)
+            .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+            .limit(targetStringLength)
+            .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+            .toString().toLowerCase();
     }
 
 }

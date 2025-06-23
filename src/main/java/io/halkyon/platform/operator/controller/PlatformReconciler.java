@@ -68,6 +68,7 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
             // When the previous package is null, then we process the first package of the list
             pkgDefinition = pkgs.getFirst();
             pkgDefinition.setCounter(1);
+            LOG.info("No previous package found. Let's pick up the first");
         } else {
             // As a Package has already been processed, we will check if status is "installation succeeded"
             // and remove it from the list to be processed to pick up the next one
@@ -112,6 +113,7 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
             condition.setType("Deploying");
             pStatus.addCondition(condition);
             platform.setStatus(pStatus);
+            LOG.info("Updating the status of the platform: {} for the package: {}", platform.getMetadata().getName(), pkg.getMetadata().getName());
             return UpdateControl.patchStatus(platform);
         } else {
             return UpdateControl.noUpdate();
@@ -149,24 +151,30 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
                 s -> s.getName() != null && s.getName().startsWith("install"),
                 true);
 
+            // Adding also the user's script defined part of the step: uninstall
+            containers.addAll(createContainersFromPipeline(
+                pkg,
+                s -> s.getName() != null && s.getName().startsWith("uninstall"),
+                true));
+
             if (!containers.isEmpty()) {
                 Job job = new JobBuilder()
-                    //@formatter:off
+                //@formatter:off
                 .withNewMetadata()
-                .withName("uninstall-"+pkg.getMetadata().getName())
-                .withNamespace(pkg.getMetadata().getNamespace())
-                .withLabels(createResourceLabels(pkg))
+                  .withName("uninstall-"+pkg.getMetadata().getName())
+                  .withNamespace(pkg.getMetadata().getNamespace())
+                  .withLabels(createResourceLabels(pkg))
                 .endMetadata()
                 .withNewSpec()
-                .withNewTemplate()
-                .withNewSpec()
-                .withContainers(containers)
-                .withRestartPolicy("Never")
-                .endSpec()
-                .endTemplate()
+                  .withNewTemplate()
+                    .withNewSpec()
+                      .withContainers(containers)
+                      .withRestartPolicy("Never")
+                    .endSpec()
+                  .endTemplate()
                 .endSpec()
                 .build();
-            //@formatter:on
+                //@formatter:on
                 job.addOwnerReference(pkg);
                 LOG.debug("job generated: {}", Serialization.asYaml(job));
                 context.getClient().resources(Job.class).inNamespace(pkg.getMetadata().getNamespace()).resource(job).serverSideApply();
