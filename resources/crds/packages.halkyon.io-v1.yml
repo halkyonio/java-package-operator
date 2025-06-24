@@ -110,11 +110,17 @@ spec:
                                 protocol:
                                   type: "string"
                               type: "object"
+                            name:
+                              type: "string"
                             namespace:
                               type: "string"
                             path:
                               type: "string"
-                            timeOut:
+                            resource:
+                              type: "string"
+                            status:
+                              type: "string"
+                            timeout:
                               type: "string"
                             type:
                               type: "string"
@@ -195,11 +201,17 @@ spec:
                             protocol:
                               type: "string"
                           type: "object"
+                        name:
+                          type: "string"
                         namespace:
                           type: "string"
                         path:
                           type: "string"
-                        timeOut:
+                        resource:
+                          type: "string"
+                        status:
+                          type: "string"
+                        timeout:
                           type: "string"
                         type:
                           type: "string"

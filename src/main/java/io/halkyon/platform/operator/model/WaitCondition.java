@@ -1,11 +1,30 @@
 package io.halkyon.platform.operator.model;
 
 public class WaitCondition {
+    private String resource;
+    private String name;
     private String namespace;
     private Endpoint endpoint;
+    private String status;
     private String type;
     private String path;
-    private String timeOut;
+    private String timeout;
+
+    public String getResource() {
+        return resource;
+    }
+
+    public void setResource(String resource) {
+        this.resource = resource;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getNamespace() {
         return namespace;
@@ -21,6 +40,14 @@ public class WaitCondition {
 
     public void setEndpoint(Endpoint endpoint) {
         this.endpoint = endpoint;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getType() {
@@ -39,11 +66,11 @@ public class WaitCondition {
         this.path = path;
     }
 
-    public String getTimeOut() {
-        return timeOut;
+    public String getTimeout() {
+        return timeout;
     }
 
-    public void setTimeOut(String timeOut) {
-        this.timeOut = timeOut;
+    public void setTimeout(String timeout) {
+        this.timeout = timeout;
     }
 }
