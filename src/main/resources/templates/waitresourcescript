@@ -1,0 +1,5 @@
+{#let wait=step.waitCondition namespace=step.namespace}
+{#if wait.type is 'rollout'}
+kubectl {wait.type} status {wait.resource} {wait.name} -n {namespace.name} --timeout={wait.timeout}
+{/if}
+{/let}

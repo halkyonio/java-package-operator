@@ -23,7 +23,12 @@ public class PackageUtils {
 
         switch (action) {
             case Mode.WAIT_FOR:
-                result = Templates.waitscript(step).render();
+                // TODO: To be reviewed and improved
+                if (step.getWaitCondition() != null && ! step.getWaitCondition().getType().equals("rollout")) {
+                    result = Templates.waitscript(step).render();
+                } else {
+                    result = Templates.waitresourcescript(step).render();
+                }
                 break;
             case Mode.MANIFEST_INSTALL:
                 result = Templates.manifestscript(step).render();
@@ -73,7 +78,7 @@ public class PackageUtils {
                 // If in cleanup mode and the step has Manifest configuration, it's a Manifest uninstall
                 return Optional.of(Mode.MANIFEST_UNINSTALL);
             }
-            if (step.getScript() != null) {
+            if (step.getName().startsWith("uninstall") && step.getScript() != null) {
                 return Optional.of(Mode.SCRIPT_UNINSTALL);
             }
         }

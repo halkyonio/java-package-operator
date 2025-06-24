@@ -13,29 +13,32 @@ public class HttpCodeIssueTest {
     @Test
     public void testWaitForScript() {
         String expected = """
-            {#let wait=step.waitCondition namespace=step.namespace}
-            echo "Wait for {wait.endpoint.name} ready ..."
             
             TIMEOUT_SECONDS=180
             RETRY_INTERVAL=5
-            URL="{wait.endpoint.protocol}://{wait.endpoint.name}.{namespace.name}:{wait.endpoint.port}/{wait.path}"
+            ELAPSED_TIME=0
+            
+            URL="http://ingress-nginx-controller-admission.default:443//healthz"
+            CMD="curl -i -o - -ks -X GET $URL -H \\"Content-Type: application/json\\""
+            
+            echo "Wait for $URL endpoint to be ready ..."
             
             while [ "$ELAPSED_TIME" -lt "$TIMEOUT_SECONDS" ]; do
-              STATUS_CODE=$(curl -ks -o /dev/null -w "%{http_code}" --max-time ${RETRY_INTERVAL} ${URL})
-            
-              if [ "$STATUS_CODE" -eq 200 ]; then
-                echo "Health check successful! Pod is ready. (Status: ${STATUS_CODE})"
-                exit 0
-              else
-                echo "Attempt failed. Status: ${STATUS_CODE}. Retrying in ${RETRY_INTERVAL} seconds..."
-                sleep ${RETRY_INTERVAL}
+              STATUS=$($CMD | grep HTTP | awk '{print $2}')
+              if [ "$STATUS" != "200" ]; then
+                echo "Attempt failed. Status: $STATUS. Retrying in $RETRY_INTERVAL seconds..."
+                sleep $RETRY_INTERVAL
                 ELAPSED_TIME=$((ELAPSED_TIME + RETRY_INTERVAL))
+              else
+                echo "Endpoint replied successfully. (Status: $STATUS)"
+                exit 0
               fi
             done
             
-            echo "Error: Health check failed after ${TIMEOUT_SECONDS} seconds. Pod did not return HTTP 200 OK."
-            echo "Service checked: ${URL}"
-            exit 1""";
+            echo "Error: endpoint failed after $TIMEOUT_SECONDS seconds. Service did not return HTTP 200 OK."
+            echo "Service checked: $URL"
+            exit 1
+            """;
 
         Step step = new Step();
         Namespace namespace = new Namespace();

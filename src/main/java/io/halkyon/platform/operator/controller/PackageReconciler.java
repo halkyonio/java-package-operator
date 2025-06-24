@@ -101,7 +101,7 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
      * @param pkg The Package object containing the pipeline steps.
      * @param stepFilter A {@link Predicate} to determine which steps should be processed into containers.
      * This allows for flexible filtering logic (e.g., by name prefix, by presence of Helm config).
-     * @param cleanUpFlag A {@link boolean} indicating if we will delete the resources of a package
+     * @param cleanUp A {@link boolean} indicating if we will delete the resources of a package
      * @return A {@link List} of {@link Container} objects. Returns an empty list if no steps are found or no steps match the filter.
      */
     public static List<Container> createContainersFromPipeline(
