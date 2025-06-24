@@ -1,3 +1,8 @@
+#
+# mkcert tekton.localtest.me localtest.me localhost 127.0.0.1 ::1
+# kubectl delete secret -n tekton-pipelines self-signed
+# kubectl create secret tls self-signed --cert tekton.localtest.me+4.pem --key tekton.localtest.me+4-key.pem -n tekton-pipelines
+#
 apiVersion: halkyon.io/v1alpha1
 kind: Platform
 metadata:
@@ -5,7 +10,7 @@ metadata:
   namespace: platform
 spec:
   version: 0.1.0
-  description: "A platform installing: nginx ingress, cert manager, tekton & tekton dashboard and exposing the ui at the address https://tekton.localtest.me:8443"
+  description: "A platform installing: nginx ingress, tekton & tekton dashboard and exposing the ui at the address https://tekton.localtest.me:8443"
   packages:
     - name: nginx-ingress
       description: "nginx-ingress package"
@@ -29,115 +34,10 @@ spec:
                 ingress:
                   enabled: true
 
-    - name: cert-manager
-      description: "cert-manager package"
-      pipeline:
-        steps:
-          # Due to this problem: https://github.com/cert-manager/cert-manager/issues/7502 with the acquisition of the leader election which is taking time and stops the process to create cert manager resources
-          # we will switch to Helm
-          #
-          #- name: install
-          #  image: dtzar/helm-kubectl
-          #  manifest:
-          #    url: https://github.com/cert-manager/cert-manager/releases/download/v1.16.3/cert-manager.yaml
-
-          - name: install
-            image: dtzar/helm-kubectl
-            namespace:
-              name: kube-system
-            helm:
-              chart:
-                repoUrl: https://charts.jetstack.io
-                name: cert-manager
-                version: v1.17.3
-              release:
-                name: cert-manager
-              values: |
-                global:
-                  leaderElection:
-                    namespace: kube-system # see: https://github.com/cert-manager/cert-manager/issues/7502
-                crds:
-                  enabled: true
-
-    - name: self-signed
-      description: "Generate a self signed root CA and issuer"
-      pipeline:
-        steps:
-          #- name: init
-          #  image: dtzar/helm-kubectl
-          #  namespace:
-          #    name: cert-manager
-          #  waitCondition:
-          #    type: service
-          #    endpoint:
-          #      name: cert-manager-webhook
-          #      port: 443
-          #      protocol: https
-          #      path: validate
-
-          - name: init
-            image: dtzar/helm-kubectl
-            namespace:
-              name: kube-system
-            waitCondition:
-              resource: deployment
-              name: cert-manager-webhook
-              type: rollout # rollout is only applicable for resources of type: deployment, daemonset or statefulset
-              timeout: 90s
-
-          - name: init
-            image: dtzar/helm-kubectl
-            namespace:
-              name: kube-system
-            waitCondition:
-              resource: deployment
-              name: cert-manager-cainjector
-              type: rollout
-              timeout: 90s
-
-          - name: init
-            image: dtzar/helm-kubectl
-            namespace:
-              name: kube-system
-            waitCondition:
-              resource: deployment
-              name: cert-manager
-              type: rollout
-              timeout: 90s
-
-          - name: install
-            image: dtzar/helm-kubectl
-            script: |
-              cat <<EOF | kubectl apply -f -
-              ---
-              apiVersion: cert-manager.io/v1
-              kind: ClusterIssuer
-              metadata:
-                name: selfsigned
-              spec:
-                selfSigned: {}
-              EOF
-
-          - name: uninstall
-            image: dtzar/helm-kubectl
-            script: |
-              kubectl delete clusterissuer/selfsigned
-
     - name: tekton
       description: "Tekton package"
       pipeline:
         steps:
-          #- name: init
-          #  image: dtzar/helm-kubectl
-          #  namespace:
-          #    name: default
-          #  waitCondition:
-          #    type: service
-          #    endpoint:
-          #      name: ingress-nginx-controller-admission
-          #      port: 443
-          #      path: /healthz
-
           - name: init
             image: dtzar/helm-kubectl
             namespace:
@@ -152,7 +52,6 @@ spec:
             image: dtzar/helm-kubectl
             manifest:
               url: https://storage.googleapis.com/tekton-releases/pipeline/previous/v1.1.0/release.yaml
-
     - name: tekton-dashboard
       description: "Tekton dashboard package"
       pipeline:
@@ -166,31 +65,31 @@ spec:
             image: dtzar/helm-kubectl
             script: |
                 cat <<EOF | kubectl apply -f -
+                ---
                 apiVersion: networking.k8s.io/v1
                 kind: Ingress
                 metadata:
                   annotations:
-                    cert-manager.io/cluster-issuer: selfsigned
                     nginx.ingress.kubernetes.io/ssl-redirect: "true"
                   name: tekton-ui
                   namespace: tekton-pipelines
                 spec:
                   ingressClassName: nginx
-                  tls:
-                  - hosts:
-                      - tekton.localtest.me
-                    secretName: ingress-tekton-cert
                   rules:
                   - host: tekton.localtest.me
                     http:
                       paths:
-                       - backend:
-                           service:
-                             name: tekton-dashboard
-                             port:
-                               number: 9097
-                         path: /
-                         pathType: Prefix
+                      - backend:
+                          service:
+                            name: tekton-dashboard
+                            port:
+                              number: 9097
+                        path: /
+                        pathType: Prefix
+                  tls:
+                  - hosts:
+                    - tekton.localtest.me
+                    secretName: self-signed
                 EOF
 
           - name: uninstall
