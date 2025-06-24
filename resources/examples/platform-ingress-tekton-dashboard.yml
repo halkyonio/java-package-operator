@@ -1,7 +1,25 @@
 #
-# mkcert tekton.localtest.me localtest.me localhost 127.0.0.1 ::1
-# kubectl delete secret -n tekton-pipelines self-signed
-# kubectl create secret tls self-signed --cert tekton.localtest.me+4.pem --key tekton.localtest.me+4-key.pem -n tekton-pipelines
+# To access the Tekton UI using ingress from your browser and instead of using the Kubernetes Fake self-signed certificate,
+# a better approach is to use the following tool able to generate a CA root certificate and to trust it locally
+#
+# - Install mkcert. See instructions on: https://github.com/FiloSottile/mkcert
+#
+# - Install the root CA on Firefox, Java keystore and Mac Keychain tool, chrome, etc using the command:
+#
+#   mkcert -install
+#
+#   You can read the certificate generated using the command:
+#
+#   cat "$(mkcert -CAROOT)"/rootCA.pem | openssl x509 -noout -text
+#
+# - Create a pem and key files for: localtest.me domain and tekton host
+#
+#   mkcert tekton.localtest.me localtest.me localhost 127.0.0.1 ::1
+#
+# - Create next a secret on the cluster
+#
+#   kubectl delete secret -n tekton-pipelines self-signed
+#   kubectl create secret tls self-signed --cert tekton.localtest.me+4.pem --key tekton.localtest.me+4-key.pem -n tekton-pipelines
 #
 apiVersion: halkyon.io/v1alpha1
 kind: Platform
