@@ -129,7 +129,8 @@ public class PackageReconciler implements Reconciler<Package>, Cleaner<Package> 
                     Mode mode = actionMode.get();
                     command = generatePodCommand(s, mode);
                 } else {
-                    throw new RuntimeException("No specific action mode determined for step: " + s.getName() + ". Operation aborted.");
+                    LOG.warn("No specific action mode determined for step: {} of the package: {}. Operation aborted.",s.getName(),pkg.getMetadata().getName());
+                    return null;
                 }
 
                 ContainerBuilder builder = new ContainerBuilder()

@@ -148,7 +148,9 @@ public class PlatformReconciler implements Reconciler<Platform>, Cleaner<Platfor
             LOG.info("Creating a job to uninstall the package {}, having position: {}", pkg.getMetadata().getName(),pkg.getMetadata().getLabels().get(PACKAGE_ORDER_LABEL));
             var containers = createContainersFromPipeline(
                 pkg,
-                s -> s.getName() != null && s.getName().startsWith("install"),
+                s -> s.getName() != null &&
+                    s.getName().startsWith("install") &&
+                    s.getHelm() != null || s.getManifest() != null,
                 true);
 
             // Adding also the user's script defined part of the step: uninstall
